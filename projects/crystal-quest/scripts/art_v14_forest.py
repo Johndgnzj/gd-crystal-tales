@@ -66,12 +66,25 @@ def path_tile(edges, band=12):
                 ("left" in edges and x < band) or ("right" in edges and x >= TS - band)):
                 px[x, y] = 255
     t.paste(g, (0, 0), mask); return t
-for nm, e in [("pn", {"top"}), ("ps", {"bottom"}), ("pnw", {"top", "left"}),
-              ("pne", {"top", "right"}), ("psw", {"bottom", "left"}), ("pse", {"bottom", "right"})]:
+for nm, e in [("pn", {"top"}), ("ps", {"bottom"}), ("pw", {"left"}), ("pe", {"right"}),
+              ("pnw", {"top", "left"}), ("pne", {"top", "right"}),
+              ("psw", {"bottom", "left"}), ("pse", {"bottom", "right"})]:
     put(nm, path_tile(e))
 put("path", DIRT); put("dirt", DIRT); put("pc", DIRT)
 atlas.save(f"{A}/map/atlas_forest.png")
 print("saved assets/map/atlas_forest.png", atlas.size)
+
+# atlas_town = 森林地面 superset ＋ 城鎮專用 plaza（夯土廣場）/farm（田）
+PLAZA = cell16(FLOORS, 7, 14)                          # 淺沙夯土（城鎮中心）
+def farm_tile():                                       # 田＝棕土＋橫向犁溝
+    b = up2(DIRT).copy(); d = ImageDraw.Draw(b)
+    for yy in range(4, 32, 7):
+        d.line([(0, yy), (31, yy)], fill=(96, 66, 40, 200), width=2)
+        d.line([(0, yy + 2), (31, yy + 2)], fill=(150, 110, 70, 150), width=1)
+    return b
+put("plaza", PLAZA); put("farm", farm_tile())
+atlas.save(f"{A}/map/atlas_town.png")
+print("saved assets/map/atlas_town.png", atlas.size)
 
 # ===================== 2. sprite 自動切割工具 =====================
 def _groups(idxs):

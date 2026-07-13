@@ -9,15 +9,21 @@
       "base": {
         "str": 4,
         "agi": 3,
-        "int": 2
+        "int": 2,
+        "luck": 6
       },
       "growth": {
         "str": 2,
         "agi": 1,
-        "int": 1
+        "int": 1,
+        "luck": 0
       },
+      "elem": { "earth": 3, "wind": 2 },
       "startLevel": 1,
       "startEq": { "weapon": "short_sword", "armor": "traveler_garb", "boots": "leather_boots", "wrist": "cloth_wraps" },
+      "age": 15,
+      "origin": "芳蕾鎮",
+      "weaponTendency": "劍類·力量",
       "story": [
         "芳蕾鎮鐵匠漢克與瑪莎的獨生子，十五歲。",
         "從小聽著往來旅人的冒險故事長大，一心嚮往外面的世界，",
@@ -36,15 +42,21 @@
       "base": {
         "str": 3,
         "agi": 4,
-        "int": 3
+        "int": 3,
+        "luck": 8
       },
       "growth": {
         "str": 1,
         "agi": 2,
-        "int": 1
+        "int": 1,
+        "luck": 0
       },
+      "elem": { "wind": 3, "water": 1 },
       "startLevel": 1,
       "startEq": { "weapon": "hunting_knife", "armor": "traveler_garb", "boots": "leather_boots", "acc1": "agate_charm" },
+      "age": 15,
+      "origin": "芳蕾鎮",
+      "weaponTendency": "匕首·敏捷",
       "story": [
         "旅店老闆娘朵拉的女兒，與路德一起長大的青梅竹馬。",
         "冷靜務實，是路德闖禍前的最後一道煞車——雖然常常煞不住。",
@@ -63,12 +75,17 @@
       "base": {
         "str": 30,
         "agi": 24,
-        "int": 14
+        "int": 14,
+        "luck": 10
       },
       "growth": {},
+      "elem": { "dark": 2, "light": 2 },
       "startLevel": 20,
       "guest": true,
       "startEq": { "weapon": "iron_sword", "armor": "leather_vest", "boots": "swift_boots", "wrist": "iron_bracer" },
+      "age": "?",
+      "origin": "不明",
+      "weaponTendency": "劍類·力量",
       "story": [
         "借宿芳蕾鎮的 A 級冒險者。話少，劍快。",
         "來歷成謎，只知道他一直在調查北方礦山的異變。",
@@ -98,12 +115,28 @@
     "dodgePerAgi": 1.5,
     "dodgeCap": 30,
     "critBase": 6.25,
-    "critPerAgi": 0.15
+    "critPerAgi": 0.15,
+    "critPerLuck": 0.2,
+    "luckRewardPer": 0.01,
+    "profAtkPer": 0.5,
+    "profPerBattle": 1,
+    "profMax": 20,
+    "elemAffinityPer": 0.05,
+    "weakMul": 1.5,
+    "resistMul": 0.5
+  },
+  "blessings": {
+    "gaia_mark": {
+      "name": "女神的記號",
+      "desc": "蓋婭女神留下的祝福，微幅強化全能力並帶來光的加護。",
+      "stats": { "patk": 2, "matk": 2, "pdef": 1, "mdef": 1 },
+      "elem": { "light": 3 }
+    }
   },
   "equipment": [
-    { "id": "short_sword",   "name": "短劍",     "slot": "weapon", "patk": 2,            "desc": "鎮上鐵匠隨手打的入門短劍，輕便好上手。",             "buy": 40,  "sell": 12 },
-    { "id": "hunting_knife", "name": "獵刀",     "slot": "weapon", "patk": 1, "crit": 4, "desc": "處理野味用的獵刀，攻擊低但容易刺中要害。",           "buy": 50,  "sell": 15 },
-    { "id": "iron_sword",    "name": "鐵劍",     "slot": "weapon", "patk": 6,            "desc": "扎實的全鐵長劍，冒險者的標準配備。",                 "buy": 120, "sell": 36 },
+    { "id": "short_sword",   "name": "短劍",     "slot": "weapon", "wtype": "sword", "patk": 2,            "desc": "鎮上鐵匠隨手打的入門短劍，輕便好上手。",             "buy": 40,  "sell": 12 },
+    { "id": "hunting_knife", "name": "獵刀",     "slot": "weapon", "wtype": "sword", "patk": 1, "crit": 4, "desc": "處理野味用的獵刀，攻擊低但容易刺中要害。",           "buy": 50,  "sell": 15 },
+    { "id": "iron_sword",    "name": "鐵劍",     "slot": "weapon", "wtype": "sword", "patk": 6,            "desc": "扎實的全鐵長劍，冒險者的標準配備。",                 "buy": 120, "sell": 36 },
     { "id": "traveler_garb", "name": "旅行衣",   "slot": "armor",  "pdef": 2,            "desc": "耐磨的旅人布衣，擋不了太多但透氣。",                 "buy": 35,  "sell": 10 },
     { "id": "leather_vest",  "name": "皮革護胸", "slot": "armor",  "pdef": 5,            "desc": "鞣製皮革製的護胸，兼顧防護與靈活。",                 "buy": 90,  "sell": 27 },
     { "id": "leather_boots", "name": "皮革長靴", "slot": "boots",  "pdef": 1,            "desc": "結實的皮靴，長途跋涉不磨腳。",                       "buy": 15,  "sell": 4  },
@@ -114,10 +147,10 @@
     { "id": "agate_charm",   "name": "瑪瑙護符", "slot": "acc",    "mdef": 3,            "desc": "朵拉塞給瑪琳的瑪瑙護符，能抵禦邪異的力量。",         "buy": 50,  "sell": 15 },
     { "id": "vital_ring",    "name": "活力戒指", "slot": "acc",    "hp": 20,             "desc": "溫熱的紅玉戒指，配戴時體力更加充沛。",               "buy": 80,  "sell": 24 },
     { "id": "focus_earring", "name": "凝神耳環", "slot": "acc",    "mp": 10, "matk": 2,  "desc": "藍晶耳環，凝神靜氣，強化魔力循環。",                 "buy": 90,  "sell": 27 },
-    { "id": "lucky_coin",    "name": "幸運銅幣", "slot": "acc",    "crit": 2, "dodge": 2,"desc": "磨得發亮的老銅幣，據說能招來一點好運。",             "buy": 45,  "sell": 13 },
+    { "id": "lucky_coin",    "name": "幸運銅幣", "slot": "acc",    "crit": 2, "dodge": 2, "luck": 3, "desc": "磨得發亮的老銅幣，據說能招來一點好運。",             "buy": 45,  "sell": 13 },
 
-    { "id": "steel_sword",       "name": "鋼劍",     "slot": "weapon", "patk": 10,                       "desc": "漢克精心鍛造的鋼劍，鋒利沉穩，第二章的主力武器。", "buy": 260, "sell": 78, "tier": 2 },
-    { "id": "keen_dagger",       "name": "銳鋒匕",   "slot": "weapon", "patk": 4, "crit": 8,             "desc": "刃薄如紙的匕首，靈巧者的利器，會心一擊機率極高。", "buy": 150, "sell": 45, "tier": 2 },
+    { "id": "steel_sword",       "name": "鋼劍",     "slot": "weapon", "wtype": "sword", "patk": 10,                       "desc": "漢克精心鍛造的鋼劍，鋒利沉穩，第二章的主力武器。", "buy": 260, "sell": 78, "tier": 2 },
+    { "id": "keen_dagger",       "name": "銳鋒匕",   "slot": "weapon", "wtype": "sword", "patk": 4, "crit": 8,             "desc": "刃薄如紙的匕首，靈巧者的利器，會心一擊機率極高。", "buy": 150, "sell": 45, "tier": 2 },
     { "id": "chainmail",         "name": "鎖子甲",   "slot": "armor",  "pdef": 9,                        "desc": "細環相扣的鎖子甲，防護扎實但略沉。",               "buy": 200, "sell": 60, "tier": 2 },
     { "id": "mage_robe",         "name": "法師袍",   "slot": "armor",  "pdef": 3, "mp": 15, "matk": 3,   "desc": "織入符文的法師長袍，擴充魔力並提升法術威力。",     "buy": 190, "sell": 57, "tier": 2 },
     { "id": "steel_bracer",      "name": "精鋼護腕", "slot": "wrist",  "patk": 3, "pdef": 2,             "desc": "精鋼打造的護腕，攻防兼備的升級品。",               "buy": 90,  "sell": 27, "tier": 2 },
@@ -145,6 +178,7 @@
       "mp": 4,
       "kind": "damage",
       "attr": "agi",
+      "element": "wind",
       "mult": 2.1,
       "flat": 2,
       "target": "enemy"
@@ -157,6 +191,7 @@
       "mp": 5,
       "kind": "heal",
       "attr": "int",
+      "element": "wind",
       "mult": 2.0,
       "flat": 18,
       "target": "ally"
@@ -169,6 +204,7 @@
       "mp": 8,
       "kind": "damage",
       "attr": "str",
+      "element": "wind",
       "mult": 1.1,
       "flat": 2,
       "target": "all_enemies"
@@ -240,6 +276,8 @@
       "spd": 14,
       "exp": 5,
       "gold": 3,
+      "weak": ["thunder"],
+      "resist": ["wind"],
       "drops": [{ "id": "soft_feather", "rate": 0.5 }]
     },
     {
@@ -252,6 +290,7 @@
       "spd": 4,
       "exp": 6,
       "gold": 4,
+      "resist": ["wind"],
       "drops": [{ "id": "slime_gel", "rate": 0.5 }]
     },
     {
@@ -264,6 +303,7 @@
       "spd": 7,
       "exp": 8,
       "gold": 5,
+      "weak": ["wind"],
       "drops": [{ "id": "worm_carapace", "rate": 0.45 }]
     },
     {
@@ -276,6 +316,7 @@
       "spd": 8,
       "exp": 8,
       "gold": 7,
+      "weak": ["wind"],
       "drops": [{ "id": "goblin_fang", "rate": 0.4 }]
     },
     {
@@ -353,6 +394,8 @@
       "spd": 7,
       "exp": 12,
       "gold": 10,
+      "resist": ["wind"],
+      "weak": ["light"],
       "drops": [{ "id": "bone_shard", "rate": 0.5 }, { "id": "iron_ore", "rate": 0.2 }]
     },
     {

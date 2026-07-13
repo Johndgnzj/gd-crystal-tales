@@ -71,6 +71,11 @@ oak = LPCT.crop((928,900,1024,1020)); oak.save(f"{A}/props/tree.png")     # 96x1
 pine = LPCT.crop((960,0,1024,152)); pine.save(f"{A}/props/pine.png")      # 64x152
 TREE_W,TREE_H = oak.size
 TPX,TPY = -(TREE_W-32)//2, 32-TREE_H   # 樹底對齊所在格底邊、水平置中
+# anokolisa 多樹種（art_v14 產 fst_tree_1..6，統一 96x120 沿用 TPX/TPY）。各用獨立 RNG→不動全域流、彼此不互擾。
+FTREES = [f"FTree{_i}" for _i in range(1,7)]
+_FRNG = random.Random(1414)            # 森林樹種/裝飾
+_TRNG = random.Random(2025)            # 城鎮樹種
+def _town_tree(): return _TRNG.choice(FTREES)
 
 # ================= 2. 新道具圖 =================
 P = f"{A}/props"
@@ -465,6 +470,12 @@ def text_obj(name,text="",size=26,color="255;255;255",bold=True,align="left"):
                        "verticalTextAlignment":"top","isOutlineEnabled":True,"outlineColor":"10;10;20",
                        "outlineThickness":2,"isShadowEnabled":False,"shadowColor":"0;0;0","shadowOpacity":127,
                        "shadowDistance":3,"shadowAngle":90,"shadowBlurRadius":2}}
+def shapepainter(name):
+    # 角色選單盒狀面板：以程序繪製（clearBetweenFrames 每幀自清、absoluteCoordinates 走螢幕座標）
+    return {"name":name,"type":"PrimitiveDrawing::Drawer","tags":"","variables":[],"effects":[],"behaviors":[],
+            "fillOpacity":255,"outlineSize":2,"outlineOpacity":255,
+            "absoluteCoordinates":True,"clearBetweenFrames":True,"antialiasing":"none",
+            "fillColor":"30;34;54","outlineColor":"10;10;20"}
 def inst(name,x,y,z=1,w=0,h=0,layer_="",variables=None):
     dd={"angle":0,"customSize":bool(w or h),"height":h,"layer":layer_,"locked":False,
         "name":name,"persistentUuid":str(uuid.uuid4()),"width":w,"x":x,"y":y,
@@ -560,18 +571,19 @@ class MapB:
     def prop(s,name,tx,ty,foot=None,px=0,py=0):
         s.props.append((name,tx*TS+px,ty*TS+py))
         if foot: s.block(tx+foot[0],ty+foot[1],tx+foot[2],ty+foot[3])
-    def trees_border(s,skip=(),step=2):
+    def trees_border(s,skip=(),step=2,tree="Tree"):
+        pick=tree if callable(tree) else (lambda:tree)   # tree 可為固定名或每棵回傳名的 callable
         for xx in range(1,s.MW-1,step):
             # 頂排：樹放第 3 列（120 高的樹 py=-88，樹冠才不會超出世界頂端被裁切），連 1-2 列一起擋
             if (xx,1) not in skip and (xx,2) not in skip and (xx,3) not in skip and not s.blocked[3][xx] and s.g[3*s.MW+xx]==G["grass"]:
-                s.prop("Tree",xx,3,px=TPX,py=TPY); s.block(xx,1); s.block(xx,2); s.block(xx,3)
+                s.prop(pick(),xx,3,px=TPX,py=TPY); s.block(xx,1); s.block(xx,2); s.block(xx,3)
             yy=s.MH-2
             if (xx,yy) not in skip and not s.blocked[yy][xx] and s.g[yy*s.MW+xx]==G["grass"]:
-                s.prop("Tree",xx,yy,px=TPX,py=TPY); s.block(xx,yy)
+                s.prop(pick(),xx,yy,px=TPX,py=TPY); s.block(xx,yy)
         for yy in range(2,s.MH-2,step+1):
             for xx in (1,s.MW-2):
                 if (xx,yy) not in skip and not s.blocked[yy][xx] and s.g[yy*s.MW+xx]==G["grass"]:
-                    s.prop("Tree",xx,yy,px=TPX,py=TPY); s.block(xx,yy)
+                    s.prop(pick(),xx,yy,px=TPX,py=TPY); s.block(xx,yy)
     def strs(s):
         B=[''.join('1' if s.blocked[y][x] else '0' for x in range(s.MW)) for y in range(s.MH)]
         E=[''.join('1' if s.enc[y][x] else '0' for x in range(s.MW)) for y in range(s.MH)]
@@ -700,7 +712,7 @@ for _o,_dx,_dy,_bw in BLDG_LAYOUT:
         for _xx in range(_tx0,_tx1+1): _bld_clear.add((_xx,_yy))
 # 北向道路出口上緣別種樹（樹冠會戳到路口）
 _top_skip={(_x,_y) for _x in range(20,24) for _y in (1,2,3)}
-tw.trees_border(skip=_bld_clear|_top_skip,step=3)   # 邊界樹疏一點（每 3 格）避免太密
+tw.trees_border(skip=_bld_clear|_top_skip,step=3,tree=_town_tree)   # 邊界樹疏一點；anokolisa 樹種（_TRNG 獨立不動全域流）
 # 散佈樹叢石：數量砍半(26→13)＋彼此不緊貼(避免破圖)。用 get/setstate 隔離 RNG→不影響後續地牢迷宮
 _rs=random.getstate()
 placed=0; _pl=[]; _tries=0
@@ -710,7 +722,7 @@ while placed<13 and _tries<1200:
     if tw.blocked[yy][xx] or (xx,yy) in _bld_clear or tw.get(xx,yy) not in (G["grass"],G["grassf"]) or (13<=xx<=28 and 8<=yy<=19): continue
     if any(abs(xx-_px)<=1 and abs(yy-_py)<=1 for _px,_py in _pl): continue   # 不緊貼
     k=random.choice(["Tree","Tree","Bush","Rock"])
-    if k=="Tree": tw.prop("Tree",xx,yy,px=TPX,py=TPY)
+    if k=="Tree": tw.prop(_town_tree(),xx,yy,px=TPX,py=TPY)   # anokolisa 樹種（此區已 getstate/setstate 隔離）
     else: tw.prop(k,xx,yy,py=6)
     tw.block(xx,yy); _pl.append((xx,yy)); placed+=1
 random.setstate(_rs)   # 還原 RNG
@@ -732,9 +744,7 @@ tw.unblock(20,0,23,0); tw.unblock(41,13,41,16)
 tw.mark_enc()
 
 # ---- Forest 兩層 64x44：樹牆迷宮（第一層通往深處、第二層有頭目）----
-# 森林 anokolisa 化：多樹種＋地面裝飾。獨立 RNG，絕不動全域 random 流（否則其他地圖佈局位移）。
-_FRNG = random.Random(1414)
-FTREES = [f"FTree{i}" for i in range(1,7)]                         # art_v14 產的 6 棵
+# 森林地面裝飾（FTREES/_FRNG 已於檔頭定義）。獨立 RNG，絕不動全域 random 流。
 _FDECO = ["FFern","FMush","FFlower","FPebble","FFern","FFlower","FBush"]  # 加權：蕨/花多、灌木少
 def _forest_decor(m):
     for y in range(1,m.MH-1):
@@ -930,42 +940,57 @@ tmj_write("mine",MMW,MMH,mi.g); tmj_write("cave",CMW,CMH,ca.g)
 # ================= 5. 對話/劇情資料 =================
 DLG = {
  "tina": [
-   {"when":"step==0","name":"緹娜","lines":["這不是路德嗎？要去礦山見習？","等你正式登錄的那天，公會隨時歡迎你。"]},
-   {"when":"ch1==2","name":"緹娜","lines":["委託完成確認——哥布林頭目討伐！","報酬 200 金幣已支付。你們是本鎮的驕傲！","（第一章完──「重返礦山」即將開放）"],"action":"ch1_reward"},
-   {"when":"ch1==1","name":"緹娜","lines":["委託進行中：討伐東之森深處的哥布林頭目。","牠就在森林最東邊的空地，小心點！"]},
-   {"when":"ch2>=1","name":"緹娜","lines":["礦坑的委託，是老葛雷私下拜託你們的吧？","那些失蹤的礦工……公會這邊也一直很掛心。","小心點，別逞強——活著回來才是好冒險者。"]},
-   {"when":"ch1==3","name":"緹娜","lines":["哥布林頭目的委託已經結案囉，辛苦了！","接下來想找活兒的話，水井旁的老葛雷正在找人幫忙。"]},
-   {"when":"reg==1","name":"緹娜","lines":["有新委託喔——農家回報東之森的哥布林越來越囂張，","牠們的頭目就盤踞在森林深處。","【委託】討伐哥布林頭目（報酬 200G）。接受嗎？就當你接受了！","頭目比雜魚強得多——建議練到 Lv5、跟漢克拿把好劍再去。"],"action":"ch1_take"},
-   {"when":"step>=3","name":"緹娜","lines":["歡迎來到冒險者公會！要登錄成為冒險者嗎？","……路德和瑪琳，兩位都登錄完成！","從今天起你們就是 F 級冒險者了。委託隨時來找我。"],"action":"register"},
+   # 委託（公會功能，依進度自動變化）
+   {"when":"ch1==2","cmd":"quest","label":"委託","name":"緹娜","lines":["委託完成確認——哥布林頭目討伐！","報酬 200 金幣已支付。你們是本鎮的驕傲！","（第一章完──「重返礦山」即將開放）"],"action":"ch1_reward"},
+   {"when":"ch1==1","cmd":"quest","label":"委託","name":"緹娜","lines":["委託進行中：討伐東之森深處的哥布林頭目。","牠就在森林最東邊的空地，小心點！"]},
+   {"when":"reg==1","cmd":"quest","label":"委託","name":"緹娜","lines":["有新委託喔——農家回報東之森的哥布林越來越囂張，","牠們的頭目就盤踞在森林深處。","【委託】討伐哥布林頭目（報酬 200G）。接受嗎？就當你接受了！","頭目比雜魚強得多——建議練到 Lv5、跟漢克拿把好劍再去。"],"action":"ch1_take"},
+   {"when":"step>=3","cmd":"quest","label":"委託","name":"緹娜","lines":["歡迎來到冒險者公會！要登錄成為冒險者嗎？","……路德和瑪琳，兩位都登錄完成！","從今天起你們就是 F 級冒險者了。委託隨時來找我。"],"action":"register"},
+   {"when":"always","cmd":"quest","label":"委託","name":"緹娜","lines":["目前沒有適合你們的新委託。","升上一階、或到週邊多探探，說不定就有新工作囉。"]},  # 💠 後備閒聊(待潤)
+   # 閒聊
+   {"when":"step==0","cmd":"talk","name":"緹娜","lines":["這不是路德嗎？要去礦山見習？","等你正式登錄的那天，公會隨時歡迎你。"]},
+   {"when":"ch1==3","cmd":"talk","name":"緹娜","lines":["哥布林頭目的委託已經結案囉，辛苦了！","接下來想找活兒的話，水井旁的老葛雷正在找人幫忙。"]},
+   {"when":"ch2>=1","cmd":"talk","name":"緹娜","lines":["礦坑的委託，是老葛雷私下拜託你們的吧？","那些失蹤的礦工……公會這邊也一直很掛心。","小心點，別逞強——活著回來才是好冒險者。"]},
+   {"when":"always","cmd":"talk","name":"緹娜","lines":["委託都貼在牆上的告示板，慢慢看。","有什麼想問的，儘管來櫃檯找我。"]},  # 💠 後備閒聊(待潤)
  ],
  "dora": [
-   {"when":"step==0","name":"朵拉","lines":["要跟亞倫先生出門？路上小心。","回來我煮好吃的等你們。"]},
-   {"when":"always","name":"朵拉","lines":["累了吧？床鋪都幫你們鋪好了。","（隊伍完全恢復了！）"],"action":"heal"},
+   {"when":"always","cmd":"rest","label":"住宿","name":"朵拉","lines":["累了吧？床鋪都幫你們鋪好了。","（隊伍完全恢復了！）"],"action":"heal"},
+   {"when":"step==0","cmd":"talk","name":"朵拉","lines":["要跟亞倫先生出門？路上小心。","回來我煮好吃的等你們。"]},
+   {"when":"always","cmd":"talk","name":"朵拉","lines":["瑪琳那孩子，就拜託你多照應了。","想歇歇隨時說一聲，自己家不收錢的。"]},  # 💠 後備閒聊(待潤)
  ],
  "sister": [
-   {"when":"ch2>=2","name":"希雅修女","lines":["你們從礦山帶回來的……不只是疲憊。","那是亡者未能安息的哀嘆。願蓋婭女神接引他們。","（隊伍完全恢復了！）","……路德，女神在你身上的記號，又亮了一分。"],"action":"heal"},
-   {"when":"step>=3","name":"希雅修女","lines":["蓋婭女神看顧著每一位旅人。","……女神在你身上留了記號呢。願風平息。","（隊伍完全恢復了！）"],"action":"heal"},
+   {"when":"ch2>=2","cmd":"pray","label":"祈禱","name":"希雅修女","lines":["你們從礦山帶回來的……不只是疲憊。","那是亡者未能安息的哀嘆。願蓋婭女神接引他們。","（隊伍完全恢復了！）","……路德，女神在你身上的記號，又亮了一分。"],"action":"heal"},
+   {"when":"always","cmd":"pray","label":"祈禱","name":"希雅修女","lines":["願蓋婭女神看顧你們的旅途。","（在女神像前禱告，隊伍完全恢復了！）"],"action":"heal"},
+   {"when":"step==0","cmd":"talk","name":"希雅修女","lines":["蓋婭女神看顧著每一位旅人。"]},
+   {"when":"always","cmd":"talk","name":"希雅修女","lines":["……女神在你身上留了記號呢。願風平息。","累了就來祈禱，女神的恩澤不分你我。"]},  # 💠 後備閒聊(待潤)
  ],
  "barton": [
-   {"when":"step==0","name":"巴頓鎮長","lines":["聽說亞倫先生要帶你去礦山見習？","好好跟著學，別亂跑。"]},
-   {"when":"ch2>=3","name":"巴頓鎮長","lines":["礦工失蹤的事……我早該多過問一句的。","孩子，你們比這鎮上所有大人都勇敢。","把礦山看到的一切，原原本本告訴大城的人吧。"]},
-   {"when":"ch1==3","name":"巴頓鎮長","lines":["哥布林的事多虧你們了。","但礦山的異變……我總覺得沒那麼簡單。"]},
-   {"when":"always","name":"巴頓鎮長","lines":["礦山最近不太平靜，連老獵人都不敢靠近。","亞倫先生的事……我很遺憾。孩子，別勉強自己。"]},
+   {"when":"ch2>=3","cmd":"talk","name":"巴頓鎮長","lines":["礦工失蹤的事……我早該多過問一句的。","孩子，你們比這鎮上所有大人都勇敢。","把礦山看到的一切，原原本本告訴大城的人吧。"]},
+   {"when":"ch1==3","cmd":"talk","name":"巴頓鎮長","lines":["哥布林的事多虧你們了。","但礦山的異變……我總覺得沒那麼簡單。"]},
+   {"when":"step==0","cmd":"talk","name":"巴頓鎮長","lines":["聽說亞倫先生要帶你去礦山見習？","好好跟著學，別亂跑。"]},
+   {"when":"always","cmd":"talk","name":"巴頓鎮長","lines":["礦山最近不太平靜，連老獵人都不敢靠近。","亞倫先生的事……我很遺憾。孩子，別勉強自己。"]},
  ],
  "hank": [
-   {"when":"gotSword==1","name":"漢克","lines":["要補貨就直說，鐵匠鋪隨時開著。"],"action":"shop_hank"},
-   {"when":"ch1>=1","name":"漢克","lines":["……路德，你也要出去闖了啊。","拿去，我打的劍。別死在外面。","（獲得『鐵劍』！開啟 選單→裝備 分頁換上它）","往後要打點裝備，儘管來鐵匠鋪。"],"action":"shop_hank_gift"},
-   {"when":"reg==1","name":"漢克","lines":["冒險者？裝備可不能馬虎。","來，看看我的貨。"],"action":"shop_hank"},
-   {"when":"step==0","name":"漢克","lines":["哼，礦山？","……跟緊亞倫先生，別給他添麻煩。"]},
-   {"when":"always","name":"漢克","lines":["冒險者？哼，那不是鬧著玩的。","你亞倫大哥那麼強的人都……算了。要去就去吧。"]},
+   # 一次性事件：臨別贈言（送鐵劍）；ch1>=1 出現、gotSword 後消失
+   {"when":"ch1>=1","done":"gotSword","cmd":"hank_gift","label":"臨別贈言","name":"漢克","lines":["……路德，你也要出去闖了啊。","拿去，我打的劍。別死在外面。","（獲得『鐵劍』！開啟 選單→裝備 分頁換上它）"],"action":"give_sword"},
+   # 交易（鐵匠鋪功能）
+   {"when":"reg==1","cmd":"trade","label":"交易","name":"漢克","lines":["冒險者？裝備可不能馬虎。來，看看我的貨。"],"action":"shop_hank"},
+   {"when":"always","cmd":"trade","label":"交易","name":"漢克","lines":["要補貨就直說，鐵匠鋪隨時開著。"],"action":"shop_hank"},
+   # 閒聊
+   {"when":"step==0","cmd":"talk","name":"漢克","lines":["哼，礦山？","……跟緊亞倫先生，別給他添麻煩。"]},
+   {"when":"always","cmd":"talk","name":"漢克","lines":["冒險者？哼，那不是鬧著玩的。","你亞倫大哥那麼強的人都……算了。要去就去吧。"]},
  ],
  "martha": [
-   {"when":"gotRing==0","name":"瑪莎","lines":["你這孩子，越來越像年輕時的你爸了。","這枚戒指你戴著——是我年輕時你爸打的，保平安。","（獲得『活力戒指』！開啟 選單→裝備 可以裝上）"],"action":"give_ring"},
-   {"when":"always","name":"瑪莎","lines":["你這孩子，越來越像年輕時的你爸了。","路上一定要吃飽穿暖，聽到沒？"]},
+   # 一次性事件：母親的心意（送活力戒指）；gotRing 後消失
+   {"when":"always","done":"gotRing","cmd":"martha_gift","label":"母親的心意","name":"瑪莎","lines":["你這孩子，越來越像年輕時的你爸了。","這枚戒指你戴著——是我年輕時你爸打的，保平安。","（獲得『活力戒指』！開啟 選單→裝備 可以裝上）"],"action":"give_ring"},
+   {"when":"always","cmd":"talk","name":"瑪莎","lines":["你這孩子，越來越像年輕時的你爸了。","路上一定要吃飽穿暖，聽到沒？"]},
  ],
  "gid": [
-   {"when":"gotPotion==1","name":"吉德","lines":["歡迎光臨！補給要趁早，這是老冒險者的鐵則。"],"action":"shop_gid"},
-   {"when":"always","name":"吉德","lines":["藥水備齊再出門，這是老冒險者的鐵則！","（先送你 2 瓶藥水，別客氣。）","要看看我店裡的商品嗎？"],"action":"shop_gid_gift"},
+   # 一次性事件：新客招待（送藥水）；gotPotion 後消失
+   {"when":"always","done":"gotPotion","cmd":"gid_gift","label":"新客招待","name":"吉德","lines":["第一次上門吧？來，先送你 2 瓶藥水，別客氣。","補給要趁早，這是老冒險者的鐵則！","（獲得『藥水』×2！）"],"action":"give_potion"},
+   # 交易
+   {"when":"always","cmd":"trade","label":"交易","name":"吉德","lines":["歡迎光臨！要看看我店裡的商品嗎？"],"action":"shop_gid"},
+   # 閒聊
+   {"when":"always","cmd":"talk","name":"吉德","lines":["藥水備齊再出門，這是老冒險者的鐵則！","缺什麼儘管開口，我這什麼都有。"]},  # 💠 後備閒聊(待潤)
  ],
  "gray": [
    {"when":"relic==1","name":"老葛雷","lines":["這頂頭盔……是阿吉的！你們在裡頭找到的？","（老葛雷的手抖個不停）……謝謝你們，把他的東西帶了回來。","這是我僅有的一點謝禮，別嫌少。","（獲得 100 金幣）"],"action":"relic_turnin"},
@@ -1042,6 +1067,8 @@ def world_objects(npc_list, extra=None):
           sprite("DlgArt",portrait_anims()),
           text_obj("DlgName","",26,"255;225;120"),text_obj("DlgText","",28),
           text_obj("Banner","",38,"255;235;140",align="center"),
+          sprite("MenuBg",[anim("i",["menubg.png"],1,False)]),
+          shapepainter("MenuGfx"),
           sprite("MenuPanel",[anim("i",["panel.png"],1,False)]),
           sprite("RowHi",[anim("i",["rowhi.png"],1,False)]),
           sprite("BarBg",[anim("i",["bar_bg.png"],1,False)]),
@@ -1051,7 +1078,8 @@ def world_objects(npc_list, extra=None):
           sprite("MenuMap",[anim("i",["region_map.png"],1,False)]),
           text_obj("MenuTitle","",30,"255;225;120"),
           text_obj("MenuTab","",26)]+[
-          text_obj(f"MRow{i}","",22) for i in range(20)]+[
+          text_obj(f"MTop{i}","",22) for i in range(7)]+[
+          text_obj(f"MRow{i}","",22) for i in range(64)]+[
           text_obj("MenuHint","",20,"170;180;220")]+[
           sprite("JoyBase",[anim("i",["joybase.png"],1,False)]),
           sprite("JoyKnob",[anim("i",["joyknob.png"],1,False)]),
@@ -1070,7 +1098,7 @@ def world_objects(npc_list, extra=None):
     return objs
 
 def ui_insts(W=1280):
-    rows=[inst(f"MRow{i}",200,176+i*28,9503,0,0,"UI") for i in range(20)]
+    rows=[inst(f"MRow{i}",200,176+i*28,9503,0,0,"UI") for i in range(64)]
     rows.append(inst("RowHi",0,0,9501,640,28,"UI"))
     for _ in range(6):
         rows.append(inst("BarBg",0,0,9502,152,14,"UI"))
@@ -1089,13 +1117,16 @@ def ui_insts(W=1280):
             inst("DlgArt",30,160,8998,300,380,"UI"),
             inst("DlgName",90,556,9001,0,0,"UI"),inst("DlgText",90,596,9001,1100,0,"UI"),
             inst("Banner",240,90,9999,800,0,"UI"),
+            inst("MenuBg",0,0,9490,W,720,"UI"),
+            inst("MenuGfx",0,0,9500,0,0,"UI"),
             inst("MenuPanel",140,80,9500,1000,520,"UI"),
             inst("MenuTitle",180,100,9501,0,0,"UI"),
             inst("MenuTab",420,104,9501,0,0,"UI"),
             inst("MenuFace",940,150,9502,144,144,"UI"),
             inst("MenuArt",812,112,9502,306,470,"UI"),
             inst("MenuMap",330,180,9502,620,360,"UI"),
-            inst("MenuHint",180,556,9501,0,0,"UI")]+rows
+            inst("MenuHint",180,556,9501,0,0,"UI")]+[
+            inst(f"MTop{i}",20+i*150,14,9501,0,0,"UI") for i in range(7)]+rows
 
 # NPC 定義: (場景, obj名, sprite, id(對話鍵), tile x,y, 面向)
 NPCS_TOWN=[
@@ -1179,9 +1210,9 @@ def build_world_scene(name,mapb,tmjname,npcs,cfg,default_spawn):
         extra.append(sprite("Interior",[anim(BLDG_KEY[_bo],["intc_"+BLDG_KEY[_bo]+".png"],1,False)
                      for _bo in ["BGuild","BInn","BShrine","BMayor","BShop","BSmith"]]))
         # 立繪＋選單式室內：大型前景立繪（先做緹娜）＋指令標籤（描邊字）
-        extra.append(sprite("IntArt",[anim("tina",["portrait_tina.png"],1,False)]))
-        extra.append(sprite("IntCmd0",[anim("i",["t_talk.png"],1,False)]))
-        extra.append(sprite("IntCmd1",[anim("i",["t_leave.png"],1,False)]))
+        extra.append(sprite("IntArt",[anim(_o,[f"portrait_{_o}.png"],1,False) for _o in ["tina","dora","sister","barton","gid","hank"]]))  # 各棟 owner 立繪（與對話 DlgArt 共用 portrait_）
+        extra.append(sprite("IntCmdBg",[anim("i",["panel.png"],1,False)]))   # 指令選單半透明底板
+        for _ci in range(6): extra.append(text_obj(f"IntCmd{_ci}","",30))     # 動態指令列（最多 6）
         extra.append(sprite("Well",[anim("i",["well.png"],1,False)]))
         extra.append(sprite("Board",[anim("i",["board.png"],1,False)]))
         for _dn,_fn in [("Barrel","barrel"),("Crate","crate"),("Lamp","lamp"),
@@ -1219,8 +1250,8 @@ def build_world_scene(name,mapb,tmjname,npcs,cfg,default_spawn):
         for _hx,_hy in [(13,26),(34,24),(7,27)]: insts.append(inst("Hen",_hx*TS+7,_hy*TS+8,5))
         insts.append(inst("Interior",0,0,1,585,440))         # 室內手繪大圖（init 隱藏，進屋時定位/縮放）
         insts.append(inst("IntArt",0,0,50))                  # 立繪前景（進屋時定位/縮放）
-        insts.append(inst("IntCmd0",150,556,9995,0,0,"UI"))  # 指令選單（UI 層螢幕座標）
-        insts.append(inst("IntCmd1",150,616,9995,0,0,"UI"))
+        insts.append(inst("IntCmdBg",96,440,9994,300,180,"UI"))   # 指令選單底板（進場時定位/縮放）
+        for _ci in range(6): insts.append(inst(f"IntCmd{_ci}",130,456+_ci*46,9995,0,0,"UI"))  # 動態指令列
     for n in npcs: insts.append(inst(n["obj"],n["x"]*TS,n["y"]*TS-16,5))
     if name=="Forest2":
         insts.append(inst("BossMark",(FW-6)*TS,FEY*TS-28,5,64,80))
@@ -1247,8 +1278,9 @@ def build_world_scene(name,mapb,tmjname,npcs,cfg,default_spawn):
     sc["events"]=[jsev(js)]
     # tilemap 檔名
     sc["objects"][0]["content"]["tilemapJsonFile"]=tmjname+".tmj"
-    if name in ("Forest","Forest2"):                       # 森林用 anokolisa 專屬地面圖集（其他地圖續用 atlas.png）
-        sc["objects"][0]["content"]["tilemapAtlasImage"]="atlas_forest.png"
+    _MAP_ATLAS={"Forest":"atlas_forest.png","Forest2":"atlas_forest.png","Town":"atlas_town.png"}
+    if name in _MAP_ATLAS:                                  # 這些地圖用 anokolisa 專屬地面（其餘續用 atlas.png）
+        sc["objects"][0]["content"]["tilemapAtlasImage"]=_MAP_ATLAS[name]
     return sc
 
 # ================= 7. World 引擎 JS =================
@@ -1337,6 +1369,21 @@ function derive(m){
   m.dodgeV=Math.round(m.attrs.agi*d.dodgePerAgi)+eqStat(m,"dodge");
   m.critV=Math.round((d.critBase+m.attrs.agi*d.critPerAgi+eqStat(m,"crit"))*10)/10;
   m.spd=m.attrs.agi;
+  // ===== 真實系統：幸運 / 武器熟練度 / 屬性加護 / 特別加護 =====
+  var _def=null,_si;for(_si=0;_si<CONTENT.party.length;_si++){if(CONTENT.party[_si].id===m.id){_def=CONTENT.party[_si];break;}}
+  var _bl=(m.blessing&&(CONTENT.blessings||{})[m.blessing])||null;
+  var _lb=(_def&&_def.base&&_def.base.luck)||0,_lg=(_def&&_def.growth&&_def.growth.luck)||0;
+  m.luck=_lb+Math.floor(((m.lv||1)-1)*_lg)+eqStat(m,"luck")+((_bl&&_bl.stats&&_bl.stats.luck)||0);
+  if(!m.prof)m.prof={};
+  var _wid=m.eq&&m.eq.weapon;m.wtype=(_wid&&EQ[_wid]&&EQ[_wid].wtype)||null;
+  if(m.wtype)m.patk+=Math.floor((m.prof[m.wtype]||0)*(d.profAtkPer||0));
+  if(_bl&&_bl.stats){var _s=_bl.stats;
+    m.patk+=_s.patk||0;m.matk+=_s.matk||0;m.pdef+=_s.pdef||0;m.mdef+=_s.mdef||0;
+    m.dodgeV+=_s.dodge||0;m.critV+=_s.crit||0;m.maxhp+=_s.hp||0;m.maxmp+=_s.mp||0;}
+  var _EL=["earth","fire","wind","water","ice","thunder","light","dark"];
+  m.elem={};for(_si=0;_si<_EL.length;_si++){var _ek=_EL[_si];
+    m.elem[_ek]=((_def&&_def.elem&&_def.elem[_ek])||0)+eqStat(m,"el_"+_ek)+((_bl&&_bl.elem&&_bl.elem[_ek])||0);}
+  m.critV=Math.round((m.critV+m.luck*(d.critPerLuck||0))*10)/10;
   if(m.hp===undefined||m.hp>m.maxhp)m.hp=m.maxhp;
   if(m.mp===undefined||m.mp>m.maxmp)m.mp=m.maxmp;
   if(!m.sk){m.sk={};for(var i=0;i<CONTENT.skills.length;i++){var s=CONTENT.skills[i];
@@ -1398,7 +1445,7 @@ if(!rs.__v){
   // Track J：室內初始隱藏；有 doors 的場景（Town）室外只顯示戶外 NPC（主人平時在室內）
   st0.inside=null;
   var iv0=one("Interior"); if(iv0)iv0.hide(true);
-  ["IntArt","IntCmd0","IntCmd1"].forEach(function(n){var o=one(n);if(o)o.hide(true);});
+  ["IntArt","IntCmdBg","IntCmd0","IntCmd1","IntCmd2","IntCmd3","IntCmd4","IntCmd5"].forEach(function(n){var o=one(n);if(o)o.hide(true);});
   if(CFG.doors){
     CFG.npcs.forEach(function(n){var o=one(n.obj);if(!o)return;
       var out=false;for(var oi=0;oi<CFG.outdoorNpcs.length;oi++)if(CFG.outdoorNpcs[oi]===n.obj)out=true;
@@ -1513,7 +1560,31 @@ function setOutdoorHidden(h){
 function isOutdoorNpc(obj){for(var i=0;i<((CFG.outdoorNpcs)||[]).length;i++)if(CFG.outdoorNpcs[i]===obj)return true;return false;}
 function npcFace(obj){for(var i=0;i<CFG.npcs.length;i++){if(CFG.npcs[i].obj===obj)return CFG.npcs[i].face||"Down";}return "Down";}
 function npcId(obj){for(var i=0;i<CFG.npcs.length;i++){if(CFG.npcs[i].obj===obj)return CFG.npcs[i].id;}return "";}
-function openOwnerDlg(id){var defs=DLG[id]||[],f9=flags();for(var i=0;i<defs.length;i++){if(matchWhen(f9,defs[i].when)){st.dlg={name:defs[i].name,lines:defs[i].lines,action:defs[i].action};st.dlgIdx=0;sfx("select.wav");return;}}}
+// 播某角色「指定 cmd」的第一個符合 when 的對話條目（cmd 預設 talk）
+function openOwnerCmd(id,cmd){var defs=DLG[id]||[],f=flags();cmd=cmd||"talk";
+  for(var i=0;i<defs.length;i++){var e=defs[i];if((e.cmd||"talk")!==cmd)continue;
+    if(matchWhen(f,e.when)){st.dlg={name:e.name,lines:e.lines,action:e.action};st.dlgIdx=0;sfx("select.wav");return true;}}
+  return false;}
+// 立繪＋選單式室內：大型前景立繪定位（原生尺寸→依房高縮放→錨右下），供進場與交談切換說話者共用
+function setIntArt(id){var art=one("IntArt"),b=st.intBox;if(!art||!b)return;
+  try{art.setAnimationName(id);}catch(e){}
+  if(art.setScale)art.setScale(1);
+  var nR=art.getWidth()/art.getHeight(),aH=Math.round(b.dH*0.82),aW=Math.round(aH*nR);
+  art.setWidth(aW);art.setHeight(aH);art.setX(b.RX+b.dW-aW+Math.round(b.dW*0.02));art.setY(b.RY+b.dH-aH);art.setZOrder(50);art.hide(false);}
+// 依 owner(s) 的 DLG 掃出室內動態指令清單：交談 ＋ 功能(唯一) ＋ 符合條件的一次性事件 ＋ 離開
+function buildIntCmds(){var f=flags(),owners=st.ownerAll||[],cmds=[{cmd:"talk",label:"交談"}],func={};
+  for(var oi=0;oi<owners.length;oi++){var oid=owners[oi],defs=DLG[oid]||[];
+    for(var i=0;i<defs.length;i++){var e=defs[i],k=e.cmd||"talk";
+      if(k==="talk")continue;
+      if(k==="trade"||k==="quest"||k==="rest"||k==="pray"){if(!func[k]){func[k]=1;cmds.push({cmd:k,label:e.label||k,who:oid});}}
+      else if(matchWhen(f,e.when)&&!(e.done&&f[e.done])){cmds.push({cmd:k,label:e.label||"？",who:oid});}  // 一次性事件：符合且未完成才出現
+    }}
+  cmds.push({cmd:"leave",label:"離開"});st.intCmds=cmds;if(!(st.intCmd<cmds.length))st.intCmd=0;}
+// 執行選單指令
+function runIntCmd(c){if(!c)return;
+  if(c.cmd==="leave"){exitBuilding();return;}
+  if(c.cmd==="talk"){st.talkKind="talk";st.talkRest=(st.ownerAll||[]).slice(1);setIntArt(st.owner);openOwnerCmd(st.owner,"talk");return;}
+  st.talkKind=c.cmd;st.talkRest=[];setIntArt(c.who||st.owner);openOwnerCmd(c.who||st.owner,c.cmd);}  // trade/rest/pray/quest/事件：跑對應條目，動作於對話結尾觸發
 function enterBuilding(door){
   st.inside=door.obj; st.curDoor=door;
   setOutdoorHidden(true);
@@ -1525,6 +1596,7 @@ function enterBuilding(door){
   var dH=700, dW=Math.round(dH*nat[0]/nat[1]);          // 顯示尺寸（維持原生長寬比）
   var RX=Math.round(cx-dW/2), RY=Math.round(cy-dH/2);
   st.intCam=[cx,cy]; st.intZoom=Math.min(1280/dW,720/dH)*0.96;   // 房間填滿螢幕
+  st.intBox={RX:RX,RY:RY,dW:dW,dH:dH};   // 供 setIntArt 依房間框定位立繪
   var iv=one("Interior");
   if(iv){iv.hide(false);iv.setAnimationName(key);iv.setWidth(dW);iv.setHeight(dH);iv.setX(RX);iv.setY(RY);iv.setZOrder(1);}
   function fx(v){return RX+v*dW;} function fy(v){return RY+v*dH;}
@@ -1535,10 +1607,9 @@ function enterBuilding(door){
     st.kp=st.kp||{}; st.kp.Space=true; st.kp.Return=true;   // 把進門那次（可能被壓住數幀）的 Space 標成已按下，避免一進門就誤觸「交談」
     p.hide(true);
     var oid=(door.owners&&door.owners[0])?npcId(door.owners[0]):""; st.owner=oid;
-    if(art){art.hide(false); try{art.setAnimationName(oid);}catch(e){}
-      var nR=art.getWidth()/art.getHeight(), aH=Math.round(dH*0.82), aW=Math.round(aH*nR);
-      art.setWidth(aW); art.setHeight(aH);
-      art.setX(RX+dW-aW+Math.round(dW*0.02)); art.setY(RY+dH-aH); art.setZOrder(50);}
+    st.ownerAll=(door.owners||[]).map(function(o){return npcId(o);});   // 全部 owner id（多 owner 棟依序談）
+    setIntArt(oid);      // 進場立繪＝第一位 owner
+    buildIntCmds();      // 依 owner(s) 與進度建動態指令清單
     st.last=[p.getX(),p.getY()]; sfx("select.wav"); return;
   }
   // === walk 模式（其餘棟）：手繪背景＋隱形碰撞，可走動 ===
@@ -1562,7 +1633,7 @@ function exitBuilding(){
   setOutdoorHidden(false);
   var iv=one("Interior"); if(iv)iv.hide(true);
   var art=one("IntArt"); if(art)art.hide(true);
-  var c0=one("IntCmd0"),c1=one("IntCmd1"); if(c0)c0.hide(true); if(c1)c1.hide(true);
+  ["IntCmdBg","IntCmd0","IntCmd1","IntCmd2","IntCmd3","IntCmd4","IntCmd5"].forEach(function(n){var o=one(n);if(o)o.hide(true);});
   p.hide(false);
   st.furnObjs=[]; st.furn=[];
   CFG.npcs.forEach(function(n){var o=one(n.obj);if(!o)return;
@@ -1664,7 +1735,7 @@ var _roam=!st.cut&&!st.dlg&&!st.menu&&!st.shop;
 _showB("BtnA",true); _showB("BtnMenu",_roam||!!st.menu);
 var _clu=(!!st.menu||!!st.shop);
 _showB("PadU",_clu);_showB("PadD",_clu);_showB("PadL",_clu);_showB("PadR",_clu);_showB("BtnBack",_clu);
-var _attr=(!!st.menu&&st.tab===0&&st.mMode==="member"&&(st.mPage===0||st.mPage===undefined));
+var _attr=false;   // 屬性配點改用畫面內 +/- 步進鈕（可點擊）＋鍵盤 1/2/3，隱藏舊 S1-3 觸控鈕
 _showB("BtnS1",_attr);_showB("BtnS2",_attr);_showB("BtnS3",_attr);
 var _tapAdv=(st.cut||st.dlg)&&_starts.length>0;   // 對話/過場：點任意處推進
 // ---------- 空白鍵（鍵盤＋觸控）----------
@@ -1760,10 +1831,10 @@ if(st.cut){
         else if(d0.action==="register"){f5.reg=1;setJ("g_flags",f5);sfx("win.wav");}
         else if(d0.action==="ch1_take"){f5.ch1=1;setJ("g_flags",f5);sfx("select.wav");var bm=one("BossMark");if(bm)bm.hide(false);}
         else if(d0.action==="ch1_reward"){f5.ch1=3;setJ("g_flags",f5);g.get("g_gold").setNumber(g.get("g_gold").getAsNumber()+200);sfx("win.wav");}
-        else if(d0.action==="shop_gid_gift"){var f6=flags();if(!f6.gotPotion){f6.gotPotion=1;setJ("g_flags",f6);invAdd("potion",2);}openShop("gid");}
         else if(d0.action==="shop_gid"){openShop("gid");}
-        else if(d0.action==="shop_hank_gift"){var f6z=flags();if(!f6z.gotSword){f6z.gotSword=1;setJ("g_flags",f6z);var invsg=J("g_eqInv",[]);invsg.push("iron_sword");setJ("g_eqInv",invsg);}openShop("hank");}
         else if(d0.action==="shop_hank"){openShop("hank");}
+        else if(d0.action==="give_sword"){var fsw=flags();if(!fsw.gotSword){fsw.gotSword=1;setJ("g_flags",fsw);var invsw=J("g_eqInv",[]);invsw.push("iron_sword");setJ("g_eqInv",invsw);sfx("learn.mp3");}}   // 事件：漢克臨別贈言
+        else if(d0.action==="give_potion"){var fpt=flags();if(!fpt.gotPotion){fpt.gotPotion=1;setJ("g_flags",fpt);invAdd("potion",2);sfx("learn.mp3");}}   // 事件：吉德新客招待
         else if(d0.action==="give_ring"){var f6c=flags();if(!f6c.gotRing){f6c.gotRing=1;setJ("g_flags",f6c);
           var inv7=J("g_eqInv",[]);inv7.push("vital_ring");setJ("g_eqInv",inv7);sfx("learn.mp3");}}
         else if(d0.action==="give_earring"){var f6d=flags();if(!f6d.gotEar){f6d.gotEar=1;setJ("g_flags",f6d);
@@ -1778,6 +1849,10 @@ if(st.cut){
           g.get("g_gold").setNumber(g.get("g_gold").getAsNumber()+100);invAdd("miner_helmet",-1);sfx("win.wav");}
         if(d0.action)saveGame();   // 對話帶動作（旗標/金幣/道具變動）→ 自動存檔
         st.dlg=null;
+        // 多人交談（如鐵匠鋪 漢克→瑪莎）：閒聊講完接著談下一位，立繪切到他
+        if(st.intMode==="menu"&&st.talkKind==="talk"&&st.talkRest&&st.talkRest.length){
+          var _nx=st.talkRest.shift(); setIntArt(_nx); openOwnerCmd(_nx,"talk");
+        }
       }
     }
   } else if(near&&hit&&!st.menu&&!st.shop){
@@ -1810,24 +1885,30 @@ if(st.cut){
 // ---------- 選單（角色/道具/地圖/稱號/系統） ----------
 if(!st.kp)st.kp={};
 function keyHit(k){var d=gdjs.evtTools.input.isKeyPressed(rs,k)||!!(st.tk&&st.tk[k]);var was=st.kp[k];st.kp[k]=d;return d&&!was;}
-// ===== 立繪＋選單式室內：指令選單（交談/離開），不走動 =====
+// ===== 立繪＋選單式室內：動態指令選單（交談／功能／事件／離開），不走動 =====
 if(st.inside&&st.intMode==="menu"){
   lock=true;   // 鎖 TopDown 移動，方向鍵留給選單游標
-  var _c0=one("IntCmd0"),_c1=one("IntCmd1");
+  var _bg=one("IntCmdBg");
   if(!st.dlg&&!st.cut&&!st.menu&&!st.shop){
-    if(_c0)_c0.hide(false); if(_c1)_c1.hide(false);
-    if(keyHit("Up")||keyHit("Down")){st.intCmd=(st.intCmd+1)%2;sfx("cursor.mp3");}
-    if(_c0)_c0.setColor(st.intCmd===0?"255;255;255":"150;150;162");
-    if(_c1)_c1.setColor(st.intCmd===1?"255;255;255":"150;150;162");
-    var _cl=-1; if(anyStartIn("IntCmd0"))_cl=0; if(anyStartIn("IntCmd1"))_cl=1;
+    buildIntCmds();   // 每幀重建：事件完成／進度變化後指令即時更新
+    var _cmds=st.intCmds||[], _n=_cmds.length, _rh=46, _px=96, _pw=300, _py=590-_n*_rh;
+    if(_bg){_bg.hide(false);_bg.setX(_px);_bg.setY(_py-14);_bg.setWidth(_pw);_bg.setHeight(_n*_rh+24);_bg.setZOrder(9994);}
+    if(keyHit("Up"))  {st.intCmd=(st.intCmd-1+_n)%_n;sfx("cursor.mp3");}
+    if(keyHit("Down")){st.intCmd=(st.intCmd+1)%_n;sfx("cursor.mp3");}
+    var _cl=-1;
+    for(var _i=0;_i<6;_i++){var _r=one("IntCmd"+_i);if(!_r)continue;
+      if(_i<_n){_r.hide(false);_r.setX(_px+28);_r.setY(_py+_i*_rh);
+        _r.setString((st.intCmd===_i?"▶ ":"　")+_cmds[_i].label);
+        _r.setColor(st.intCmd===_i?"255;245;200":"210;214;230");
+        if(anyStartIn("IntCmd"+_i))_cl=_i;
+      } else _r.hide(true);
+    }
     if(_cl>=0)st.intCmd=_cl;
     var _canC=!st.intJustEntered&&!st.dlgPrev; st.intJustEntered=false;   // 略過進門/對話關閉當幀的按鍵，避免誤觸
-    if(_canC&&(_cl>=0||keyHit("Space")||keyHit("Return"))){
-      if(st.intCmd===0)openOwnerDlg(st.owner); else exitBuilding();
-    }
-  }else{ if(_c0)_c0.hide(true); if(_c1)_c1.hide(true); }
+    if(_canC&&(_cl>=0||keyHit("Space")||keyHit("Return"))) runIntCmd(_cmds[st.intCmd]);
+  }else{ if(_bg)_bg.hide(true); for(var _j=0;_j<6;_j++){var _rr=one("IntCmd"+_j);if(_rr)_rr.hide(true);} }
 }
-var TABS=["角色","裝備","道具","地圖","稱號","系統"];
+var TABS=["角色","道具","地圖","稱號","系統"];   // 頂層分類（裝備已收進角色頁子分頁）
 // Claude Design 原型 tokens：accent=#AADCEB（John 選定）、gold 留給金幣/警示
 var C_ACC="170;220;235", C_GOLD="255;225;120", C_DIM="120;130;150";
 var SLOTS=[["weapon","武器"],["armor","防具"],["boots","靴子"],["wrist","護腕"],["acc1","飾品Ⅰ"],["acc2","飾品Ⅱ"]];
@@ -1846,7 +1927,7 @@ function titleEarned(t){
   return (mres[2]==="==")?(val===num):(val>=num);
 }
 function skPow(sk,slv){return 1+C_DERIVED.skillPowerPerLv*((slv||1)-1);}
-var EQSTAT_N={patk:"物攻",matk:"魔攻",pdef:"物防",mdef:"魔防",dodge:"閃避",crit:"會心",hp:"生命",mp:"法力"};
+var EQSTAT_N={patk:"物攻",matk:"魔攻",pdef:"物防",mdef:"魔防",dodge:"閃避",crit:"會心",hp:"生命",mp:"法力",luck:"幸運"};
 function eqDesc(e){
   var out=[];
   for(var k in EQSTAT_N){if(e[k])out.push(EQSTAT_N[k]+"+"+e[k]);}
@@ -1879,7 +1960,7 @@ function renderPanel(rows,barsp,opt){
   if(mt){mt.hide(false);mt.setString(opt.title||"選單");}
   if(mtab){if(opt.tab!==undefined&&opt.tab!==null){mtab.hide(false);mtab.setColor(opt.tabCol||C_ACC);mtab.setString(opt.tab);}else mtab.hide(true);}
   var hiRow=null;
-  for(var i=0;i<20;i++){
+  for(var i=0;i<64;i++){
     var ro=one("MRow"+i);if(!ro)continue;
     if(i<rows.length&&rows[i]){ro.hide(false);ro.setString(rows[i].t);
       var rx=rows[i].x!==undefined?rows[i].x:200, ry=rows[i].y!==undefined?rows[i].y:176+i*28;
@@ -1916,257 +1997,327 @@ function renderPanel(rows,barsp,opt){
 }
 if(!st.cut&&!st.dlg&&!st.shop){
   if(keyHit("Escape")||keyHit("m")){
-    if(st.menu&&st.tab===0&&st.mMode==="member"){st.mMode="list";sfx("cancel.mp3");}
-    else if(st.menu&&st.tab===1&&st.eqMode==="who"){st.eqMode="list";sfx("cancel.mp3");}
-    else if(st.menu&&st.tab===2&&st.iMode==="who"){st.iMode="list";sfx("cancel.mp3");}
-    else{st.menu=!st.menu;st.tab=0;st.sel=0;st.sSel=0;st.mMode="list";st.mPage=0;
-         st.eqMode="list";st.eqSel=0;st.iMode="list";st.confirmQuit=false;
+    if(st.menu&&st.tab===0&&st.eqSwap){st.eqSwap=false;sfx("cancel.mp3");}
+    else if(st.menu&&st.tab===0&&st.skUse){st.skUse=null;sfx("cancel.mp3");}
+    else if(st.menu&&st.tab===1&&st.iMode==="who"){st.iMode="list";sfx("cancel.mp3");}
+    else{st.menu=!st.menu;st.tab=0;st.cMem=0;st.cTab=0;st.cSel=0;st.sel=0;
+         st.iMode="list";st.iSel=0;st.eqSwap=false;st.skUse=null;st.confirmQuit=false;
          sfx(st.menu?"menu.mp3":"cancel.mp3");}
   }
 }
 if(st.menu){
   lock=true;
   var ps=party();
-  // Q/E 也可切分頁（Claude Design 原型鍵位；任何子畫面皆可用）
+  var GFX=one("MenuGfx");
+  if(st.cMem===undefined)st.cMem=0; if(ps.length&&st.cMem>=ps.length)st.cMem=ps.length-1; if(st.cMem<0)st.cMem=0;
+  if(st.cTab===undefined)st.cTab=0;
+  if(st.cSel===undefined)st.cSel=0;
+  if(st.sel===undefined)st.sel=0;
+  var eRet=keyHit("Return"),eSpc=keyHit("Space");var enter=eRet||eSpc;
+  var up=keyHit("Up"),down=keyHit("Down"),lk=keyHit("Left"),rk=keyHit("Right");
   var qh=keyHit("q"),eh=keyHit("e");
-  if(qh||eh){st.tab=(st.tab+(eh?1:TABS.length-1))%TABS.length;
-    st.sel=0;st.mMode="list";st.eqMode="list";st.eqSel=0;st.iMode="list";st.confirmQuit=false;sfx("cursor.mp3");}
-  var inMember=(st.tab===0&&st.mMode==="member")||(st.tab===1&&st.eqMode==="who")||(st.tab===2&&st.iMode==="who");
-  if(!inMember){
-    if(keyHit("Left")){st.tab=(st.tab+TABS.length-1)%TABS.length;st.sel=0;st.eqMode="list";st.eqSel=0;st.iMode="list";st.confirmQuit=false;sfx("cursor.mp3");}
-    if(keyHit("Right")){st.tab=(st.tab+1)%TABS.length;st.sel=0;st.eqMode="list";st.eqSel=0;st.iMode="list";st.confirmQuit=false;sfx("cursor.mp3");}
-  }
-  var eRet=keyHit("Return"),eSpc=keyHit("Space");
-  var enter=eRet||eSpc;
-  var up=keyHit("Up"),down=keyHit("Down");
-  var rows=[]; var barsp=[]; var hint="←→/Q/E 切換分頁　Esc 關閉";
-  var showFace=null, showArt=null, showMap=false;
-  if(st.tab===0&&st.mMode==="list"){
-    if(up&&st.sel>0){st.sel--;sfx("cursor.mp3");}
-    if(down&&st.sel<ps.length-1){st.sel++;sfx("cursor.mp3");}
-    rows.push({t:"── 隊伍 ──",c:C_ACC});
-    for(var i=0;i<ps.length;i++){var mm=ps[i];derive(mm);
-      var y0=214+i*76;
-      rows.push({t:(i===st.sel?"▶ ":"　 ")+mm.name+"　"+clsName(mm)+"　Lv"+mm.lv+
-        (((mm.pts||0)>0||(mm.spts||0)>0)?"　★有可分配點數":""),sel:i===st.sel,x:180,y:y0,hw:920});
-      rows.push({t:"HP "+mm.hp+"/"+mm.maxhp,x:220,y:y0+30});
-      barsp.push({x:390,y:y0+38,w:170,cur:mm.hp,max:mm.maxhp,kind:"hp"});
-      rows.push({t:"MP "+mm.mp+"/"+mm.maxmp,x:620,y:y0+30});
-      barsp.push({x:780,y:y0+38,w:170,cur:mm.mp,max:mm.maxmp,kind:"mp"});
-    }
-    hint="↑↓ 選隊員　Enter 檢視/配點　←→/Q/E 分頁　Esc 關閉";
-    if(enter&&ps[st.sel]){st.mMode="member";st.sSel=0;st.mPage=0;sfx("select.wav");}
-  } else if(st.tab===0){
-    var m=ps[st.sel];derive(m);
-    if(st.mPage===undefined)st.mPage=0;
-    if(keyHit("Left")||keyHit("Right")){st.mPage^=1;sfx("cursor.mp3");}
-    var _hasArt=(m.id==="ludo"||m.id==="marin"||m.id==="aaron");
-    if(st.mPage===1&&_hasArt){showArt=m.id;showFace=null;}   // 故事頁：有全身圖者顯示大立繪
-    else showFace=m.id;                                       // 能力頁或無全身圖：顯示小頭像
-    rows.push({t:m.name+"　"+clsName(m)+"　Lv"+m.lv+"　EXP "+m.exp+"/"+expNeed(m.lv)+"　　"+
-      (st.mPage===0?"〔能力〕　故事▶":"◀能力　〔故事〕"),x:180,y:140});
-    if(st.mPage===1){
-      rows.push({t:"【個人故事】",c:C_ACC,x:180,y:196});
-      var stv=(pDef(m.id)&&pDef(m.id).story)||["（沒有相關紀錄）"];
-      for(var i=0;i<stv.length&&i<9;i++)rows.push({t:stv[i],x:180,y:232+i*32,c:"215;220;235"});
-      hint="←→ 切換 能力/故事　Esc 返回";
+  var TBH=54,PX=16,PY=62,PW=396,RX=424,RW=680,RY=62,RB=690,PPB=508,SUBH=40,BODY_Y=110;
+  var SUB=["屬性","裝備","技能","故事"];
+  var C_GOLD="255;225;120",C_SELY="255;235;120",C_ACC="170;220;235",C_DIM2="120;130;150";
+  var _ti=0;
+  function T(s,x,y,sz,col){var o=one("MRow"+_ti);_ti++;if(!o)return;o.hide(false);o.setString(String(s));o.setX(Math.round(x));o.setY(Math.round(y));if(o.setCharacterSize)o.setCharacterSize(sz||18);o.setColor(col||"235;235;245");}
+  function box(x,y,w,h,fill,fop,oc,os){if(!GFX)return;GFX.setFillColor(fill);GFX.setFillOpacity(fop);GFX.setOutlineColor(oc||"10;10;20");GFX.setOutlineSize(os===undefined?2:os);GFX.setOutlineOpacity(os===0?0:255);GFX.drawRectangle(x,y,x+w,y+h);}
+  function fillR(x,y,w,h,fill,fop){if(!GFX)return;GFX.setFillColor(fill);GFX.setFillOpacity(fop===undefined?255:fop);GFX.setOutlineSize(0);GFX.setOutlineOpacity(0);GFX.drawRectangle(x,y,x+w,y+h);}
+  function bar(x,y,w,h,ratio,fill){box(x,y,w,h,"42;46;64",255,"10;10;20",2);var fw=Math.max(0,Math.round((w-4)*Math.max(0,Math.min(1,ratio))));if(fw>0)fillR(x+2,y+2,fw,h-4,fill,255);}
+  function hitRect(x,y,w,h){for(var _q=0;_q<_starts.length;_q++){var _s=_starts[_q];if(_s.x>=x&&_s.x<=x+w&&_s.y>=y&&_s.y<=y+h)return true;}return false;}
+  var mbg=one("MenuBg");if(mbg){mbg.hide(false);mbg.setX(0);mbg.setY(0);mbg.setWidth(1280);mbg.setHeight(720);}
+  fillR(0,0,1280,720,"10;11;20",210);
+  fillR(0,0,1280,TBH,"12;14;26",245);fillR(0,TBH,1280,3,"10;10;20",255);
+  var _mtab=one("MenuTab");if(_mtab)_mtab.hide(true);
+  (function(){var o=one("MTop0");if(o){o.hide(false);o.setString("MENU");o.setX(22);o.setY(16);if(o.setCharacterSize)o.setCharacterSize(20);o.setColor(C_GOLD);}})();
+  var _cx=140;var _catRect=[];
+  for(var _ci=0;_ci<TABS.length;_ci++){var _lab=TABS[_ci];var _on=(_ci===st.tab);var _wpx=_lab.length*22+(_on?26:6);
+    var o2=one("MTop"+(_ci+1));if(o2){o2.hide(false);o2.setString((_on?"【":"")+_lab+(_on?"】":""));o2.setX(_cx);o2.setY(15);if(o2.setCharacterSize)o2.setCharacterSize(22);o2.setColor(_on?C_SELY:"225;228;238");}
+    _catRect.push({x:_cx-6,w:_wpx+8,i:_ci});_cx+=_lab.length*22+40;}
+  (function(){var o=one("MTop6");if(o){o.hide(false);o.setString("金幣 "+g.get("g_gold").getAsNumber());o.setX(1080);o.setY(16);if(o.setCharacterSize)o.setCharacterSize(20);o.setColor(C_GOLD);}})();
+  var _navCat=function(ni){st.tab=((ni%TABS.length)+TABS.length)%TABS.length;st.cSel=0;st.sel=0;st.iMode="list";st.iSel=0;st.eqSwap=false;st.skUse=null;st.confirmQuit=false;sfx("cursor.mp3");};
+  for(var _ci=0;_ci<_catRect.length;_ci++){if(_catRect[_ci].i!==st.tab&&hitRect(_catRect[_ci].x,10,_catRect[_ci].w,TBH-8)){_navCat(_catRect[_ci].i);break;}}
+  if(qh)_navCat(st.tab-1); else if(eh)_navCat(st.tab+1);
+  if(st.tab!==0){if(lk){_navCat(st.tab-1);lk=false;} else if(rk){_navCat(st.tab+1);rk=false;}}
+  var rows=[],barsp=[],hint="",showFace=null,showArt=null,showMap=false;
+  if(st.tab!==0){var _mahide=one("MenuArt");if(_mahide)_mahide.hide(true);}
+
+  if(st.tab===0){
+    var m=ps[st.cMem];derive(m);
+    box(PX,PY,PW,PPB-PY,"22;26;40",242,"10;10;20",2);
+    fillR(PX+3,PY+3,PW-6,PPB-PY-6,"52;58;74",255);
+    var mart=one("MenuArt");
+    if(mart){mart.hide(false);mart.setAnimationName(m.id);
+      var _ph=PPB-PY-74;var _pw=Math.round(_ph*(306/470));if(_pw>PW-24){_pw=PW-24;_ph=Math.round(_pw*(470/306));}
+      mart.setWidth(_pw);mart.setHeight(_ph);mart.setX(PX+PW/2-_pw/2);mart.setY(PPB-_ph-6);}
+    fillR(PX+3,PPB-72,PW-6,66,"10;10;20",180);
+    if(ps.length>1){T("◀",PX+12,PPB-60,26,C_ACC);T("▶",PX+PW-32,PPB-60,26,C_ACC);
+      if(hitRect(PX+4,PPB-64,44,50)){st.cMem=(st.cMem+ps.length-1)%ps.length;st.cSel=0;sfx("cursor.mp3");}
+      if(hitRect(PX+PW-48,PPB-64,44,50)){st.cMem=(st.cMem+1)%ps.length;st.cSel=0;sfx("cursor.mp3");}}
+    m=ps[st.cMem];derive(m);
+    T(m.name,PX+46,PPB-66,30,C_GOLD);
+    T("Lv"+m.lv,PX+46+m.name.length*30+12,PPB-58,16,"255;255;255");
+    T("職業："+clsName(m),PX+46,PPB-32,17,"255;255;255");
+    var _sw=Math.floor((RW-24)/4);
+    for(var _si=0;_si<4;_si++){var _sx=RX+_si*(_sw+8);var _son=(_si===st.cTab);
+      box(_sx,RY,_sw,SUBH,_son?"58;64;90":"20;22;38",_son?255:212,_son?C_SELY:"70;80;120",2);
+      T((_son?"◆ ":"")+SUB[_si],_sx+_sw/2-(_son?34:22),RY+9,20,_son?C_SELY:"200;204;220");
+      if(_si!==st.cTab&&hitRect(_sx,RY,_sw,SUBH)){st.cTab=_si;st.cSel=0;st.eqSwap=false;st.skUse=null;sfx("cursor.mp3");}}
+    if(lk){st.cTab=(st.cTab+3)%4;st.cSel=0;st.eqSwap=false;st.skUse=null;sfx("cursor.mp3");}
+    if(rk){st.cTab=(st.cTab+1)%4;st.cSel=0;st.eqSwap=false;st.skUse=null;sfx("cursor.mp3");}
+    box(RX,BODY_Y,RW,RB-BODY_Y,"16;18;32",236,"10;10;20",2);
+    var bx=RX+16,bw=RW-32,byy=BODY_Y+16;
+
+    if(st.cTab===0){
+      if(ps.length>1){if(up){st.cMem=(st.cMem+ps.length-1)%ps.length;sfx("cursor.mp3");}else if(down){st.cMem=(st.cMem+1)%ps.length;sfx("cursor.mp3");}}
+      m=ps[st.cMem];derive(m);
+      T("HP",bx,byy,16,"255;255;255");T(m.hp+"/"+m.maxhp,bx+bw/2-96,byy,15,"255;255;255");
+      bar(bx+34,byy+1,bw/2-150,16,m.maxhp?m.hp/m.maxhp:0,"208;88;74");
+      T("MP",bx+bw/2+6,byy,16,"255;255;255");T(m.mp+"/"+m.maxmp,bx+bw-62,byy,15,"255;255;255");
+      bar(bx+bw/2+40,byy+1,bw/2-150,16,m.maxmp?m.mp/m.maxmp:0,"90;160;200");
+      var dy=byy+30;
+      var DER=[["物攻",m.patk],["魔攻",m.matk],["物防",m.pdef],["魔防",m.mdef],["閃避",m.dodgeV],["會心",m.critV+"%"]];
+      var cw=Math.floor((bw-5*7)/6);
+      for(var _i=0;_i<6;_i++){var _cx2=bx+_i*(cw+7);box(_cx2,dy,cw,46,"30;34;54",214,"10;10;20",2);
+        T(DER[_i][0],_cx2+8,dy+6,13,"170;180;220");T(String(DER[_i][1]),_cx2+8,dy+22,20,C_ACC);}
+      dy+=58;
+      box(bx,dy,bw,90,"34;38;58",230,"10;10;20",2);
+      T("主屬性配點",bx+12,dy+9,17,"255;255;255");
+      T("剩餘 "+(m.pts||0),bx+bw-118,dy+10,16,(m.pts||0)>0?C_SELY:"170;180;220");
+      var ATT=[["力量","str"],["敏捷","agi"],["智力","int"]];var aw=Math.floor((bw-24-2*10)/3);var _alloc=false;
+      if(keyHit("Num1")&&(m.pts||0)>0){m.attrs.str++;m.pts--;_alloc=true;sfx("select.wav");}
+      if(keyHit("Num2")&&(m.pts||0)>0){m.attrs.agi++;m.pts--;_alloc=true;sfx("select.wav");}
+      if(keyHit("Num3")&&(m.pts||0)>0){m.attrs.int++;m.pts--;_alloc=true;sfx("select.wav");}
+      for(var _i=0;_i<3;_i++){var _ax=bx+12+_i*(aw+10);var _ay=dy+36;
+        T(ATT[_i][0],_ax+aw/2-16,_ay-2,16,"255;255;255");
+        box(_ax,_ay+18,34,30,"20;22;38",255,"70;80;120",2);T("－",_ax+8,_ay+21,20,"255;255;255");
+        T(String(m.attrs[ATT[_i][1]]),_ax+aw/2-7,_ay+20,22,C_SELY);
+        box(_ax+aw-34,_ay+18,34,30,"20;22;38",255,"70;80;120",2);T("＋",_ax+aw-28,_ay+21,20,(m.pts||0)>0?C_GOLD:C_DIM2);
+        if((m.pts||0)>0&&hitRect(_ax+aw-34,_ay+18,34,30)){m.attrs[ATT[_i][1]]++;m.pts--;_alloc=true;sfx("select.wav");}}
+      if(_alloc){derive(m);setJ("g_party",ps);}
+      dy+=100;
+      var _dbh=RB-14-dy;box(bx,dy,bw,_dbh,"34;38;58",230,"10;10;20",2);
+      var f0=flags();var _et="";for(var _i=0;_i<TITLES.length;_i++){if(TITLES[_i].id===f0.eqTitle)_et=TITLES[_i].name;}
+      var _bl=(m.blessing&&(CONTENT.blessings||{})[m.blessing]);
+      T("◆ 詳細屬性",bx+12,dy+8,15,C_GOLD);
+      T("幸運 "+m.luck,bx+12,dy+30,15,C_ACC);
+      T("特別加護 "+(_bl?_bl.name:"—"),bx+150,dy+30,15,_bl?C_GOLD:C_DIM2);
+      T("稱號 "+(_et||"—"),bx+400,dy+30,15,_et?C_GOLD:C_DIM2);
+      T("武器熟練度",bx+12,dy+54,13,"136;146;150");
+      var WT=[["劍","sword"],["槍","spear"],["斧","axe"],["盾","shield"],["投射","throw"],["杖","staff"],["鎚","hammer"]];
+      var pw2=Math.floor((bw-24-6*5)/7);
+      for(var _i=0;_i<7;_i++){var _wx=bx+12+_i*(pw2+5);var _v=(m.prof&&m.prof[WT[_i][1]])||0;var _eqt=(m.wtype===WT[_i][1]);
+        box(_wx,dy+72,pw2,38,_eqt?"58;64;90":"20;22;40",255,_eqt?C_SELY:"70;80;120",2);
+        T(WT[_i][0]+" +"+_v,_wx+8,dy+82,14,_v>0?C_SELY:"160;168;190");}
+      T("屬性攻擊加護",bx+12,dy+118,13,"136;146;150");
+      var EL=[["土","earth","111;82;40"],["火","fire","168;69;42"],["風","wind","67;128;82"],["水","water","58;112;146"],["冰","ice","80;144;170"],["雷","thunder","160;138;42"],["光","light","184;168;72"],["暗","dark","79;66;112"]];
+      var ew=Math.floor((bw-24-7*5)/8);
+      for(var _i=0;_i<8;_i++){var _ex=bx+12+_i*(ew+5);var _ev=(m.elem&&m.elem[EL[_i][1]])||0;
+        box(_ex,dy+136,ew,40,EL[_i][2],_ev>0?255:120,"10;10;20",2);
+        T(EL[_i][0]+(_ev>0?" +"+_ev:" 0"),_ex+7,dy+147,14,_ev>0?"255;255;255":"200;204;214");}
+      hint="←→ 分頁　↑↓ 換隊員　1/2/3 或點＋ 配點　Q/E 分類　Esc 關閉";
+    } else if(st.cTab===1){
+      var SN=SLOTS.length;
+      if(!st.eqSwap){if(up&&st.cSel>0){st.cSel--;sfx("cursor.mp3");}if(down&&st.cSel<SN-1){st.cSel++;sfx("cursor.mp3");}}
+      if(st.cSel>=SN)st.cSel=SN-1;
+      var lw=214;
+      for(var _i=0;_i<SN;_i++){var _sk=SLOTS[_i][0];var _eid=m.eq&&m.eq[_sk];var _sy=byy+_i*46;var _sel=(_i===st.cSel&&!st.eqSwap);
+        box(bx,_sy,lw,42,_sel?"58;64;90":"20;22;40",_sel?255:212,_sel?C_SELY:"70;80;120",2);
+        T(SLOTS[_i][1],bx+8,_sy+4,13,"170;180;220");
+        T(_eid?EQ[_eid].name:"— 未裝備",bx+8,_sy+20,15,_eid?"255;255;255":C_DIM2);
+        if(hitRect(bx,_sy,lw,42)){st.cSel=_i;st.eqSwap=false;sfx("cursor.mp3");}}
+      var rx2=bx+lw+14,rw2=bw-lw-14;
+      var curSlot=SLOTS[st.cSel][0],curId=m.eq&&m.eq[curSlot];
+      box(rx2,byy,rw2,96,"30;34;54",217,"10;10;20",2);
+      if(curId){var e=EQ[curId];T(e.name,rx2+12,byy+8,22,C_GOLD);
+        T(SLOTN[e.slot]||"裝備",rx2+12+e.name.length*22+12,byy+15,13,C_ACC);
+        T(e.desc||"",rx2+12,byy+42,13,"170;180;200");
+        T("效果 "+(eqDesc(e)||"（無屬性加成）"),rx2+12,byy+68,14,C_ACC);}
+      else{T("（未裝備）",rx2+12,byy+34,18,C_DIM2);}
+      var tp=slotType(curSlot);var _inv=J("g_eqInv",[]);var alts=[],acnt={};
+      for(var _i=0;_i<_inv.length;_i++){var _e=EQ[_inv[_i]];if(_e&&_e.slot===tp){if(acnt[_inv[_i]]===undefined){acnt[_inv[_i]]=0;alts.push(_inv[_i]);}acnt[_inv[_i]]++;}}
+      alts.sort();
+      var opts=[];if(curId)opts.push("__off__");for(var _i=0;_i<alts.length;_i++)opts.push(alts[_i]);
+      T("可更換（"+(SLOTN[tp]||"裝備")+"）",rx2,byy+106,15,C_GOLD);
+      var doEquip=function(pick){var iv2=J("g_eqInv",[]);
+        if(pick==="__off__"){if(m.eq&&m.eq[curSlot]){iv2.push(m.eq[curSlot]);delete m.eq[curSlot];setJ("g_eqInv",iv2);derive(m);setJ("g_party",ps);sfx("select.wav");}}
+        else if(pick){var ix=iv2.indexOf(pick);if(ix>=0)iv2.splice(ix,1);if(m.eq[curSlot])iv2.push(m.eq[curSlot]);m.eq[curSlot]=pick;setJ("g_eqInv",iv2);derive(m);setJ("g_party",ps);sfx("learn.mp3");}
+        st.eqSwap=false;};
+      var listY=byy+130;
+      if(st.eqSwap){if(st.eqPick===undefined)st.eqPick=0;if(st.eqPick>=opts.length)st.eqPick=Math.max(0,opts.length-1);
+        if(up&&st.eqPick>0){st.eqPick--;sfx("cursor.mp3");}if(down&&st.eqPick<opts.length-1){st.eqPick++;sfx("cursor.mp3");}}
+      if(!opts.length){T("（沒有可更換的"+(SLOTN[tp]||"裝備")+"——多探索、多和鎮民聊聊）",rx2,listY,14,"150;160;190");}
+      for(var _i=0;_i<opts.length&&_i<8;_i++){var _oy=listY+_i*32;var _sel2=(st.eqSwap&&_i===st.eqPick);
+        box(rx2,_oy,rw2,30,_sel2?"58;64;90":"20;22;38",_sel2?255:204,_sel2?C_SELY:"10;10;20",2);
+        if(opts[_i]==="__off__"){T("▶ 卸下目前裝備",rx2+10,_oy+6,15,"255;150;150");}
+        else{var _e2=EQ[opts[_i]];var sim=JSON.parse(JSON.stringify(m));if(!sim.eq)sim.eq={};sim.eq[curSlot]=opts[_i];derive(sim);
+          var _df="";var DK=[["patk","物攻"],["matk","魔攻"],["pdef","物防"],["mdef","魔防"],["dodgeV","閃避"],["critV","會心"],["maxhp","HP"],["maxmp","MP"],["luck","幸運"]];
+          for(var _k=0;_k<DK.length;_k++){var a0=m[DK[_k][0]],b0=sim[DK[_k][0]];if(a0!==b0)_df+=DK[_k][1]+(b0>a0?" +":" ")+(Math.round((b0-a0)*10)/10)+" ";}
+          T(_e2.name+(acnt[opts[_i]]>1?" x"+acnt[opts[_i]]:""),rx2+10,_oy+6,15,"255;255;255");
+          T(_df||"（無變化）",rx2+rw2-300,_oy+7,13,"120;230;150");}
+        if(hitRect(rx2,_oy,rw2,30)){doEquip(opts[_i]);}}
+      if(enter){if(!st.eqSwap){if(opts.length){st.eqSwap=true;st.eqPick=0;sfx("select.wav");}else sfx("cancel.mp3");}
+        else{doEquip(opts[st.eqPick]);}}
+      hint=st.eqSwap?"↑↓ 選裝備　Enter 確定　Esc 取消":"↑↓ 選槽位　Enter 更換　←→ 分頁　點立繪◀▶ 換隊員　Esc 關閉";
+    } else if(st.cTab===2){
+      var sl=skillList(m);
+      if(!st.skUse){if(up&&st.cSel>0){st.cSel--;sfx("cursor.mp3");}if(down&&st.cSel<sl.length-1){st.cSel++;sfx("cursor.mp3");}}
+      if(st.cSel>=sl.length)st.cSel=Math.max(0,sl.length-1);
+      T("技能點 "+(m.spts||0),bx+bw-150,byy-4,16,(m.spts||0)>0?C_SELY:"170;180;220");
+      var ATG={fire:"火",wind:"風",water:"水",earth:"土",ice:"冰",thunder:"雷",light:"光",dark:"暗"};
+      for(var _i=0;_i<sl.length&&_i<5;_i++){var sk1=sl[_i];var slv=m.sk[sk1.id];var _yy=byy+18+_i*74;var _sel=(_i===st.cSel);
+        box(bx,_yy,bw,68,_sel?"58;64;90":"22;24;40",_sel?255:212,_sel?C_SELY:"70;80;120",2);
+        T(sk1.name,bx+14,_yy+8,18,"255;255;255");
+        T(sk1.attr==="int"?"魔法":"物理",bx+14+sk1.name.length*18+12,_yy+11,12,C_ACC);
+        if(sk1.element)T(ATG[sk1.element]||sk1.element,bx+14+sk1.name.length*18+60,_yy+11,12,C_GOLD);
+        T("MP"+sk1.mp,bx+bw-268,_yy+10,13,"170;180;220");
+        var pw1=skPow(sk1,slv);T((sk1.attr==="int"?"魔攻":"物攻")+"x"+(sk1.mult*pw1).toFixed(2),bx+bw-206,_yy+10,13,"170;180;220");
+        T("Lv"+slv+"/"+C_DERIVED.skillMaxLv,bx+14,_yy+40,13,C_GOLD);
+        bar(bx+96,_yy+42,bw-330,12,slv/C_DERIVED.skillMaxLv,"208;133;74");
+        var _canUp=(m.spts||0)>0&&slv<C_DERIVED.skillMaxLv;
+        box(bx+bw-98,_yy+36,86,26,"20;22;38",255,"70;80;120",2);T("升級",bx+bw-80,_yy+40,15,_canUp?C_GOLD:C_DIM2);
+        if(hitRect(bx+bw-98,_yy+36,86,26)&&_canUp){m.sk[sk1.id]++;m.spts--;derive(m);setJ("g_party",ps);sfx("learn.mp3");}
+        if(sk1.kind==="heal"){box(bx+bw-192,_yy+36,86,26,"20;22;38",255,"70;80;120",2);T("使用",bx+bw-174,_yy+40,15,C_ACC);
+          if(hitRect(bx+bw-192,_yy+36,86,26)){st.skUse=sk1.id;st.skWho=0;sfx("select.wav");}}
+        if(hitRect(bx,_yy,bw-200,68)){st.cSel=_i;sfx("cursor.mp3");}}
+      if(!sl.length)T("（尚未習得技能）",bx+12,byy+30,16,C_DIM2);
+      if(enter&&!st.skUse&&sl[st.cSel]){var sk0=sl[st.cSel];
+        if((m.spts||0)>0&&m.sk[sk0.id]<C_DERIVED.skillMaxLv){m.sk[sk0.id]++;m.spts--;derive(m);setJ("g_party",ps);sfx("learn.mp3");}else sfx("cancel.mp3");}
+      if(st.skUse){var sk2=null;for(var _i=0;_i<CONTENT.skills.length;_i++)if(CONTENT.skills[_i].id===st.skUse)sk2=CONTENT.skills[_i];
+        fillR(RX,BODY_Y,RW,RB-BODY_Y,"8;9;18",190);
+        box(RX+40,BODY_Y+34,RW-80,60+ps.length*46,"30;34;54",244,C_SELY,2);
+        T("以「"+(sk2?sk2.name:"")+"」治療誰？（MP"+(sk2?sk2.mp:0)+"）",RX+58,BODY_Y+48,17,C_GOLD);
+        if(up&&st.skWho>0){st.skWho--;sfx("cursor.mp3");}if(down&&st.skWho<ps.length-1){st.skWho++;sfx("cursor.mp3");}
+        for(var _i=0;_i<ps.length;_i++){var mm=ps[_i];derive(mm);var _ty2=BODY_Y+82+_i*46;var _sw2=(_i===st.skWho);
+          box(RX+58,_ty2,RW-116,40,_sw2?"58;64;90":"20;22;38",_sw2?255:212,_sw2?C_SELY:"70;80;120",2);
+          T(mm.name+"　HP "+mm.hp+"/"+mm.maxhp,RX+72,_ty2+10,16,"255;255;255");
+          if(hitRect(RX+58,_ty2,RW-116,40)){st.skWho=_i;}}
+        if(enter&&sk2){var tgt=ps[st.skWho];derive(tgt);
+          if(m.mp<sk2.mp){sfx("cancel.mp3");}else if(tgt.hp>=tgt.maxhp){sfx("cancel.mp3");}
+          else{var pw3=skPow(sk2,(m.sk&&m.sk[sk2.id])||1);var heal=Math.round((m.matk*sk2.mult+sk2.flat)*pw3);
+            tgt.hp=Math.min(tgt.maxhp,tgt.hp+heal);m.mp-=sk2.mp;derive(m);setJ("g_party",ps);sfx("heal.wav");st.skUse=null;}}
+        hint="↑↓ 選對象　Enter 施放　Esc 取消";}
+      else{hint="←→ 分頁　↑↓ 選技能　Enter 升級　Q/E 分類　Esc 關閉";}
     } else {
-    var did=false;
-    if(keyHit("Num1")&&(m.pts||0)>0){m.attrs.str++;m.pts--;did=true;sfx("select.wav");}
-    if(keyHit("Num2")&&(m.pts||0)>0){m.attrs.agi++;m.pts--;did=true;sfx("select.wav");}
-    if(keyHit("Num3")&&(m.pts||0)>0){m.attrs.int++;m.pts--;did=true;sfx("select.wav");}
-    var sl=skillList(m).slice(0,5);
-    var nItems=SLOTS.length+sl.length;
-    if(up&&st.sSel>0){st.sSel--;sfx("cursor.mp3");}
-    if(down&&st.sSel<nItems-1){st.sSel++;sfx("cursor.mp3");}
-    if(enter){
-      if(st.sSel<SLOTS.length){
-        if(cycleEq(m,SLOTS[st.sSel][0]))did=true;
-      } else {var sk0=sl[st.sSel-SLOTS.length];
-        if(sk0&&(m.spts||0)>0&&m.sk[sk0.id]<C_DERIVED.skillMaxLv){m.sk[sk0.id]++;m.spts--;did=true;sfx("learn.mp3");}
+      if(ps.length>1){if(up){st.cMem=(st.cMem+ps.length-1)%ps.length;sfx("cursor.mp3");}else if(down){st.cMem=(st.cMem+1)%ps.length;sfx("cursor.mp3");}}
+      m=ps[st.cMem];
+      var pd0=pDef(m.id)||{};
+      var _iw=Math.floor((bw-2*10)/3);
+      var INF=[["年齡",pd0.age!==undefined?pd0.age:"—"],["出身",pd0.origin||"—"],["武器傾向",pd0.weaponTendency||"—"]];
+      for(var _i=0;_i<3;_i++){var _ix=bx+_i*(_iw+10);box(_ix,byy,_iw,54,"30;34;54",214,"10;10;20",2);
+        T(INF[_i][0],_ix+10,byy+8,13,"170;180;220");T(String(INF[_i][1]),_ix+10,byy+26,18,C_ACC);}
+      var sy2=byy+66;box(bx,sy2,bw,RB-14-sy2,"22;24;40",214,"10;10;20",2);
+      T("◆ 人物誌",bx+12,sy2+10,16,C_GOLD);
+      var stv=pd0.story||["（沒有相關紀錄）"];
+      for(var _i=0;_i<stv.length&&_i<8;_i++)T(stv[_i],bx+14,sy2+40+_i*28,15,"230;232;240");
+      hint="←→ 分頁　↑↓ 換隊員　Q/E 分類　Esc 關閉";
+    }
+    var _mh=one("MenuHint");if(_mh){_mh.hide(false);_mh.setString(hint);_mh.setX(RX);_mh.setY(RB+2);if(_mh.setCharacterSize)_mh.setCharacterSize(15);}
+    ["MenuPanel","RowHi","MenuMap","MenuFace","MenuTitle"].forEach(function(n){var o=one(n);if(o)o.hide(true);});
+    rs.getObjects("BarBg").forEach(function(o){o.hide(true);});rs.getObjects("BarFill").forEach(function(o){o.hide(true);});
+    for(var _z=_ti;_z<64;_z++){var _o=one("MRow"+_z);if(_o)_o.hide(true);}
+  } else {
+    box(130,66,1020,556,"16;18;32",236,"10;10;20",2);   // 其他分頁：面板深底（壓掉 menubg 浮水印，與角色頁一致）
+    if(st.tab===1){
+      if(st.iMode===undefined)st.iMode="list";
+      if(st.iSel===undefined)st.iSel=0;
+      if(st.iWho===undefined)st.iWho=0;
+      var iv=invAll();
+      var cons=[],mats=[],keys=[];
+      for(var i=0;i<(CONTENT.items||[]).length;i++){var it=CONTENT.items[i];var q=iv[it.id]||0;if(q<=0)continue;
+        if(it.cat==="consumable")cons.push({id:it.id,n:q,meta:it});
+        else if(it.cat==="material")mats.push({id:it.id,n:q,meta:it});
+        else if(it.cat==="key")keys.push({id:it.id,n:q,meta:it});}
+      if(st.iSel>=cons.length)st.iSel=Math.max(0,cons.length-1);
+      if(st.iMode==="who"&&!cons.length)st.iMode="list";
+      if(st.iMode==="list"){
+        if(up&&st.iSel>0){st.iSel--;sfx("cursor.mp3");}
+        if(down&&st.iSel<cons.length-1){st.iSel++;sfx("cursor.mp3");}
+        rows.push({t:"── 道具袋 ──　消耗品",c:C_ACC,x:180,y:150});
+        if(!cons.length)rows.push({t:"（沒有可用的消耗品——去吉德的道具店補貨吧）",c:"150;160;190",x:180,y:200});
+        for(var i=0;i<cons.length&&i<8;i++){var c0=cons[i];
+          rows.push({t:(i===st.iSel?"▶ ":"　 ")+c0.meta.name+"　×"+c0.n,sel:i===st.iSel,x:180,y:200+i*30,hw:460});}
+        if(cons[st.iSel]){var sc=cons[st.iSel].meta;var usable=(sc.kind==="heal"||sc.kind==="mp");
+          rows.push({t:"效果：　"+(sc.effect||"（無說明）"),c:"170;220;235",x:180,y:472,hw:520});
+          rows.push({t:usable?"→ Enter 選擇使用對象":"→ 此道具目前無法在選單中使用",c:usable?"150;230;150":"170;150;150",x:180,y:504});}
+        var ry0=200;
+        rows.push({t:"─ 素材 ─",c:C_DIM,x:700,y:ry0});ry0+=28;
+        if(!mats.length){rows.push({t:"（無）",c:"110;120;140",x:720,y:ry0});ry0+=26;}
+        for(var i=0;i<mats.length&&i<6;i++){rows.push({t:mats[i].meta.name+"　×"+mats[i].n,c:"205;205;215",x:720,y:ry0});ry0+=26;}
+        rows.push({t:"─ 重要物品 ─",c:C_DIM,x:700,y:ry0});ry0+=28;
+        if(!keys.length){rows.push({t:"（無）",c:"110;120;140",x:720,y:ry0});ry0+=26;}
+        for(var i=0;i<keys.length&&i<4;i++){rows.push({t:keys[i].meta.name,c:"205;205;215",x:720,y:ry0});ry0+=26;}
+        if(enter&&cons[st.iSel]){var sc2=cons[st.iSel].meta;
+          if(sc2.kind==="heal"||sc2.kind==="mp"){st.iMode="who";st.iWho=0;sfx("select.wav");}
+          else sfx("cancel.mp3");}
+        hint="↑↓ 選道具　Enter 使用　←→/Q/E 分頁　Esc 關閉";
+      } else {
+        var it2=cons[st.iSel];var isMp=(it2.meta.kind==="mp");
+        if(up&&st.iWho>0){st.iWho--;sfx("cursor.mp3");}
+        if(down&&st.iWho<ps.length-1){st.iWho++;sfx("cursor.mp3");}
+        if(ps[st.iWho])showFace=ps[st.iWho].id;
+        rows.push({t:"對誰使用：　"+it2.meta.name+"　×"+it2.n+"　"+(it2.meta.effect||""),c:C_ACC,x:180,y:150,hw:900});
+        for(var i=0;i<ps.length;i++){var mm=ps[i];derive(mm);
+          var y0=224+i*64;
+          rows.push({t:(i===st.iWho?"▶ ":"　 ")+mm.name+"　Lv"+mm.lv,sel:i===st.iWho,x:180,y:y0,hw:820});
+          rows.push({t:"HP "+mm.hp+"/"+mm.maxhp,x:220,y:y0+30});
+          barsp.push({x:390,y:y0+38,w:150,cur:mm.hp,max:mm.maxhp,kind:"hp"});
+          rows.push({t:"MP "+mm.mp+"/"+mm.maxmp,x:600,y:y0+30});
+          barsp.push({x:760,y:y0+38,w:150,cur:mm.mp,max:mm.maxmp,kind:"mp"});}
+        if(enter&&ps[st.iWho]){var tgt=ps[st.iWho];derive(tgt);
+          var full=isMp?(tgt.mp>=tgt.maxmp):(tgt.hp>=tgt.maxhp);
+          if(full)sfx("cancel.mp3");
+          else{var pw=it2.meta.power||0;
+            if(isMp)tgt.mp=Math.min(tgt.maxmp,tgt.mp+pw);
+            else tgt.hp=Math.min(tgt.maxhp,tgt.hp+pw);
+            invUse(it2.id);setJ("g_party",ps);sfx("heal.wav");
+            if(invGet(it2.id)<=0)st.iMode="list";}}
+        hint="↑↓ 選隊員　Enter 使用　Esc 返回";
+      }
+    } else if(st.tab===2){
+      showMap=true;
+      var LOC={Town:"芳蕾鎮",Forest:"東之森",Forest2:"東之森深處",Mine:"礦山外圍",Cave:"礦山洞穴"};
+      rows.push({t:"現在位置：{loc}　（南方大道/西方迷霧森林 目前封鎖中）".replace("{loc}",LOC[CFG.SCENE]||CFG.SCENE),c:C_GOLD});
+      var PM=(CONTENT.pacing&&CONTENT.pacing.maps)||{};
+      var lvR=function(k){var p=PM[k];return p?("Lv"+p.entryLv+"-"+p.targetLv):"—";};
+      rows.push({t:"建議等級　東之森 "+lvR("forest")+"　森林深處 "+lvR("forest2")+"　礦山 "+lvR("mine")+"　洞穴 "+lvR("cave"),
+        x:330,y:512,c:C_ACC});
+    } else if(st.tab===3){
+      if(up&&st.sel>0){st.sel--;sfx("cursor.mp3");}
+      if(down&&st.sel<TITLES.length-1){st.sel++;sfx("cursor.mp3");}
+      var f10=flags();
+      rows.push({t:"── 稱號（Enter 佩戴）──",c:C_ACC});
+      for(var i=0;i<TITLES.length;i++){var tt=TITLES[i];var got=titleEarned(tt);
+        var tag=(f10.eqTitle===tt.id)?"【佩戴中】":"";
+        rows.push({t:(i===st.sel?"▶ ":"　 ")+(got?tt.name+"　"+tag+"　— "+tt.desc:"？？？　— "+tt.hint),
+                   sel:i===st.sel,c:got?null:"110;120;140"});}
+      if(enter){var tt2=TITLES[st.sel];
+        if(titleEarned(tt2)){var f11=flags();f11.eqTitle=tt2.id;setJ("g_flags",f11);sfx("select.wav");}
         else sfx("cancel.mp3");
       }
-    }
-    if(did){derive(m);setJ("g_party",ps);}
-    rows.push({t:"HP "+m.hp+"/"+m.maxhp,x:180,y:168});
-    barsp.push({x:330,y:176,w:170,cur:m.hp,max:m.maxhp,kind:"hp"});
-    rows.push({t:"MP "+m.mp+"/"+m.maxmp,x:560,y:168});
-    barsp.push({x:700,y:176,w:170,cur:m.mp,max:m.maxmp,kind:"mp"});
-    // 屬性：分欄對齊、拉開行距、攻防成對（原本擠成兩長行、全形空格難讀）
-    rows.push({t:"【屬性】屬性點 "+(m.pts||0)+((m.pts||0)>0?"　（1=力 2=敏 3=智 分配）":""),x:180,y:206,
-      c:(m.pts||0)>0?C_GOLD:C_ACC});
-    rows.push({t:"力量  "+m.attrs.str,x:200,y:238}); rows.push({t:"敏捷  "+m.attrs.agi,x:380,y:238}); rows.push({t:"智力  "+m.attrs.int,x:560,y:238});
-    var _dc="170;220;235";
-    rows.push({t:"物攻  "+m.patk,x:200,y:276,c:_dc}); rows.push({t:"物防  "+m.pdef,x:380,y:276,c:_dc}); rows.push({t:"閃避  "+m.dodgeV,x:560,y:276,c:_dc}); rows.push({t:"速度  "+m.spd,x:740,y:276,c:_dc});
-    rows.push({t:"魔攻  "+m.matk,x:200,y:304,c:_dc}); rows.push({t:"魔防  "+m.mdef,x:380,y:304,c:_dc}); rows.push({t:"會心  "+m.critV+"%",x:560,y:304,c:_dc});
-    rows.push({t:"【裝備】（Enter 循環更換）",x:180,y:332,c:C_ACC});
-    for(var i=0;i<SLOTS.length;i++){
-      var eid=m.eq&&m.eq[SLOTS[i][0]];
-      rows.push({t:(i===st.sSel?"▶ ":"　 ")+SLOTS[i][1]+"："+(eid?EQ[eid].name+"（"+eqDesc(EQ[eid])+"）":"——"),
-        sel:i===st.sSel,x:180,y:360+i*28,hw:440});}
-    rows.push({t:"【技能】技能點 "+(m.spts||0)+"（Enter 升級）",x:650,y:332,c:C_ACC});
-    for(var i=0;i<sl.length;i++){var sk1=sl[i];var slv=m.sk[sk1.id];var si=SLOTS.length+i;
-      var pw1=skPow(sk1,slv);
-      rows.push({t:(si===st.sSel?"▶ ":"　 ")+sk1.name+"　Lv"+slv+"/"+C_DERIVED.skillMaxLv+"　MP"+sk1.mp+"　"+
-        (sk1.attr==="int"?"魔攻":"物攻")+"×"+(sk1.mult*pw1).toFixed(2)+(sk1.flat?"+"+Math.round(sk1.flat*pw1):""),
-        sel:si===st.sSel,x:650,y:360+i*28,hw:470});}
-    hint="↑↓ 選擇　Enter 換裝/升技　1/2/3 配點　←→ 能力/故事　Esc 返回";
-    }
-  } else if(st.tab===1){
-    if(st.eqMode===undefined){st.eqMode="list";st.eqSel=0;}
-    var inv=J("g_eqInv",[]);
-    var uniq=[],cnt={};
-    for(var i=0;i<inv.length;i++){if(!EQ[inv[i]])continue;
-      if(cnt[inv[i]]===undefined){cnt[inv[i]]=0;uniq.push(inv[i]);}cnt[inv[i]]++;}
-    var SORD={weapon:0,armor:1,boots:2,wrist:3,acc:4};
-    uniq.sort(function(a,b){return (SORD[EQ[a].slot]-SORD[EQ[b].slot])||(a<b?-1:1);});
-    if(st.eqMode==="who"&&(!EQ[st.eqItem]||!cnt[st.eqItem]))st.eqMode="list";
-    if(st.eqMode==="list"){
-      if(st.eqSel>=uniq.length)st.eqSel=Math.max(0,uniq.length-1);
-      if(up&&st.eqSel>0){st.eqSel--;sfx("cursor.mp3");}
-      if(down&&st.eqSel<uniq.length-1){st.eqSel++;sfx("cursor.mp3");}
-      rows.push({t:"── 裝備袋（隊伍共用）──",c:C_ACC});
-      if(!uniq.length)rows.push({t:"（目前沒有備用裝備——多和鎮民聊聊、完成委託會有收穫）",c:"150;160;190"});
-      var base=Math.max(0,Math.min(st.eqSel-5,uniq.length-11));
-      for(var i=base;i<uniq.length&&i<base+11;i++){var e=EQ[uniq[i]];
-        rows.push({t:(i===st.eqSel?"▶ ":"　 ")+"［"+SLOTN[e.slot]+"］"+e.name+(cnt[uniq[i]]>1?" ×"+cnt[uniq[i]]:"")+"　"+eqDesc(e),
-          sel:i===st.eqSel,x:180,y:204+(i-base)*28,hw:900});}
-      if(uniq[st.eqSel]){var e2=EQ[uniq[st.eqSel]];
-        rows.push({t:"效果：　"+(eqDesc(e2)||"（無屬性加成）")+"　［"+SLOTN[e2.slot]+"部位］",c:"170;220;235",x:180,y:522});}
-      if(enter&&uniq[st.eqSel]){st.eqMode="who";st.eqWho=0;st.eqItem=uniq[st.eqSel];sfx("select.wav");}
-      hint="↑↓ 選裝備　Enter 選擇要裝備的隊員　←→ 分頁　Esc 關閉";
+      hint="↑↓ 選稱號　Enter 佩戴　←→ 分頁　Esc 關閉";
     } else {
-      var it=EQ[st.eqItem];
-      if(up&&st.eqWho>0){st.eqWho--;sfx("cursor.mp3");}
-      if(down&&st.eqWho<ps.length-1){st.eqWho++;sfx("cursor.mp3");}
-      if(ps[st.eqWho])showFace=ps[st.eqWho].id;
-      rows.push({t:"要讓誰裝備：　"+it.name+"　［"+SLOTN[it.slot]+"］　"+(eqDesc(it)||"無屬性加成"),c:C_ACC});
-      var DIFFK=[["patk","物攻"],["matk","魔攻"],["pdef","物防"],["mdef","魔防"],["dodgeV","閃避"],["critV","會心"],["maxhp","HP上限"],["maxmp","MP上限"]];
-      for(var i=0;i<ps.length;i++){var mm=ps[i];derive(mm);
-        var slot2=accSlotFor(mm,it);
-        var old2=(mm.eq&&mm.eq[slot2])||null;
-        var sim=JSON.parse(JSON.stringify(mm));
-        sim.eq[slot2]=st.eqItem;derive(sim);
-        var difs=[];
-        for(var k=0;k<DIFFK.length;k++){var a0=mm[DIFFK[k][0]],b0=sim[DIFFK[k][0]];
-          if(a0!==b0)difs.push(DIFFK[k][1]+" "+a0+"→"+b0);}
-        rows.push({t:(i===st.eqWho?"▶ ":"　 ")+mm.name+"　"+slotLabel(slot2)+"："+(old2?EQ[old2].name:"（空）")+" → "+it.name,
-          sel:i===st.eqWho,x:180,y:216+i*66,hw:900});
-        rows.push({t:"　　　"+(difs.length?difs.join("　"):"（能力值不變）"),
-          c:i===st.eqWho?"150;230;150":"130;140;165",x:180,y:216+i*66+28});
+      if(up&&st.sel>0){st.sel--;st.confirmQuit=false;sfx("cursor.mp3");}
+      if(down&&st.sel<1){st.sel++;sfx("cursor.mp3");}
+      rows.push({t:(st.sel===0?"▶ ":"　 ")+"操作說明",sel:st.sel===0});
+      rows.push({t:(st.sel===1?"▶ ":"　 ")+(st.confirmQuit?"回到標題畫面（再按一次 Enter 確認，進度不保存！）":"回到標題畫面"),sel:st.sel===1,
+                 c:st.confirmQuit?"255;150;150":null});
+      rows.push({t:""});
+      rows.push({t:"　方向鍵：移動　空白鍵：交談/推進對話",c:"170;180;220"});
+      rows.push({t:"　M / Esc：選單　戰鬥：方向鍵+Enter 或 滑鼠點擊",c:"170;180;220"});
+      rows.push({t:"　旅店（瑪琳家）與神殿可免費全恢復",c:"170;180;220"});
+      if(enter&&st.sel===1){
+        if(!st.confirmQuit){st.confirmQuit=true;sfx("cancel.mp3");}
+        else{gdjs.evtTools.runtimeScene.replaceScene(rs,"Title",true);return;}
       }
-      if(enter&&ps[st.eqWho]){
-        var mr=ps[st.eqWho];derive(mr);
-        var slot3=accSlotFor(mr,it);
-        var idx3=inv.indexOf(st.eqItem);if(idx3>=0)inv.splice(idx3,1);
-        if(mr.eq[slot3])inv.push(mr.eq[slot3]);
-        mr.eq[slot3]=st.eqItem;derive(mr);
-        setJ("g_eqInv",inv);setJ("g_party",ps);
-        sfx("learn.mp3");st.eqMode="list";
-      }
-      hint="↑↓ 選隊員（顯示裝備前後差異）　Enter 裝備　Esc 返回";
+      hint="↑↓ 選擇　Enter 執行　←→ 分頁　Esc 關閉";
     }
-  } else if(st.tab===2){
-    if(st.iMode===undefined)st.iMode="list";
-    if(st.iSel===undefined)st.iSel=0;
-    if(st.iWho===undefined)st.iWho=0;
-    var iv=invAll();
-    // 依 CONTENT.items 順序分類：消耗品（可選用）、素材、重要物品（唯讀）
-    var cons=[],mats=[],keys=[];
-    for(var i=0;i<(CONTENT.items||[]).length;i++){var it=CONTENT.items[i];var q=iv[it.id]||0;if(q<=0)continue;
-      if(it.cat==="consumable")cons.push({id:it.id,n:q,meta:it});
-      else if(it.cat==="material")mats.push({id:it.id,n:q,meta:it});
-      else if(it.cat==="key")keys.push({id:it.id,n:q,meta:it});}
-    if(st.iSel>=cons.length)st.iSel=Math.max(0,cons.length-1);
-    if(st.iMode==="who"&&!cons.length)st.iMode="list";
-    if(st.iMode==="list"){
-      if(up&&st.iSel>0){st.iSel--;sfx("cursor.mp3");}
-      if(down&&st.iSel<cons.length-1){st.iSel++;sfx("cursor.mp3");}
-      rows.push({t:"── 道具袋 ──　消耗品",c:C_ACC,x:180,y:150});
-      if(!cons.length)rows.push({t:"（沒有可用的消耗品——去吉德的道具店補貨吧）",c:"150;160;190",x:180,y:200});
-      for(var i=0;i<cons.length&&i<8;i++){var c0=cons[i];
-        rows.push({t:(i===st.iSel?"▶ ":"　 ")+c0.meta.name+"　×"+c0.n,sel:i===st.iSel,x:180,y:200+i*30,hw:460});}
-      if(cons[st.iSel]){var sc=cons[st.iSel].meta;var usable=(sc.kind==="heal"||sc.kind==="mp");
-        rows.push({t:"效果：　"+(sc.effect||"（無說明）"),c:"170;220;235",x:180,y:472,hw:520});
-        rows.push({t:usable?"→ Enter 選擇使用對象":"→ 此道具目前無法在選單中使用",c:usable?"150;230;150":"170;150;150",x:180,y:504});}
-      // 右欄：素材 / 重要物品（唯讀）
-      var ry0=200;
-      rows.push({t:"─ 素材 ─",c:C_DIM,x:700,y:ry0});ry0+=28;
-      if(!mats.length){rows.push({t:"（無）",c:"110;120;140",x:720,y:ry0});ry0+=26;}
-      for(var i=0;i<mats.length&&i<6;i++){rows.push({t:mats[i].meta.name+"　×"+mats[i].n,c:"205;205;215",x:720,y:ry0});ry0+=26;}
-      rows.push({t:"─ 重要物品 ─",c:C_DIM,x:700,y:ry0});ry0+=28;
-      if(!keys.length){rows.push({t:"（無）",c:"110;120;140",x:720,y:ry0});ry0+=26;}
-      for(var i=0;i<keys.length&&i<4;i++){rows.push({t:keys[i].meta.name,c:"205;205;215",x:720,y:ry0});ry0+=26;}
-      if(enter&&cons[st.iSel]){var sc2=cons[st.iSel].meta;
-        if(sc2.kind==="heal"||sc2.kind==="mp"){st.iMode="who";st.iWho=0;sfx("select.wav");}
-        else sfx("cancel.mp3");}
-      hint="↑↓ 選道具　Enter 使用　←→/Q/E 分頁　Esc 關閉";
-    } else {
-      var it2=cons[st.iSel];var isMp=(it2.meta.kind==="mp");
-      if(up&&st.iWho>0){st.iWho--;sfx("cursor.mp3");}
-      if(down&&st.iWho<ps.length-1){st.iWho++;sfx("cursor.mp3");}
-      if(ps[st.iWho])showFace=ps[st.iWho].id;
-      rows.push({t:"對誰使用：　"+it2.meta.name+"　×"+it2.n+"　"+(it2.meta.effect||""),c:C_ACC,x:180,y:150,hw:900});
-      for(var i=0;i<ps.length;i++){var mm=ps[i];derive(mm);
-        var y0=224+i*64;
-        rows.push({t:(i===st.iWho?"▶ ":"　 ")+mm.name+"　Lv"+mm.lv,sel:i===st.iWho,x:180,y:y0,hw:820});
-        rows.push({t:"HP "+mm.hp+"/"+mm.maxhp,x:220,y:y0+30});
-        barsp.push({x:390,y:y0+38,w:150,cur:mm.hp,max:mm.maxhp,kind:"hp"});
-        rows.push({t:"MP "+mm.mp+"/"+mm.maxmp,x:600,y:y0+30});
-        barsp.push({x:760,y:y0+38,w:150,cur:mm.mp,max:mm.maxmp,kind:"mp"});}
-      if(enter&&ps[st.iWho]){var tgt=ps[st.iWho];derive(tgt);
-        var full=isMp?(tgt.mp>=tgt.maxmp):(tgt.hp>=tgt.maxhp);
-        if(full)sfx("cancel.mp3");
-        else{var pw=it2.meta.power||0;
-          if(isMp)tgt.mp=Math.min(tgt.maxmp,tgt.mp+pw);
-          else tgt.hp=Math.min(tgt.maxhp,tgt.hp+pw);
-          invUse(it2.id);setJ("g_party",ps);sfx("heal.wav");
-          if(invGet(it2.id)<=0)st.iMode="list";}}
-      hint="↑↓ 選隊員　Enter 使用　Esc 返回";
-    }
-  } else if(st.tab===3){
-    showMap=true;
-    var LOC={Town:"芳蕾鎮",Forest:"東之森",Forest2:"東之森深處",Mine:"礦山外圍",Cave:"礦山洞穴"};
-    rows.push({t:"現在位置：{loc}　（南方大道/西方迷霧森林 目前封鎖中）".replace("{loc}",LOC[CFG.SCENE]||CFG.SCENE),c:C_GOLD});
-    var PM=(CONTENT.pacing&&CONTENT.pacing.maps)||{};
-    function lvR(k){var p=PM[k];return p?("Lv"+p.entryLv+"-"+p.targetLv):"—";}
-    rows.push({t:"建議等級　東之森 "+lvR("forest")+"　森林深處 "+lvR("forest2")+"　礦山 "+lvR("mine")+"　洞穴 "+lvR("cave"),
-      x:330,y:512,c:C_ACC});
-  } else if(st.tab===4){
-    if(up&&st.sel>0){st.sel--;sfx("cursor.mp3");}
-    if(down&&st.sel<TITLES.length-1){st.sel++;sfx("cursor.mp3");}
-    var f10=flags();
-    rows.push({t:"── 稱號（Enter 佩戴）──",c:C_ACC});
-    for(var i=0;i<TITLES.length;i++){var tt=TITLES[i];var got=titleEarned(tt);
-      var tag=(f10.eqTitle===tt.id)?"【佩戴中】":"";
-      rows.push({t:(i===st.sel?"▶ ":"　 ")+(got?tt.name+"　"+tag+"　— "+tt.desc:"？？？　— "+tt.hint),
-                 sel:i===st.sel,c:got?null:"110;120;140"});}
-    if(enter){var tt2=TITLES[st.sel];
-      if(titleEarned(tt2)){var f11=flags();f11.eqTitle=tt2.id;setJ("g_flags",f11);sfx("select.wav");}
-      else sfx("cancel.mp3");
-    }
-    hint="↑↓ 選稱號　Enter 佩戴　←→ 分頁　Esc 關閉";
-  } else {
-    if(up&&st.sel>0){st.sel--;st.confirmQuit=false;sfx("cursor.mp3");}
-    if(down&&st.sel<1){st.sel++;sfx("cursor.mp3");}
-    rows.push({t:(st.sel===0?"▶ ":"　 ")+"操作說明",sel:st.sel===0});
-    rows.push({t:(st.sel===1?"▶ ":"　 ")+(st.confirmQuit?"回到標題畫面（再按一次 Enter 確認，進度不保存！）":"回到標題畫面"),sel:st.sel===1,
-               c:st.confirmQuit?"255;150;150":null});
-    rows.push({t:""});
-    rows.push({t:"　方向鍵：移動　空白鍵：交談/推進對話",c:"170;180;220"});
-    rows.push({t:"　M / Esc：選單　戰鬥：方向鍵+Enter 或 滑鼠點擊",c:"170;180;220"});
-    rows.push({t:"　旅店（瑪琳家）與神殿可免費全恢復",c:"170;180;220"});
-    if(enter&&st.sel===1){
-      if(!st.confirmQuit){st.confirmQuit=true;sfx("cancel.mp3");}
-      else{gdjs.evtTools.runtimeScene.replaceScene(rs,"Title",true);return;}
-    }
-    hint="↑↓ 選擇　Enter 執行　←→ 分頁　Esc 關閉";
+    renderPanel(rows,barsp,{title:TABS[st.tab],showFace:showFace,showArt:showArt,showMap:showMap,hint:hint,tab:null});
   }
-  renderPanel(rows,barsp,{title:"選單",showFace:showFace,showArt:showArt,showMap:showMap,hint:hint,
-    tab:TABS.map(function(t,i){return i===st.tab?"【"+t+"】":" "+t+" ";}).join("　")});
 } else if(st.shop){
   // ---------- 商店（買/賣兩頁籤，複用選單面板元件）----------
   lock=true;
+  (function(){var _mb=one("MenuBg");if(_mb)_mb.hide(true);for(var _tj=0;_tj<7;_tj++){var _to=one("MTop"+_tj);if(_to)_to.hide(true);}})();
   var shopDef=(CONTENT.shops||{})[st.shop.id]||{name:"商店",sell:[]};
   var fsh=flags();
   // 買清單：tier>=2 需第二章旗標 ch2（目前恆未進貨）
@@ -2229,8 +2380,9 @@ if(st.menu){
     renderPanel(rows,barsp,{title:shopDef.name,tab:tabStr,hint:shHint});
   }
 } else {
-  var hideM=["MenuPanel","MenuTitle","MenuTab","MenuHint","MenuFace","MenuArt","MenuMap"];
-  for(var hj=0;hj<20;hj++)hideM.push("MRow"+hj);
+  var hideM=["MenuPanel","MenuTitle","MenuTab","MenuHint","MenuFace","MenuArt","MenuMap","MenuBg"];
+  for(var hj=0;hj<64;hj++)hideM.push("MRow"+hj);
+  for(var hj=0;hj<7;hj++)hideM.push("MTop"+hj);
   hideM.forEach(function(n){var o=one(n);if(o)o.hide(true);});
   ["RowHi","BarBg","BarFill"].forEach(function(n){rs.getObjects(n).forEach(function(o){o.hide(true);});});
 }
@@ -2391,17 +2543,19 @@ if(CFG.pickups){
   }
 }
 
-// ---------- HUD ----------
+// ---------- HUD ----------（選單/商店開啟時隱藏，避免與頂框重疊）
+var _hudHide=(!!st.menu||!!st.shop);
 var hp=one("HudParty");
-if(hp){var ps=party();hp.setString(ps.map(function(m){derive(m);return m.name+" Lv"+m.lv+" "+m.hp+"/"+m.maxhp;}).join("   "));}
+if(hp){if(_hudHide)hp.hide(true);else{hp.hide(false);var ps=party();hp.setString(ps.map(function(m){derive(m);return m.name+" Lv"+m.lv+" "+m.hp+"/"+m.maxhp;}).join("   "));}}
 var hg=one("HudGold");
-if(hg){
+if(hg){if(_hudHide)hg.hide(true);else{hg.hide(false);
   var f12=flags();var eq=null;
   for(var i=0;i<TITLES.length;i++){if(TITLES[i].id===f12.eqTitle)eq=TITLES[i].name;}
   hg.setString((eq?"〈"+eq+"〉　":"")+"金幣 "+g.get("g_gold").getAsNumber()+"　[M]選單");
-}
+}}
 var goal=one("HudGoal");
-if(goal){
+if(goal&&_hudHide){goal.hide(true);}
+else if(goal){goal.hide(false);
   var t="";
   if(f.step===0&&CFG.SCENE==="Town")t="▶ 逛逛鎮子，準備好就從北出口前往礦山";
   else if(f.step===0)t="▶ 跟著亞倫深入礦山（往北）";
@@ -2480,6 +2634,9 @@ INT_DRAWN={
    "owners":[[0.46,0.56]],          # (walk 模式用) 緹娜站櫃檯後靠右端
    "entry":[0.68,0.66],"exit":[0.64,0.86,0.80],
    "mode":"menu"},                  # ★立繪＋選單式（不走動）：手繪背景＋緹娜大型立繪＋指令選單
+ # 其餘棟同款立繪＋選單式（指令由 buildIntCmds 依 DLG 動態生成、runIntCmd 執行）。
+ # 鐵匠鋪(smithy)有 2 owner(漢克+瑪莎)：進場顯示漢克立繪，交談時漢克講完接瑪莎，漢克的商店延到全員談完才開。
+ "inn":{"mode":"menu"},"shrine":{"mode":"menu"},"mayor":{"mode":"menu"},"shop":{"mode":"menu"},"smithy":{"mode":"menu"},
 }
 INT_DRAWN_DEFAULT={"room":[0.20,0.55,0.86,0.86],"furn":[],
    "owners":[[0.30,0.56]],"entry":[0.60,0.72],"exit":[0.44,0.74,0.80]}
@@ -2652,6 +2809,21 @@ function derive(m){
   m.dodgeV=Math.round(m.attrs.agi*d.dodgePerAgi)+eqStat(m,"dodge");
   m.critV=d.critBase+m.attrs.agi*d.critPerAgi+eqStat(m,"crit");
   m.spd=m.attrs.agi;
+  // ===== 真實系統：幸運 / 武器熟練度 / 屬性加護 / 特別加護 =====
+  var _def=null,_si;for(_si=0;_si<C.party.length;_si++){if(C.party[_si].id===m.id){_def=C.party[_si];break;}}
+  var _bl=(m.blessing&&(C.blessings||{})[m.blessing])||null;
+  var _lb=(_def&&_def.base&&_def.base.luck)||0,_lg=(_def&&_def.growth&&_def.growth.luck)||0;
+  m.luck=_lb+Math.floor(((m.lv||1)-1)*_lg)+eqStat(m,"luck")+((_bl&&_bl.stats&&_bl.stats.luck)||0);
+  if(!m.prof)m.prof={};
+  var _wid=m.eq&&m.eq.weapon;m.wtype=(_wid&&EQ[_wid]&&EQ[_wid].wtype)||null;
+  if(m.wtype)m.patk+=Math.floor((m.prof[m.wtype]||0)*(d.profAtkPer||0));
+  if(_bl&&_bl.stats){var _s=_bl.stats;
+    m.patk+=_s.patk||0;m.matk+=_s.matk||0;m.pdef+=_s.pdef||0;m.mdef+=_s.mdef||0;
+    m.dodgeV+=_s.dodge||0;m.critV+=_s.crit||0;m.maxhp+=_s.hp||0;m.maxmp+=_s.mp||0;}
+  var _EL=["earth","fire","wind","water","ice","thunder","light","dark"];
+  m.elem={};for(_si=0;_si<_EL.length;_si++){var _ek=_EL[_si];
+    m.elem[_ek]=((_def&&_def.elem&&_def.elem[_ek])||0)+eqStat(m,"el_"+_ek)+((_bl&&_bl.elem&&_bl.elem[_ek])||0);}
+  m.critV=Math.round((m.critV+m.luck*(d.critPerLuck||0))*10)/10;
   if(m.hp===undefined||m.hp>m.maxhp)m.hp=m.maxhp;
   if(m.mp===undefined||m.mp>m.maxmp)m.mp=m.maxmp;
   if(!m.sk){m.sk={};for(var i=0;i<C.skills.length;i++){var s=C.skills[i];
@@ -2670,6 +2842,15 @@ function skPow(a,sk){var slv=(a.sk&&a.sk[sk.id])||1;return 1+C.derived.skillPowe
 function skBase(a,sk){  // 技能以普攻數值為基礎：智力系吃魔攻、其餘吃物攻（敵人用 atk 折算）
   if(sk.attr==="int")return a.attrs?a.matk:Math.round((a.atk||0)*0.8);
   return a.attrs?a.patk:(a.atk||0);
+}
+// 元素倍率：攻擊者屬性加護 × 目標弱點/抗性（無 element 的技能回傳 1）
+function elemMul(a,t,sk){
+  if(!sk||!sk.element)return {m:1,weak:false,resist:false};
+  var d=C.derived,e=sk.element;
+  var aff=1+(((a.elem&&a.elem[e])||0)*(d.elemAffinityPer||0));
+  var wk=(t.weak||[]).indexOf(e)>=0, rs=(t.resist||[]).indexOf(e)>=0;
+  var wr=wk?(d.weakMul||1.5):(rs?(d.resistMul||0.5):1);
+  return {m:aff*wr,weak:wk,resist:rs};
 }
 var EXPSCALE=__EXPSCALE__;
 var ATB_K=1.05;   // ATB 速度：慢（Claude Design Tweaks 定案；waitMode=true 由狀態機天然實現）
@@ -2858,7 +3039,7 @@ function initB(){
     var t=byId[grp[i]];
     b.foes.push({id:t.id,name:t.name,sprite:t.sprite,hp:t.hp,maxhp:t.hp,atk:t.atk,def:t.def,
       spd:t.spd,exp:t.exp,gold:t.gold,big:!!t.big,healer:!!t.healer,allAttack:!!t.allAttack,
-      foeSkills:t.foeSkills||null,
+      foeSkills:t.foeSkills||null,weak:t.weak||[],resist:t.resist||[],
       drops:t.drops||[],side:"foe",slot:i,alive:true,atb:Math.random()*30});
   }
   // 陣型：前排（近我方）／後排；big（頭目級）預設後排、3 隻以上自動分兩排
@@ -2973,12 +3154,12 @@ function applyOne(ts){
     var t=ts[0];var pw=skPow(a,sk);var slv=(a.sk&&a.sk[sk.id])||1;
     var skTag="「"+sk.name+(slv>1?" Lv"+slv:"")+"」";
     if(sk.kind==="damage"){
-      var df=skDef(t,sk);
-      var dmg=Math.max(1,Math.round(((skBase(a,sk)*sk.mult+sk.flat)*pw-df*0.6)*(0.85+Math.random()*0.15)));
+      var df=skDef(t,sk);var em=elemMul(a,t,sk);
+      var dmg=Math.max(1,Math.round(((skBase(a,sk)*sk.mult+sk.flat)*pw-df*0.6)*em.m*(0.85+Math.random()*0.15)));
       t.hp-=dmg;sfx("magic.wav");sfx("hurt.wav");
       hitFx(a,t,sk.attr==="int"?"spark":"burst");
-      popDmg(t,String(dmg),"255;255;255");
-      msg=a.name+skTag+"！"+t.name+" 受到 "+dmg+" 傷害";kill(t);
+      popDmg(t,String(dmg)+(em.weak?"!":""),em.weak?"255;120;120":(em.resist?"170;190;220":"255;255;255"));
+      msg=a.name+skTag+"！"+t.name+" 受到 "+dmg+" 傷害"+(em.weak?"（弱點！）":(em.resist?"（抗性…）":""));kill(t);
     }else{
       var before=t.hp;t.hp=Math.min(t.maxhp,t.hp+Math.round((skBase(a,sk)*sk.mult+sk.flat)*pw));
       a.lungeT=0.22;fxShow("heal",t);
@@ -3005,11 +3186,12 @@ function applyAll(sk){
   var tot=0;var pw=skPow(a,sk);var slv=(a.sk&&a.sk[sk.id])||1;
   a.lungeT=0.28;
   for(var i=0;i<list.length;i++){
-    var dmg=Math.max(1,Math.round(((skBase(a,sk)*sk.mult+sk.flat)*pw-skDef(list[i],sk)*0.6)*(0.85+Math.random()*0.15)));
+    var em=elemMul(a,list[i],sk);
+    var dmg=Math.max(1,Math.round(((skBase(a,sk)*sk.mult+sk.flat)*pw-skDef(list[i],sk)*0.6)*em.m*(0.85+Math.random()*0.15)));
     list[i].hp-=dmg;tot+=dmg;
     list[i].shakeT=0.32;list[i].flashT=0.3;
     fxShow(sk.attr==="int"?"spark":"burst",list[i]);
-    popDmg(list[i],String(dmg),"255;255;255");
+    popDmg(list[i],String(dmg)+(em.weak?"!":""),em.weak?"255;120;120":(em.resist?"170;190;220":"255;255;255"));
     kill(list[i]);
   }
   sfx("magic.wav");sfx("hurt.wav");
@@ -3076,7 +3258,8 @@ function saveParty(){
     var h=b.heroes[i];
     for(var j=0;j<ps.length;j++){
       if(ps[j].id===h.id){ps[j].hp=Math.max(1,h.hp);ps[j].mp=h.mp;ps[j].lv=h.lv;ps[j].exp=h.exp;
-        ps[j].pts=h.pts;ps[j].spts=h.spts;ps[j].sk=h.sk;ps[j].eq=h.eq;ps[j].attrs=h.attrs;}
+        ps[j].pts=h.pts;ps[j].spts=h.spts;ps[j].sk=h.sk;ps[j].eq=h.eq;ps[j].attrs=h.attrs;
+        if(h.prof)ps[j].prof=h.prof; if(h.blessing!==undefined)ps[j].blessing=h.blessing;}
     }
   }
   setJ("g_party",ps);
@@ -3090,6 +3273,9 @@ function checkEnd(){
     for(var i=0;i<b.foes.length;i++){exp+=b.foes[i].exp;gold+=b.foes[i].gold;}
     // EXP 節奏：依 CONTENT.pacing 換算的地圖係數（農怪時間由 battles 參數控制）
     if(EXPSCALE[b.enc]!==undefined)exp=Math.max(1,Math.round(exp*EXPSCALE[b.enc]));
+    // 幸運：以隊伍最高幸運提升金幣報酬
+    var _maxLuck=0;for(var i=0;i<b.heroes.length;i++){if((b.heroes[i].luck||0)>_maxLuck)_maxLuck=b.heroes[i].luck||0;}
+    gold=Math.round(gold*(1+_maxLuck*(C.derived.luckRewardPer||0)));
     g.get("g_gold").setNumber(g.get("g_gold").getAsNumber()+gold);
     var gain=[];var anyUp=false,anyLearn=false;
     var members=b.heroes.filter(function(u){return !u.guest;});
@@ -3111,6 +3297,11 @@ function checkEnd(){
         gain.push(m.name+" 升級 Lv"+m.lv+"！"+(learned.length?"　習得『"+learned.join("』『")+"』！":""));
         if(learned.length)anyLearn=true;}
     }
+    // 武器熟練度：戰鬥後為所裝武器型別 +profPerBattle（上限 profMax）
+    for(var i=0;i<members.length;i++){var mm=members[i];
+      var _wid=mm.eq&&mm.eq.weapon,_wt=_wid&&EQ[_wid]&&EQ[_wid].wtype;
+      if(_wt){if(!mm.prof)mm.prof={};
+        mm.prof[_wt]=Math.min(C.derived.profMax||99,(mm.prof[_wt]||0)+(C.derived.profPerBattle||0));}}
     saveParty();
     var dropMsg="";
     // 敵人素材掉落：依 drops 機率加入背包
@@ -3437,7 +3628,8 @@ if(rs.__ts===0){
 
 # ================= 11. 專案組裝 =================
 resources=[res_("atlas.png","assets/map/atlas.png","image"),
-           res_("atlas_forest.png","assets/map/atlas_forest.png","image")]  # 森林專屬地面（anokolisa，art_v14 產）
+           res_("atlas_forest.png","assets/map/atlas_forest.png","image"),   # 森林專屬地面（anokolisa，art_v14 產）
+           res_("atlas_town.png","assets/map/atlas_town.png","image")]        # 城鎮專屬地面（anokolisa，art_v14 產）
 for t in ["town","forest","forest2","mine","cave"]:
     resources.append(res_(t+".tmj",f"assets/map/{t}.tmj","tilemap"))
 for f in sorted(os.listdir(f"{A}/char")):
