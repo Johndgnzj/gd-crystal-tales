@@ -51,11 +51,12 @@ STYLES = {
                  "plane, no drop shadow, no text, no letters, no numbers, no people. Building: "),
     # 室內背景大圖（水彩手繪，滿版場景，與立繪同一套風格 DNA；作立繪＋選單式室內背景）
     "interior": ("Hand-drawn watercolor, painterly JRPG interior background scene: fine and delicate "
-                 "line work, soft watercolor shading with gentle gradients and warm lantern light, "
-                 "warm color palette of creams, golds, warm woods and earthy reds (NOT flat cel "
-                 "blocks, NOT pixel art, NOT 3D). Cozy, richly detailed fantasy room with characterful "
-                 "furniture and props and atmospheric depth. Full-frame scene filling the whole image, "
-                 "no characters, no people, no text, no letters, no numbers, no watermark. Room: "),
+                 "line work, soft watercolor shading with gentle gradients (NOT flat cel blocks, NOT "
+                 "pixel art, NOT 3D). Color palette and lighting chosen to suit the room's own mood "
+                 "and materials (do not force warm tones). Richly detailed fantasy room with "
+                 "characterful furniture and props and atmospheric depth. Full-frame scene filling "
+                 "the whole image, no characters, no people, no text, no letters, no numbers, no "
+                 "watermark. Room: "),
     "raw": "",
 }
 ASPECT = {"face": "16:9", "battlebg": "16:9", "map": "16:9", "title": "16:9", "icon": "1:1",

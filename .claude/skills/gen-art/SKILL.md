@@ -26,7 +26,7 @@ python3 .claude/skills/gen-art/gen_image.py --type <類型> [--frame bust|full] 
 | `title` | 16:9 | 關鍵美術、無 logo 文字 | 縮 1280×720 替換 `assets/ui/menubg.png`（合成流程見 `scripts/art_v13_title.py`） |
 | `icon` | 1:1 | 置中主體、深底、無字 | 視用途 |
 | `building` | 1:1 | 45° 斜角像素建築外觀、洋紅底 #ff00ff 去背（地圖用，維持像素風不套水彩） | 去背後縮放置放於地圖 |
-| `interior` | 4:3 | **水彩手繪滿版室內場景**（與立繪同套風格）、暖色、無角色、無文字 | 存 `assets/map/int_<key>.png` → build 走 `_clean_ext` 產 `intc_<key>.png` 作立繪＋選單式室內背景 |
+| `interior` | 4:3 | **水彩手繪滿版室內場景**（與立繪同套技法）、色調隨房間氛圍決定、無角色、無文字 | 存 `assets/map/int_<key>.png` → build 走 `_clean_ext` 產 `intc_<key>.png` 作立繪＋選單式室內背景 |
 | `raw` | 自訂 `--ar` | 無前綴 | — |
 
 ## 角色立繪風格（統一方向；2026-07-13 依 `design/ref/role-design-*` 定調）

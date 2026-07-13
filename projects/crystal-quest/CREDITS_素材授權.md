@@ -40,11 +40,12 @@ LPC 角色產生器圖層合成（CC-BY-SA/GPL），圖層配方參考 overworld
 
 ## 對話立繪與戰鬥大圖
 - `assets/ui/face_*.png`（全 13 位：三主角＋十位鎮民）：AI 生成立繪
-  （Gemini gemini-2.5-flash-image，提示詞作者 John/協作 Agent，2026-07-12，
+  （Gemini gemini-2.5-flash-image，提示詞作者 John/協作 Agent，
   由 /gen-art skill 生成，原圖在 design/faces/、art_v7_faces.py 裁切縮圖）。
+  ※ 2026-07-13：十位鎮民立繪全數改「細線稿＋水彩手繪」風重生，配色改由角色設計各自決定（見 DESIGN §3）；三主角待重生。
   程式繪備用版可由 art_v4_portraits.py 重生。
 - `assets/ui/portrait_<id>.png`（室內立繪＋選單用的大型前景立繪）：由 design/faces 同一 AI 立繪，
-  以 art_v13_title.py 亮度鍵去深藍底＋羽化裁出（衍生自上者，授權相同）。目前有 portrait_tina（公會）。
+  以 art_v13_title.py 取四角背景色做色距去背＋羽化、裁至角色 bbox（衍生自上者，授權相同）。目前有 portrait_tina（公會，2026-07-13 隨新水彩立繪更新）。
 - `assets/battle/hero_*.png`：由 LPC 合成角色幀放大裁切（沿用 LPC CC-BY-SA/GPL 授權），
   武器圖層取自 LPC weapon walk（longsword/dagger/saber，CC-BY-SA/GPL）。
 - `assets/ui/battlebg_*.png`：程序化生成（自製）。
@@ -53,7 +54,9 @@ LPC 角色產生器圖層合成（CC-BY-SA/GPL），圖層配方參考 overworld
   build 時去洋紅底＋**統一石造重上色**（磚紅屋頂→深色石板、暖乳白牆→灰米石）產生衍生版 `extc_*.png`（自動生成、不入版控，見 build_cq2.py `_clean_ext(stone=True)`）。
 - `assets/props/f_*.png`（室內家具：床/桌椅/櫃架/櫃檯/壁爐/祭壇/鐵砧/武具架…）與
   `assets/props/int_room_wood/stone.png`（室內房間外殼）：**程序化像素繪製（自製，`art_v12_furniture.py` 以 PIL 繪，無授權限制）**。
-  室內改為「物件擺放式」後，舊的單張室內大圖 `int_<key>/intc_<key>.png` 已停用（不再註冊進 game.json，檔案暫留 design 備查）。
+- `assets/props/int_<key>.png`（六棟室內大圖：公會/旅店/神殿/鎮長宅/道具店/鐵匠鋪）：AI 生成素材
+  （Gemini gemini-2.5-flash-image，提示詞作者 John/協作 Agent，2026-07-13，由 /gen-art skill 的 interior type
+  「細線稿＋水彩手繪」風生成、色調隨房間氛圍決定）。現行室內為「立繪＋選單式」，build 去底產衍生版 `intc_<key>.png` 當手繪背景註冊進 game.json。
 - `assets/char/gray_*/guard_*.png`（老葛雷/羅素隊長 36 幀走路圖，戶外遊走 NPC）：
   LPC 角色產生器圖層合成（`art_v10_npcwalk.py`；body＋頭＋鬍/帽/鎖甲染色），授權同主角 **CC-BY-SA 3.0 / GPL 3.0**。
 - `assets/props/chest_closed.png`／`chest_opened.png`（地圖寶箱兩態）、`herb.png`（支線鏡草）、
