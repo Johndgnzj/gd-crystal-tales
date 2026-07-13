@@ -1,0 +1,18 @@
+<!-- @dsCard group="世界 UI" name="HUD（大地圖）" subtitle="隊伍狀態/目標/金幣+選單鍵" -->
+<!doctype html><html><head><meta charset="utf-8"><style>
+  html,body{margin:0;padding:0;background:#0d0f16;}
+  *{box-sizing:border-box;}
+  .wrap{width:640px;height:360px;overflow:hidden;border-radius:6px;}
+  .stage{width:1280px;height:720px;position:relative;transform:scale(.5);transform-origin:top left;
+         font-family:"Noto Sans TC",system-ui,sans-serif;font-weight:700;}
+  .px{image-rendering:pixelated;}
+  .panel{position:absolute;background-image:url(./assets/panel.png);background-size:100% 100%;}
+  .t{position:absolute;color:#fff;white-space:pre;line-height:1.25;
+      text-shadow:-2px 0 #0a0a14,2px 0 #0a0a14,0 -2px #0a0a14,0 2px #0a0a14,
+                  -2px -2px #0a0a14,2px -2px #0a0a14,-2px 2px #0a0a14,2px 2px #0a0a14;}
+</style></head><body><div class="wrap"><div class="stage">
+<img class="px" src="./assets/bg_town.png" style="position:absolute;width:1280px;height:720px;filter:brightness(.55)">
+<div class="t" style="left:20px;top:12px;font-size:20px">路德 Lv2 126/134　瑪琳 Lv1 70/70</div>
+<div class="t" style="left:20px;top:44px;font-size:22px;color:#AAE6AA">▶ 討伐東之森深處的哥布林頭目</div>
+<div class="t" style="left:900px;top:12px;font-size:20px;color:#FFE178">〈哥布林剋星〉　金幣 337　[M]選單</div>
+</div></div></body></html>

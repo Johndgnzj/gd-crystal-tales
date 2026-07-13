@@ -1,0 +1,19 @@
+<!-- @dsCard group="世界 UI" name="對話框＋立繪" subtitle="說話者立繪/名字金/內文28px/▽翻頁" -->
+<!doctype html><html><head><meta charset="utf-8"><style>
+  html,body{margin:0;padding:0;background:#0d0f16;}
+  *{box-sizing:border-box;}
+  .wrap{width:640px;height:360px;overflow:hidden;border-radius:6px;}
+  .stage{width:1280px;height:720px;position:relative;transform:scale(.5);transform-origin:top left;
+         font-family:"Noto Sans TC",system-ui,sans-serif;font-weight:700;}
+  .px{image-rendering:pixelated;}
+  .panel{position:absolute;background-image:url(./assets/panel.png);background-size:100% 100%;}
+  .t{position:absolute;color:#fff;white-space:pre;line-height:1.25;
+      text-shadow:-2px 0 #0a0a14,2px 0 #0a0a14,0 -2px #0a0a14,0 2px #0a0a14,
+                  -2px -2px #0a0a14,2px -2px #0a0a14,-2px 2px #0a0a14,2px 2px #0a0a14;}
+</style></head><body><div class="wrap"><div class="stage">
+<img class="px" src="./assets/bg_town.png" style="position:absolute;width:1280px;height:720px;filter:brightness(.55)">
+<img class="px" src="./assets/face_marin.png" style="position:absolute;left:70px;top:388px;width:144px;height:144px">
+<div class="panel" style="left:60px;top:540px;width:1160px;height:160px"></div>
+<div class="t" style="left:90px;top:556px;font-size:26px;color:#FFE178">瑪琳</div>
+<div class="t" style="left:90px;top:596px;font-size:28px">一個人？想得美。要去，就一起去。　▽</div>
+</div></div></body></html>

@@ -1,0 +1,28 @@
+# === 機密（絕不入 repo）===
+.env
+*.env
+!.env.example
+
+# === 大型第三方工具（各有自己的 .git、可重新取得，不納入本 repo）===
+# LPC 角色產生器完整 clone（~780MB）；還原見 README_安裝與使用.md（git clone --depth 1）
+tools/lpc/
+# gdevelop-mcp（獨立專案、另有自己的 .git 與 node_modules）
+gdevelop-mcp/
+
+# === 依賴 / 建置產物 ===
+node_modules/
+builds/
+*.zip
+dist/
+
+# === Python 快取 ===
+__pycache__/
+*.pyc
+*.pyo
+
+# === 系統 / 編輯器 ===
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/

@@ -1,0 +1,29 @@
+<!-- @dsCard group="戰鬥 UI" name="戰鬥 UI" subtitle="訊息列/指令2x2/隊伍狀態/目標游標" -->
+<!doctype html><html><head><meta charset="utf-8"><style>
+  html,body{margin:0;padding:0;background:#0d0f16;}
+  *{box-sizing:border-box;}
+  .wrap{width:640px;height:360px;overflow:hidden;border-radius:6px;}
+  .stage{width:1280px;height:720px;position:relative;transform:scale(.5);transform-origin:top left;
+         font-family:"Noto Sans TC",system-ui,sans-serif;font-weight:700;}
+  .px{image-rendering:pixelated;}
+  .panel{position:absolute;background-image:url(./assets/panel.png);background-size:100% 100%;}
+  .t{position:absolute;color:#fff;white-space:pre;line-height:1.25;
+      text-shadow:-2px 0 #0a0a14,2px 0 #0a0a14,0 -2px #0a0a14,0 2px #0a0a14,
+                  -2px -2px #0a0a14,2px -2px #0a0a14,-2px 2px #0a0a14,2px 2px #0a0a14;}
+</style></head><body><div class="wrap"><div class="stage">
+<img class="px" src="./assets/battlebg.png" style="position:absolute;width:1280px;height:720px">
+<img class="px" src="./assets/goblin.png" style="position:absolute;left:252px;top:202px;width:96px;height:96px">
+<div class="t" style="left:200px;top:302px;font-size:20px;width:200px;text-align:center;color:#FFEB78">哥布林拾荒者</div>
+<img class="px" src="./assets/cursor.png" style="position:absolute;left:352px;top:230px;width:40px;height:40px">
+<img class="px" src="./assets/hero_ludo.png" style="position:absolute;left:1026px;top:100px;height:130px">
+<div class="panel" style="left:40px;top:16px;width:1200px;height:62px"></div>
+<div class="t" style="left:60px;top:30px;font-size:30px">選擇攻擊目標（←→ 切換、Enter 確定、Esc 返回）</div>
+<div class="panel" style="left:40px;top:566px;width:520px;height:146px"></div>
+<div class="panel" style="left:575px;top:566px;width:665px;height:146px"></div>
+<div class="t" style="left:90px;top:596px;font-size:28px;color:#FFEB78">攻擊</div>
+<div class="t" style="left:300px;top:596px;font-size:28px">技能</div>
+<div class="t" style="left:90px;top:652px;font-size:28px">道具</div>
+<div class="t" style="left:300px;top:652px;font-size:28px">逃跑</div>
+<div class="t" style="left:592px;top:578px;font-size:21px;color:#FFEB78">路德 Lv2  HP 126/134  MP 33/33</div>
+<div class="t" style="left:592px;top:612px;font-size:21px">瑪琳 Lv1  HP 70/70  MP 38/38</div>
+</div></div></body></html>

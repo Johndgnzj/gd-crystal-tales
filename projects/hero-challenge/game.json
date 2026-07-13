@@ -1,0 +1,4125 @@
+{
+  "firstLayout": "Menu",
+  "gdVersion": {
+    "major": 5,
+    "minor": 6,
+    "build": 268,
+    "revision": 0
+  },
+  "properties": {
+    "adaptGameResolutionAtRuntime": true,
+    "antialiasingMode": "MSAA",
+    "antialisingEnabledOnMobile": false,
+    "folderProject": false,
+    "orientation": "landscape",
+    "packageName": "com.wising.herochallenge",
+    "pixelsRounding": false,
+    "projectUuid": "b9ecb78d-fbfd-4c6a-90b8-98f4e4b728d9",
+    "scaleMode": "linear",
+    "sizeOnStartupMode": "adaptWidth",
+    "templateSlug": "",
+    "version": "1.0.0",
+    "name": "點點英雄大派對",
+    "description": "HTML 版 Hero Challenge 移植",
+    "author": "John Chou",
+    "windowWidth": 1280,
+    "windowHeight": 720,
+    "latestCompilationDirectory": "",
+    "maxFPS": 60,
+    "minFPS": 20,
+    "verticalSync": false,
+    "platformSpecificAssets": {},
+    "loadingScreen": {
+      "backgroundColor": 0,
+      "backgroundFadeInDuration": 0.2,
+      "backgroundImageResourceName": "",
+      "gdevelopLogoStyle": "light",
+      "logoAndProgressFadeInDuration": 0.2,
+      "logoAndProgressLogoFadeInDelay": 0,
+      "minDuration": 1.5,
+      "progressBarColor": 16777215,
+      "progressBarHeight": 20,
+      "progressBarMaxWidth": 200,
+      "progressBarMinWidth": 40,
+      "progressBarWidthPercent": 30,
+      "showGDevelopSplash": true,
+      "showProgressBar": true
+    },
+    "watermark": {
+      "placement": "bottom-left",
+      "showWatermark": true
+    },
+    "authorIds": [],
+    "authorUsernames": [],
+    "categories": [],
+    "playableDevices": [],
+    "extensionProperties": [],
+    "platforms": [
+      {
+        "name": "GDevelop JS platform"
+      }
+    ],
+    "currentPlatform": "GDevelop JS platform"
+  },
+  "resources": {
+    "resources": [
+      {
+        "alwaysLoaded": false,
+        "file": "assets/background-landscape.jpg",
+        "kind": "image",
+        "metadata": "",
+        "name": "background-landscape.jpg",
+        "userAdded": true,
+        "smoothed": true
+      },
+      {
+        "alwaysLoaded": false,
+        "file": "assets/background-intro.jpg",
+        "kind": "image",
+        "metadata": "",
+        "name": "background-intro.jpg",
+        "userAdded": true,
+        "smoothed": true
+      },
+      {
+        "alwaysLoaded": false,
+        "file": "assets/ultraman.png",
+        "kind": "image",
+        "metadata": "",
+        "name": "ultraman.png",
+        "userAdded": true,
+        "smoothed": true
+      },
+      {
+        "alwaysLoaded": false,
+        "file": "assets/melody.png",
+        "kind": "image",
+        "metadata": "",
+        "name": "melody.png",
+        "userAdded": true,
+        "smoothed": true
+      },
+      {
+        "alwaysLoaded": false,
+        "file": "assets/spiderman-skill.png",
+        "kind": "image",
+        "metadata": "",
+        "name": "spiderman-skill.png",
+        "userAdded": true,
+        "smoothed": true
+      },
+      {
+        "alwaysLoaded": false,
+        "file": "assets/kuromi-skill.png",
+        "kind": "image",
+        "metadata": "",
+        "name": "kuromi-skill.png",
+        "userAdded": true,
+        "smoothed": true
+      },
+      {
+        "alwaysLoaded": false,
+        "file": "assets/spiderman-block.png",
+        "kind": "image",
+        "metadata": "",
+        "name": "spiderman-block.png",
+        "userAdded": true,
+        "smoothed": true
+      },
+      {
+        "alwaysLoaded": false,
+        "file": "assets/kuromi-block.png",
+        "kind": "image",
+        "metadata": "",
+        "name": "kuromi-block.png",
+        "userAdded": true,
+        "smoothed": true
+      },
+      {
+        "alwaysLoaded": false,
+        "file": "assets/btn.png",
+        "kind": "image",
+        "metadata": "",
+        "name": "btn.png",
+        "userAdded": true,
+        "smoothed": true
+      },
+      {
+        "alwaysLoaded": false,
+        "file": "assets/overlay.png",
+        "kind": "image",
+        "metadata": "",
+        "name": "overlay.png",
+        "userAdded": true,
+        "smoothed": true
+      },
+      {
+        "alwaysLoaded": false,
+        "file": "assets/hudbar.png",
+        "kind": "image",
+        "metadata": "",
+        "name": "hudbar.png",
+        "userAdded": true,
+        "smoothed": true
+      },
+      {
+        "alwaysLoaded": false,
+        "file": "assets/divider.png",
+        "kind": "image",
+        "metadata": "",
+        "name": "divider.png",
+        "userAdded": true,
+        "smoothed": true
+      },
+      {
+        "alwaysLoaded": false,
+        "file": "assets/ring.png",
+        "kind": "image",
+        "metadata": "",
+        "name": "ring.png",
+        "userAdded": true,
+        "smoothed": true
+      },
+      {
+        "alwaysLoaded": false,
+        "file": "assets/barbg.png",
+        "kind": "image",
+        "metadata": "",
+        "name": "barbg.png",
+        "userAdded": true,
+        "smoothed": true
+      },
+      {
+        "alwaysLoaded": false,
+        "file": "assets/bar-blue.png",
+        "kind": "image",
+        "metadata": "",
+        "name": "bar-blue.png",
+        "userAdded": true,
+        "smoothed": true
+      },
+      {
+        "alwaysLoaded": false,
+        "file": "assets/bar-pink.png",
+        "kind": "image",
+        "metadata": "",
+        "name": "bar-pink.png",
+        "userAdded": true,
+        "smoothed": true
+      },
+      {
+        "alwaysLoaded": false,
+        "file": "assets/bgm-solo.mp3",
+        "kind": "audio",
+        "metadata": "",
+        "name": "bgm-solo.mp3",
+        "userAdded": true
+      },
+      {
+        "alwaysLoaded": false,
+        "file": "assets/bgm-duo.mp3",
+        "kind": "audio",
+        "metadata": "",
+        "name": "bgm-duo.mp3",
+        "userAdded": true
+      },
+      {
+        "alwaysLoaded": false,
+        "file": "assets/hit.mp3",
+        "kind": "audio",
+        "metadata": "",
+        "name": "hit.mp3",
+        "userAdded": true
+      },
+      {
+        "alwaysLoaded": false,
+        "file": "assets/gameover.mp3",
+        "kind": "audio",
+        "metadata": "",
+        "name": "gameover.mp3",
+        "userAdded": true
+      }
+    ]
+  },
+  "usedResources": [],
+  "objects": [],
+  "objectsFolderStructure": {
+    "folderName": "__ROOT"
+  },
+  "objectsGroups": [],
+  "variables": [
+    {
+      "name": "g_pick",
+      "type": "string",
+      "value": "u"
+    },
+    {
+      "name": "g_time",
+      "type": "number",
+      "value": 30
+    }
+  ],
+  "layouts": [
+    {
+      "b": 17,
+      "r": 6,
+      "v": 6,
+      "disableInputWhenNotFocused": false,
+      "mangledName": "Menu",
+      "name": "Menu",
+      "standardSortMethod": true,
+      "stopSoundsOnStartup": true,
+      "title": "",
+      "uiSettings": {},
+      "variables": [],
+      "instances": [
+        {
+          "angle": 0,
+          "customSize": true,
+          "height": 720,
+          "layer": "",
+          "locked": false,
+          "name": "MenuBg",
+          "persistentUuid": "2a7d64ff-bacc-46f4-8d1a-15362adf1dcc",
+          "width": 1280,
+          "x": 0,
+          "y": 0,
+          "zOrder": 0,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": true,
+          "height": 0,
+          "layer": "",
+          "locked": false,
+          "name": "Title",
+          "persistentUuid": "041a94d2-bace-4e80-8871-3695fcf34d57",
+          "width": 800,
+          "x": 240,
+          "y": 50,
+          "zOrder": 1,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": false,
+          "height": 0,
+          "layer": "",
+          "locked": false,
+          "name": "PickLabel",
+          "persistentUuid": "60d9819b-72de-4907-9d19-4dba5f6150ed",
+          "width": 0,
+          "x": 585,
+          "y": 150,
+          "zOrder": 1,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": true,
+          "height": 130,
+          "layer": "",
+          "locked": false,
+          "name": "BtnHeroU",
+          "persistentUuid": "d6be73be-cbc1-4056-914f-0bad7e7c0f05",
+          "width": 130,
+          "x": 480,
+          "y": 200,
+          "zOrder": 2,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": true,
+          "height": 130,
+          "layer": "",
+          "locked": false,
+          "name": "BtnHeroM",
+          "persistentUuid": "0b4cfe6b-fd42-40bd-adc9-7f79739cbe0e",
+          "width": 130,
+          "x": 670,
+          "y": 200,
+          "zOrder": 2,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": true,
+          "height": 160,
+          "layer": "",
+          "locked": false,
+          "name": "SelRing",
+          "persistentUuid": "e6cae2c0-7acb-425f-8d3e-7535e7873f6b",
+          "width": 160,
+          "x": 465,
+          "y": 185,
+          "zOrder": 3,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": false,
+          "height": 0,
+          "layer": "",
+          "locked": false,
+          "name": "BtnTime",
+          "persistentUuid": "eaf380da-2544-4dbd-ac4c-767b080b5e0f",
+          "width": 0,
+          "x": 460,
+          "y": 380,
+          "zOrder": 2,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": false,
+          "height": 0,
+          "layer": "",
+          "locked": false,
+          "name": "TxtTime",
+          "persistentUuid": "19075639-d221-420c-92a4-0cd99f7c7feb",
+          "width": 0,
+          "x": 528,
+          "y": 402,
+          "zOrder": 3,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": false,
+          "height": 0,
+          "layer": "",
+          "locked": false,
+          "name": "BtnSolo",
+          "persistentUuid": "630ad894-3d85-49df-8b07-b77e73773254",
+          "width": 0,
+          "x": 460,
+          "y": 490,
+          "zOrder": 2,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": false,
+          "height": 0,
+          "layer": "",
+          "locked": false,
+          "name": "TxtSolo",
+          "persistentUuid": "ba0c6dbf-0d8f-4c01-a54c-acd724a11f86",
+          "width": 0,
+          "x": 542,
+          "y": 510,
+          "zOrder": 3,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": false,
+          "height": 0,
+          "layer": "",
+          "locked": false,
+          "name": "BtnDuo",
+          "persistentUuid": "6c762b37-61ad-4aa3-8a73-ca8c66901f31",
+          "width": 0,
+          "x": 460,
+          "y": 600,
+          "zOrder": 2,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": false,
+          "height": 0,
+          "layer": "",
+          "locked": false,
+          "name": "TxtDuo",
+          "persistentUuid": "94f3bd73-c2aa-4aab-916e-e5455fb33be6",
+          "width": 0,
+          "x": 542,
+          "y": 620,
+          "zOrder": 3,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        }
+      ],
+      "objects": [
+        {
+          "name": "MenuBg",
+          "type": "Sprite",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "adaptCollisionMaskAutomatically": false,
+          "updateIfNotVisible": false,
+          "animations": [
+            {
+              "name": "idle",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 1,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "background-intro.jpg",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "type": "TextObject::Text",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "content": {
+            "text": "點點英雄大派對",
+            "font": "",
+            "characterSize": 64,
+            "color": "255;255;255",
+            "bold": true,
+            "italic": false,
+            "underlined": false,
+            "smoothed": true,
+            "textAlignment": "center",
+            "verticalTextAlignment": "top",
+            "isOutlineEnabled": true,
+            "outlineColor": "20;20;60",
+            "outlineThickness": 3,
+            "isShadowEnabled": false,
+            "shadowColor": "0;0;0",
+            "shadowOpacity": 127,
+            "shadowDistance": 3,
+            "shadowAngle": 90,
+            "shadowBlurRadius": 2
+          }
+        },
+        {
+          "name": "PickLabel",
+          "type": "TextObject::Text",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "content": {
+            "text": "選擇英雄",
+            "font": "",
+            "characterSize": 28,
+            "color": "251;191;36",
+            "bold": true,
+            "italic": false,
+            "underlined": false,
+            "smoothed": true,
+            "textAlignment": "left",
+            "verticalTextAlignment": "top",
+            "isOutlineEnabled": false,
+            "outlineColor": "0;0;0",
+            "outlineThickness": 3,
+            "isShadowEnabled": false,
+            "shadowColor": "0;0;0",
+            "shadowOpacity": 127,
+            "shadowDistance": 3,
+            "shadowAngle": 90,
+            "shadowBlurRadius": 2
+          }
+        },
+        {
+          "name": "BtnHeroU",
+          "type": "Sprite",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "adaptCollisionMaskAutomatically": false,
+          "updateIfNotVisible": false,
+          "animations": [
+            {
+              "name": "idle",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 1,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "ultraman.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "BtnHeroM",
+          "type": "Sprite",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "adaptCollisionMaskAutomatically": false,
+          "updateIfNotVisible": false,
+          "animations": [
+            {
+              "name": "idle",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 1,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "melody.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "SelRing",
+          "type": "Sprite",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "adaptCollisionMaskAutomatically": false,
+          "updateIfNotVisible": false,
+          "animations": [
+            {
+              "name": "idle",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 1,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "ring.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "BtnTime",
+          "type": "Sprite",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "adaptCollisionMaskAutomatically": false,
+          "updateIfNotVisible": false,
+          "animations": [
+            {
+              "name": "idle",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 1,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "btn.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "TxtTime",
+          "type": "TextObject::Text",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "content": {
+            "text": "時間：30 秒",
+            "font": "",
+            "characterSize": 32,
+            "color": "40;25;0",
+            "bold": true,
+            "italic": false,
+            "underlined": false,
+            "smoothed": true,
+            "textAlignment": "left",
+            "verticalTextAlignment": "top",
+            "isOutlineEnabled": false,
+            "outlineColor": "0;0;0",
+            "outlineThickness": 3,
+            "isShadowEnabled": false,
+            "shadowColor": "0;0;0",
+            "shadowOpacity": 127,
+            "shadowDistance": 3,
+            "shadowAngle": 90,
+            "shadowBlurRadius": 2
+          }
+        },
+        {
+          "name": "BtnSolo",
+          "type": "Sprite",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "adaptCollisionMaskAutomatically": false,
+          "updateIfNotVisible": false,
+          "animations": [
+            {
+              "name": "idle",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 1,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "btn.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "TxtSolo",
+          "type": "TextObject::Text",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "content": {
+            "text": "▶ 單人挑戰",
+            "font": "",
+            "characterSize": 34,
+            "color": "40;25;0",
+            "bold": true,
+            "italic": false,
+            "underlined": false,
+            "smoothed": true,
+            "textAlignment": "left",
+            "verticalTextAlignment": "top",
+            "isOutlineEnabled": false,
+            "outlineColor": "0;0;0",
+            "outlineThickness": 3,
+            "isShadowEnabled": false,
+            "shadowColor": "0;0;0",
+            "shadowOpacity": 127,
+            "shadowDistance": 3,
+            "shadowAngle": 90,
+            "shadowBlurRadius": 2
+          }
+        },
+        {
+          "name": "BtnDuo",
+          "type": "Sprite",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "adaptCollisionMaskAutomatically": false,
+          "updateIfNotVisible": false,
+          "animations": [
+            {
+              "name": "idle",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 1,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "btn.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "TxtDuo",
+          "type": "TextObject::Text",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "content": {
+            "text": "▶ 雙人對戰",
+            "font": "",
+            "characterSize": 34,
+            "color": "40;25;0",
+            "bold": true,
+            "italic": false,
+            "underlined": false,
+            "smoothed": true,
+            "textAlignment": "left",
+            "verticalTextAlignment": "top",
+            "isOutlineEnabled": false,
+            "outlineColor": "0;0;0",
+            "outlineThickness": 3,
+            "isShadowEnabled": false,
+            "shadowColor": "0;0;0",
+            "shadowOpacity": 127,
+            "shadowDistance": 3,
+            "shadowAngle": 90,
+            "shadowBlurRadius": 2
+          }
+        }
+      ],
+      "objectsFolderStructure": {
+        "folderName": "__ROOT"
+      },
+      "objectsGroups": [],
+      "events": [
+        {
+          "type": "BuiltinCommonInstructions::JsCode",
+          "inlineCode": "\nconst scene = runtimeScene;\nconst g = scene.getGame().getVariables();\nconst im = scene.getGame().getInputManager();\nconst one = n => scene.getObjects(n)[0];\nconst setTxt = (n, s) => { const o = one(n); if (o) o.setString(s); };\n// 讓選擇圈跟著目前英雄\nconst ring = one(\"SelRing\");\nif (ring) {\n  const target = g.get(\"g_pick\").getAsString() === \"m\" ? one(\"BtnHeroM\") : one(\"BtnHeroU\");\n  if (target) { ring.setX(target.getX()-15); ring.setY(target.getY()-15); }\n}\nfor (const id of im.getStartedTouchIdentifiers()) {\n  const x = im.getTouchX(id), y = im.getTouchY(id);\n  const hit = n => { const o = one(n); return o && o.insideObject(x, y); };\n  if (hit(\"BtnHeroU\")) g.get(\"g_pick\").setString(\"u\");\n  else if (hit(\"BtnHeroM\")) g.get(\"g_pick\").setString(\"m\");\n  else if (hit(\"BtnTime\")) {\n    const cyc = {30: 45, 45: 60, 60: 30};\n    const t = cyc[g.get(\"g_time\").getAsNumber()] || 30;\n    g.get(\"g_time\").setNumber(t);\n    setTxt(\"TxtTime\", \"時間：\" + t + \" 秒\");\n  } else if (hit(\"BtnSolo\")) gdjs.evtTools.runtimeScene.replaceScene(scene, \"Solo\", true);\n  else if (hit(\"BtnDuo\")) gdjs.evtTools.runtimeScene.replaceScene(scene, \"Duo\", true);\n}\n",
+          "parameterObjects": "",
+          "useStrict": true,
+          "eventsSheetExpanded": false
+        }
+      ],
+      "layers": [
+        {
+          "ambientLightColorB": 32,
+          "ambientLightColorG": 32,
+          "ambientLightColorR": 32,
+          "camera3DFarPlaneDistance": 10000,
+          "camera3DFieldOfView": 45,
+          "camera3DNearPlaneDistance": 0.1,
+          "followBaseLayerCamera": false,
+          "isLightingLayer": false,
+          "isLocked": false,
+          "name": "",
+          "renderingType": "",
+          "visibility": true,
+          "effects": [],
+          "cameras": [
+            {
+              "defaultSize": true,
+              "defaultViewport": true,
+              "height": 0,
+              "width": 0,
+              "viewportBottom": 1,
+              "viewportLeft": 0,
+              "viewportRight": 1,
+              "viewportTop": 0
+            }
+          ]
+        },
+        {
+          "ambientLightColorB": 32,
+          "ambientLightColorG": 32,
+          "ambientLightColorR": 32,
+          "camera3DFarPlaneDistance": 10000,
+          "camera3DFieldOfView": 45,
+          "camera3DNearPlaneDistance": 0.1,
+          "followBaseLayerCamera": false,
+          "isLightingLayer": false,
+          "isLocked": false,
+          "name": "UI",
+          "renderingType": "",
+          "visibility": true,
+          "effects": [],
+          "cameras": [
+            {
+              "defaultSize": true,
+              "defaultViewport": true,
+              "height": 0,
+              "width": 0,
+              "viewportBottom": 1,
+              "viewportLeft": 0,
+              "viewportRight": 1,
+              "viewportTop": 0
+            }
+          ]
+        }
+      ],
+      "behaviorsSharedData": [],
+      "usedResources": []
+    },
+    {
+      "b": 17,
+      "r": 6,
+      "v": 6,
+      "disableInputWhenNotFocused": false,
+      "mangledName": "Solo",
+      "name": "Solo",
+      "standardSortMethod": true,
+      "stopSoundsOnStartup": true,
+      "title": "",
+      "uiSettings": {},
+      "variables": [
+        {
+          "name": "Score",
+          "type": "number",
+          "value": 0
+        },
+        {
+          "name": "Energy",
+          "type": "number",
+          "value": 0
+        },
+        {
+          "name": "TimeLeft",
+          "type": "number",
+          "value": 0
+        },
+        {
+          "name": "Phase",
+          "type": "string",
+          "value": "init"
+        },
+        {
+          "name": "SkillLeft",
+          "type": "number",
+          "value": 0
+        },
+        {
+          "name": "SpawnAcc",
+          "type": "number",
+          "value": 0
+        }
+      ],
+      "instances": [
+        {
+          "angle": 0,
+          "customSize": true,
+          "height": 720,
+          "layer": "",
+          "locked": false,
+          "name": "Bg",
+          "persistentUuid": "e8d6d6db-5bac-48bb-8fbf-ef2215d6b1c9",
+          "width": 1280,
+          "x": 0,
+          "y": 0,
+          "zOrder": 0,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": true,
+          "height": 0,
+          "layer": "",
+          "locked": false,
+          "name": "TimerTxt",
+          "persistentUuid": "d8e600c4-8bf7-4bb6-83d7-f5ca6b97eaef",
+          "width": 200,
+          "x": 540,
+          "y": 16,
+          "zOrder": 10,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": true,
+          "height": 400,
+          "layer": "",
+          "locked": false,
+          "name": "SkillFx",
+          "persistentUuid": "2dac4724-0125-490a-8248-a5245f576806",
+          "width": 400,
+          "x": 440,
+          "y": 140,
+          "zOrder": 15,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": true,
+          "height": 0,
+          "layer": "",
+          "locked": false,
+          "name": "SkillLabel",
+          "persistentUuid": "96952fea-b925-457e-a1df-408fe00e0f37",
+          "width": 300,
+          "x": 490,
+          "y": 560,
+          "zOrder": 15,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": true,
+          "height": 104,
+          "layer": "",
+          "locked": false,
+          "name": "HudBar",
+          "persistentUuid": "f027a85e-a33a-49f2-93e8-e9c5669a94b1",
+          "width": 1280,
+          "x": 0,
+          "y": 616,
+          "zOrder": 20,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": true,
+          "height": 88,
+          "layer": "",
+          "locked": false,
+          "name": "Avatar",
+          "persistentUuid": "364c4460-e2e9-4edb-8fe3-87cd8b5fdb07",
+          "width": 88,
+          "x": 250,
+          "y": 624,
+          "zOrder": 21,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": false,
+          "height": 0,
+          "layer": "",
+          "locked": false,
+          "name": "ScoreTxt",
+          "persistentUuid": "babea120-cc45-4993-b7c3-2eac6e9bd632",
+          "width": 0,
+          "x": 360,
+          "y": 636,
+          "zOrder": 21,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": false,
+          "height": 0,
+          "layer": "",
+          "locked": false,
+          "name": "BarBg",
+          "persistentUuid": "454fac0e-e5be-40f4-aa1b-364955d724eb",
+          "width": 0,
+          "x": 480,
+          "y": 656,
+          "zOrder": 21,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": false,
+          "height": 0,
+          "layer": "",
+          "locked": false,
+          "name": "EnergyBar",
+          "persistentUuid": "22410e44-63b4-4895-97b7-41b3640c1f5b",
+          "width": 0,
+          "x": 484,
+          "y": 660,
+          "zOrder": 22,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": true,
+          "height": 96,
+          "layer": "",
+          "locked": false,
+          "name": "SkillBtn",
+          "persistentUuid": "923fc12a-8058-46d7-a6b2-289a653fa1b7",
+          "width": 96,
+          "x": 1160,
+          "y": 620,
+          "zOrder": 21,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": true,
+          "height": 720,
+          "layer": "UI",
+          "locked": false,
+          "name": "OverlayBg",
+          "persistentUuid": "a215631e-7952-4410-935e-d90281fa6f95",
+          "width": 1280,
+          "x": 0,
+          "y": 0,
+          "zOrder": 50,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": true,
+          "height": 0,
+          "layer": "UI",
+          "locked": false,
+          "name": "ResultTitle",
+          "persistentUuid": "1c52a56a-57e7-41e1-b984-3607099ffed5",
+          "width": 600,
+          "x": 340,
+          "y": 200,
+          "zOrder": 51,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": true,
+          "height": 0,
+          "layer": "UI",
+          "locked": false,
+          "name": "ResultScore",
+          "persistentUuid": "d5cb7641-87a9-48c3-8ce5-a046474c4314",
+          "width": 400,
+          "x": 440,
+          "y": 290,
+          "zOrder": 51,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": false,
+          "height": 0,
+          "layer": "UI",
+          "locked": false,
+          "name": "BtnRestart",
+          "persistentUuid": "e4c10be6-5799-4924-9c3a-f220dfa072e2",
+          "width": 0,
+          "x": 460,
+          "y": 450,
+          "zOrder": 51,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": false,
+          "height": 0,
+          "layer": "UI",
+          "locked": false,
+          "name": "TxtRestart",
+          "persistentUuid": "0a24c209-9332-48e0-a707-70baab18fc02",
+          "width": 0,
+          "x": 560,
+          "y": 468,
+          "zOrder": 52,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": false,
+          "height": 0,
+          "layer": "UI",
+          "locked": false,
+          "name": "BtnMenu",
+          "persistentUuid": "3fa2f51b-70d8-4f11-9e94-0745e8082079",
+          "width": 0,
+          "x": 460,
+          "y": 570,
+          "zOrder": 51,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": false,
+          "height": 0,
+          "layer": "UI",
+          "locked": false,
+          "name": "TxtMenu",
+          "persistentUuid": "57c9fcbe-c20e-44e1-ba94-37e98db09ee0",
+          "width": 0,
+          "x": 578,
+          "y": 588,
+          "zOrder": 52,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        }
+      ],
+      "objects": [
+        {
+          "name": "Bg",
+          "type": "Sprite",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "adaptCollisionMaskAutomatically": false,
+          "updateIfNotVisible": false,
+          "animations": [
+            {
+              "name": "idle",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 1,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "background-landscape.jpg",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Item",
+          "type": "Sprite",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "adaptCollisionMaskAutomatically": false,
+          "updateIfNotVisible": false,
+          "animations": [
+            {
+              "name": "u",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 1,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "ultraman.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "m",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 1,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "melody.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "HudBar",
+          "type": "Sprite",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "adaptCollisionMaskAutomatically": false,
+          "updateIfNotVisible": false,
+          "animations": [
+            {
+              "name": "idle",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 1,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "hudbar.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Avatar",
+          "type": "Sprite",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "adaptCollisionMaskAutomatically": false,
+          "updateIfNotVisible": false,
+          "animations": [
+            {
+              "name": "u",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 1,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "ultraman.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "m",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 1,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "melody.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "ScoreTxt",
+          "type": "TextObject::Text",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "content": {
+            "text": "0",
+            "font": "",
+            "characterSize": 56,
+            "color": "96;165;250",
+            "bold": true,
+            "italic": false,
+            "underlined": false,
+            "smoothed": true,
+            "textAlignment": "left",
+            "verticalTextAlignment": "top",
+            "isOutlineEnabled": true,
+            "outlineColor": "0;0;0",
+            "outlineThickness": 3,
+            "isShadowEnabled": false,
+            "shadowColor": "0;0;0",
+            "shadowOpacity": 127,
+            "shadowDistance": 3,
+            "shadowAngle": 90,
+            "shadowBlurRadius": 2
+          }
+        },
+        {
+          "name": "BarBg",
+          "type": "Sprite",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "adaptCollisionMaskAutomatically": false,
+          "updateIfNotVisible": false,
+          "animations": [
+            {
+              "name": "idle",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 1,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "barbg.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "EnergyBar",
+          "type": "Sprite",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "adaptCollisionMaskAutomatically": false,
+          "updateIfNotVisible": false,
+          "animations": [
+            {
+              "name": "u",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 1,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "bar-blue.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "m",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 1,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "bar-pink.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "SkillBtn",
+          "type": "Sprite",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "adaptCollisionMaskAutomatically": false,
+          "updateIfNotVisible": false,
+          "animations": [
+            {
+              "name": "u",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 1,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "spiderman-skill.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "m",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 1,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "kuromi-skill.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "SkillFx",
+          "type": "Sprite",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "adaptCollisionMaskAutomatically": false,
+          "updateIfNotVisible": false,
+          "animations": [
+            {
+              "name": "u",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 1,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "spiderman-skill.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "m",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 1,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "kuromi-skill.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "SkillLabel",
+          "type": "TextObject::Text",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "content": {
+            "text": "SKILL ACTIVE",
+            "font": "",
+            "characterSize": 26,
+            "color": "251;191;36",
+            "bold": true,
+            "italic": false,
+            "underlined": false,
+            "smoothed": true,
+            "textAlignment": "center",
+            "verticalTextAlignment": "top",
+            "isOutlineEnabled": false,
+            "outlineColor": "0;0;0",
+            "outlineThickness": 3,
+            "isShadowEnabled": false,
+            "shadowColor": "0;0;0",
+            "shadowOpacity": 127,
+            "shadowDistance": 3,
+            "shadowAngle": 90,
+            "shadowBlurRadius": 2
+          }
+        },
+        {
+          "name": "TimerTxt",
+          "type": "TextObject::Text",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "content": {
+            "text": "30",
+            "font": "",
+            "characterSize": 96,
+            "color": "255;255;255",
+            "bold": true,
+            "italic": false,
+            "underlined": false,
+            "smoothed": true,
+            "textAlignment": "center",
+            "verticalTextAlignment": "top",
+            "isOutlineEnabled": true,
+            "outlineColor": "0;0;0",
+            "outlineThickness": 3,
+            "isShadowEnabled": false,
+            "shadowColor": "0;0;0",
+            "shadowOpacity": 127,
+            "shadowDistance": 3,
+            "shadowAngle": 90,
+            "shadowBlurRadius": 2
+          }
+        },
+        {
+          "name": "OverlayBg",
+          "type": "Sprite",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "adaptCollisionMaskAutomatically": false,
+          "updateIfNotVisible": false,
+          "animations": [
+            {
+              "name": "idle",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 1,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "overlay.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "ResultTitle",
+          "type": "TextObject::Text",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "content": {
+            "text": "MISSION COMPLETE",
+            "font": "",
+            "characterSize": 56,
+            "color": "250;204;21",
+            "bold": true,
+            "italic": false,
+            "underlined": false,
+            "smoothed": true,
+            "textAlignment": "center",
+            "verticalTextAlignment": "top",
+            "isOutlineEnabled": false,
+            "outlineColor": "0;0;0",
+            "outlineThickness": 3,
+            "isShadowEnabled": false,
+            "shadowColor": "0;0;0",
+            "shadowOpacity": 127,
+            "shadowDistance": 3,
+            "shadowAngle": 90,
+            "shadowBlurRadius": 2
+          }
+        },
+        {
+          "name": "ResultScore",
+          "type": "TextObject::Text",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "content": {
+            "text": "0",
+            "font": "",
+            "characterSize": 90,
+            "color": "255;255;255",
+            "bold": true,
+            "italic": false,
+            "underlined": false,
+            "smoothed": true,
+            "textAlignment": "center",
+            "verticalTextAlignment": "top",
+            "isOutlineEnabled": false,
+            "outlineColor": "0;0;0",
+            "outlineThickness": 3,
+            "isShadowEnabled": false,
+            "shadowColor": "0;0;0",
+            "shadowOpacity": 127,
+            "shadowDistance": 3,
+            "shadowAngle": 90,
+            "shadowBlurRadius": 2
+          }
+        },
+        {
+          "name": "BtnRestart",
+          "type": "Sprite",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "adaptCollisionMaskAutomatically": false,
+          "updateIfNotVisible": false,
+          "animations": [
+            {
+              "name": "idle",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 1,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "btn.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "TxtRestart",
+          "type": "TextObject::Text",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "content": {
+            "text": "再玩一次",
+            "font": "",
+            "characterSize": 40,
+            "color": "40;25;0",
+            "bold": true,
+            "italic": false,
+            "underlined": false,
+            "smoothed": true,
+            "textAlignment": "left",
+            "verticalTextAlignment": "top",
+            "isOutlineEnabled": false,
+            "outlineColor": "0;0;0",
+            "outlineThickness": 3,
+            "isShadowEnabled": false,
+            "shadowColor": "0;0;0",
+            "shadowOpacity": 127,
+            "shadowDistance": 3,
+            "shadowAngle": 90,
+            "shadowBlurRadius": 2
+          }
+        },
+        {
+          "name": "BtnMenu",
+          "type": "Sprite",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "adaptCollisionMaskAutomatically": false,
+          "updateIfNotVisible": false,
+          "animations": [
+            {
+              "name": "idle",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 1,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "btn.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "TxtMenu",
+          "type": "TextObject::Text",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "content": {
+            "text": "回選單",
+            "font": "",
+            "characterSize": 40,
+            "color": "40;25;0",
+            "bold": true,
+            "italic": false,
+            "underlined": false,
+            "smoothed": true,
+            "textAlignment": "left",
+            "verticalTextAlignment": "top",
+            "isOutlineEnabled": false,
+            "outlineColor": "0;0;0",
+            "outlineThickness": 3,
+            "isShadowEnabled": false,
+            "shadowColor": "0;0;0",
+            "shadowOpacity": 127,
+            "shadowDistance": 3,
+            "shadowAngle": 90,
+            "shadowBlurRadius": 2
+          }
+        }
+      ],
+      "objectsFolderStructure": {
+        "folderName": "__ROOT"
+      },
+      "objectsGroups": [],
+      "events": [
+        {
+          "type": "BuiltinCommonInstructions::Standard",
+          "conditions": [
+            {
+              "type": {
+                "value": "SceneJustBegins"
+              },
+              "parameters": [
+                ""
+              ]
+            }
+          ],
+          "actions": [
+            {
+              "type": {
+                "value": "PlaySoundOnChannel"
+              },
+              "parameters": [
+                "",
+                "bgm-solo.mp3",
+                "1",
+                "yes",
+                "50",
+                "1"
+              ]
+            },
+            {
+              "type": {
+                "value": "SetNumberVariable"
+              },
+              "parameters": [
+                "TimeLeft",
+                "=",
+                "GlobalVariable(g_time)"
+              ]
+            },
+            {
+              "type": {
+                "value": "ResetTimer"
+              },
+              "parameters": [
+                "",
+                "\"tick\""
+              ]
+            },
+            {
+              "type": {
+                "value": "Hide"
+              },
+              "parameters": [
+                "OverlayBg"
+              ]
+            },
+            {
+              "type": {
+                "value": "Hide"
+              },
+              "parameters": [
+                "ResultTitle"
+              ]
+            },
+            {
+              "type": {
+                "value": "Hide"
+              },
+              "parameters": [
+                "ResultScore"
+              ]
+            },
+            {
+              "type": {
+                "value": "Hide"
+              },
+              "parameters": [
+                "BtnRestart"
+              ]
+            },
+            {
+              "type": {
+                "value": "Hide"
+              },
+              "parameters": [
+                "TxtRestart"
+              ]
+            },
+            {
+              "type": {
+                "value": "Hide"
+              },
+              "parameters": [
+                "BtnMenu"
+              ]
+            },
+            {
+              "type": {
+                "value": "Hide"
+              },
+              "parameters": [
+                "TxtMenu"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "BuiltinCommonInstructions::JsCode",
+          "inlineCode": "\nconst scene = runtimeScene;\nconst vars = scene.getVariables();\nconst g = scene.getGame().getVariables();\nconst one = n => scene.getObjects(n)[0];\nconst pick = g.get(\"g_pick\").getAsString() === \"m\" ? \"m\" : \"u\";\nif (vars.get(\"Phase\").getAsString() === \"init\") {\n  vars.get(\"Phase\").setString(\"play\");\n  for (const n of [\"Avatar\", \"SkillBtn\", \"SkillFx\", \"EnergyBar\"]) {\n    const o = one(n); if (o) o.setAnimationName(pick);\n  }\n  const sc = one(\"ScoreTxt\");\n  if (sc && pick === \"m\") sc.setColor(\"244;114;182\");\n  const fx = one(\"SkillFx\"); if (fx) fx.hide(true);\n  const lb = one(\"SkillLabel\"); if (lb) lb.hide(true);\n  const eb = one(\"EnergyBar\"); if (eb) eb.setWidth(0);\n}\nif (vars.get(\"Phase\").getAsString() !== \"play\") return;\nconst dt = scene.getElapsedTime() / 1000;\nconst skillActive = vars.get(\"SkillLeft\").getAsNumber() > 0;\nlet speedFactor = 1.0, gravityOn = false;\nif (skillActive) {\n  vars.get(\"SkillLeft\").setNumber(Math.max(0, vars.get(\"SkillLeft\").getAsNumber() - dt));\n  if (pick === \"u\") speedFactor = 0.5; else gravityOn = true;\n  if (vars.get(\"SkillLeft\").getAsNumber() <= 0) {\n    const fx = one(\"SkillFx\"); if (fx) fx.hide(true);\n    const lb = one(\"SkillLabel\"); if (lb) lb.hide(true);\n  }\n}\n// 生成\nconst interval = skillActive ? 0.3 : 0.6;\nvars.get(\"SpawnAcc\").setNumber(vars.get(\"SpawnAcc\").getAsNumber() + dt);\nwhile (vars.get(\"SpawnAcc\").getAsNumber() >= interval) {\n  vars.get(\"SpawnAcc\").setNumber(vars.get(\"SpawnAcc\").getAsNumber() - interval);\n  const it = scene.createObject(\"Item\");\n  if (it) {\n    it.setAnimationName(pick);\n    it.setWidth(88); it.setHeight(88);\n    it.setX(10 + Math.random() * 1180);\n    it.setY(-88);\n    it.setZOrder(5);\n    it.getVariables().get(\"vy\").setNumber(200 + Math.random() * 250);\n  }\n}\n// 移動 / 重力吸取\nconst fx = one(\"SkillFx\");\nconst fcx = fx ? fx.getX() + fx.getWidth()/2 : 640;\nconst fcy = fx ? fx.getY() + fx.getHeight()/2 : 340;\nfor (const it of [...scene.getObjects(\"Item\")]) {\n  if (gravityOn) {\n    const cx = it.getX() + 44, cy = it.getY() + 44;\n    const nx = cx + (fcx - cx) * 0.15, ny = cy + (fcy - cy) * 0.15;\n    it.setX(nx - 44); it.setY(ny - 44);\n    if (Math.hypot(fcx - nx, fcy - ny) < 40) {\n      vars.get(\"Score\").setNumber(vars.get(\"Score\").getAsNumber() + 1);\n      gdjs.evtTools.sound.playSound(scene, \"hit.mp3\", false, 100, 1);\n      it.deleteFromScene(scene);\n    }\n  } else {\n    it.setY(it.getY() + it.getVariables().get(\"vy\").getAsNumber() * speedFactor * dt);\n    if (it.getY() > 720) it.deleteFromScene(scene);\n  }\n}\n// 點擊\nconst im = scene.getGame().getInputManager();\nfor (const id of im.getStartedTouchIdentifiers()) {\n  const x = im.getTouchX(id), y = im.getTouchY(id);\n  const sb = one(\"SkillBtn\");\n  if (sb && sb.insideObject(x, y)) {\n    if (vars.get(\"Energy\").getAsNumber() >= 8 && !skillActive) {\n      vars.get(\"Energy\").setNumber(0);\n      vars.get(\"SkillLeft\").setNumber(pick === \"u\" ? 5 : 3.5);\n      if (fx) { fx.hide(false); fx.setAngle(0); }\n      const lb = one(\"SkillLabel\"); if (lb) lb.hide(false);\n    }\n    continue;\n  }\n  let best = null;\n  for (const it of scene.getObjects(\"Item\")) {\n    const cx = it.getX() + 44, cy = it.getY() + 44;\n    if (Math.abs(x - cx) < 68 && Math.abs(y - cy) < 68) { best = it; break; }\n  }\n  if (best) {\n    vars.get(\"Score\").setNumber(vars.get(\"Score\").getAsNumber() + 1);\n    vars.get(\"Energy\").setNumber(Math.min(8, vars.get(\"Energy\").getAsNumber() + 1));\n    gdjs.evtTools.sound.playSound(scene, \"hit.mp3\", false, 100, 1);\n    best.deleteFromScene(scene);\n  }\n}\n// HUD\nconst eb = one(\"EnergyBar\");\nif (eb) eb.setWidth(312 * vars.get(\"Energy\").getAsNumber() / 8);\nconst sb2 = one(\"SkillBtn\");\nif (sb2) sb2.setOpacity(vars.get(\"Energy\").getAsNumber() >= 8 ? 255 : 80);\nif (fx && !fx.isHidden()) fx.setAngle(fx.getAngle() + 40 * dt);\nconst st = one(\"ScoreTxt\");\nif (st) st.setString(String(vars.get(\"Score\").getAsNumber()));\n",
+          "parameterObjects": "",
+          "useStrict": true,
+          "eventsSheetExpanded": false
+        },
+        {
+          "type": "BuiltinCommonInstructions::Standard",
+          "conditions": [
+            {
+              "type": {
+                "value": "Timer"
+              },
+              "parameters": [
+                "",
+                "1",
+                "\"tick\""
+              ]
+            },
+            {
+              "type": {
+                "value": "StringVariable"
+              },
+              "parameters": [
+                "Phase",
+                "=",
+                "\"play\""
+              ]
+            }
+          ],
+          "actions": [
+            {
+              "type": {
+                "value": "ResetTimer"
+              },
+              "parameters": [
+                "",
+                "\"tick\""
+              ]
+            },
+            {
+              "type": {
+                "value": "SetNumberVariable"
+              },
+              "parameters": [
+                "TimeLeft",
+                "-",
+                "1"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "BuiltinCommonInstructions::Standard",
+          "conditions": [],
+          "actions": [
+            {
+              "type": {
+                "value": "TextObject::String"
+              },
+              "parameters": [
+                "TimerTxt",
+                "=",
+                "ToString(Variable(TimeLeft))"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "BuiltinCommonInstructions::Standard",
+          "conditions": [
+            {
+              "type": {
+                "value": "NumberVariable"
+              },
+              "parameters": [
+                "TimeLeft",
+                "<=",
+                "5"
+              ]
+            }
+          ],
+          "actions": [
+            {
+              "type": {
+                "value": "TextObject::ChangeColor"
+              },
+              "parameters": [
+                "TimerTxt",
+                "255;80;80"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "BuiltinCommonInstructions::Standard",
+          "conditions": [
+            {
+              "type": {
+                "value": "NumberVariable"
+              },
+              "parameters": [
+                "TimeLeft",
+                "<=",
+                "0"
+              ]
+            },
+            {
+              "type": {
+                "value": "StringVariable"
+              },
+              "parameters": [
+                "Phase",
+                "=",
+                "\"play\""
+              ]
+            }
+          ],
+          "actions": [
+            {
+              "type": {
+                "value": "SetStringVariable"
+              },
+              "parameters": [
+                "Phase",
+                "=",
+                "\"end\""
+              ]
+            },
+            {
+              "type": {
+                "value": "StopSoundChannel"
+              },
+              "parameters": [
+                "",
+                "1"
+              ]
+            },
+            {
+              "type": {
+                "value": "PlaySound"
+              },
+              "parameters": [
+                "",
+                "gameover.mp3",
+                "",
+                "100",
+                "1"
+              ]
+            },
+            {
+              "type": {
+                "value": "TextObject::String"
+              },
+              "parameters": [
+                "ResultScore",
+                "=",
+                "ToString(Variable(Score))"
+              ]
+            },
+            {
+              "type": {
+                "value": "Show"
+              },
+              "parameters": [
+                "OverlayBg",
+                ""
+              ]
+            },
+            {
+              "type": {
+                "value": "Show"
+              },
+              "parameters": [
+                "ResultTitle",
+                ""
+              ]
+            },
+            {
+              "type": {
+                "value": "Show"
+              },
+              "parameters": [
+                "ResultScore",
+                ""
+              ]
+            },
+            {
+              "type": {
+                "value": "Show"
+              },
+              "parameters": [
+                "BtnRestart",
+                ""
+              ]
+            },
+            {
+              "type": {
+                "value": "Show"
+              },
+              "parameters": [
+                "TxtRestart",
+                ""
+              ]
+            },
+            {
+              "type": {
+                "value": "Show"
+              },
+              "parameters": [
+                "BtnMenu",
+                ""
+              ]
+            },
+            {
+              "type": {
+                "value": "Show"
+              },
+              "parameters": [
+                "TxtMenu",
+                ""
+              ]
+            }
+          ]
+        },
+        {
+          "type": "BuiltinCommonInstructions::Standard",
+          "conditions": [
+            {
+              "type": {
+                "value": "StringVariable"
+              },
+              "parameters": [
+                "Phase",
+                "=",
+                "\"end\""
+              ]
+            },
+            {
+              "type": {
+                "value": "IsCursorOnObject"
+              },
+              "parameters": [
+                "BtnRestart",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "type": {
+                "value": "MouseButtonReleased"
+              },
+              "parameters": [
+                "",
+                "Left"
+              ]
+            }
+          ],
+          "actions": [
+            {
+              "type": {
+                "value": "Scene"
+              },
+              "parameters": [
+                "",
+                "\"Solo\"",
+                ""
+              ]
+            }
+          ]
+        },
+        {
+          "type": "BuiltinCommonInstructions::Standard",
+          "conditions": [
+            {
+              "type": {
+                "value": "StringVariable"
+              },
+              "parameters": [
+                "Phase",
+                "=",
+                "\"end\""
+              ]
+            },
+            {
+              "type": {
+                "value": "IsCursorOnObject"
+              },
+              "parameters": [
+                "BtnMenu",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "type": {
+                "value": "MouseButtonReleased"
+              },
+              "parameters": [
+                "",
+                "Left"
+              ]
+            }
+          ],
+          "actions": [
+            {
+              "type": {
+                "value": "Scene"
+              },
+              "parameters": [
+                "",
+                "\"Menu\"",
+                ""
+              ]
+            }
+          ]
+        }
+      ],
+      "layers": [
+        {
+          "ambientLightColorB": 32,
+          "ambientLightColorG": 32,
+          "ambientLightColorR": 32,
+          "camera3DFarPlaneDistance": 10000,
+          "camera3DFieldOfView": 45,
+          "camera3DNearPlaneDistance": 0.1,
+          "followBaseLayerCamera": false,
+          "isLightingLayer": false,
+          "isLocked": false,
+          "name": "",
+          "renderingType": "",
+          "visibility": true,
+          "effects": [],
+          "cameras": [
+            {
+              "defaultSize": true,
+              "defaultViewport": true,
+              "height": 0,
+              "width": 0,
+              "viewportBottom": 1,
+              "viewportLeft": 0,
+              "viewportRight": 1,
+              "viewportTop": 0
+            }
+          ]
+        },
+        {
+          "ambientLightColorB": 32,
+          "ambientLightColorG": 32,
+          "ambientLightColorR": 32,
+          "camera3DFarPlaneDistance": 10000,
+          "camera3DFieldOfView": 45,
+          "camera3DNearPlaneDistance": 0.1,
+          "followBaseLayerCamera": false,
+          "isLightingLayer": false,
+          "isLocked": false,
+          "name": "UI",
+          "renderingType": "",
+          "visibility": true,
+          "effects": [],
+          "cameras": [
+            {
+              "defaultSize": true,
+              "defaultViewport": true,
+              "height": 0,
+              "width": 0,
+              "viewportBottom": 1,
+              "viewportLeft": 0,
+              "viewportRight": 1,
+              "viewportTop": 0
+            }
+          ]
+        }
+      ],
+      "behaviorsSharedData": [],
+      "usedResources": []
+    },
+    {
+      "b": 17,
+      "r": 6,
+      "v": 6,
+      "disableInputWhenNotFocused": false,
+      "mangledName": "Duo",
+      "name": "Duo",
+      "standardSortMethod": true,
+      "stopSoundsOnStartup": true,
+      "title": "",
+      "uiSettings": {},
+      "variables": [
+        {
+          "name": "Score1",
+          "type": "number",
+          "value": 0
+        },
+        {
+          "name": "Score2",
+          "type": "number",
+          "value": 0
+        },
+        {
+          "name": "Energy1",
+          "type": "number",
+          "value": 0
+        },
+        {
+          "name": "Energy2",
+          "type": "number",
+          "value": 0
+        },
+        {
+          "name": "TimeLeft",
+          "type": "number",
+          "value": 0
+        },
+        {
+          "name": "Phase",
+          "type": "string",
+          "value": "init"
+        },
+        {
+          "name": "Block1",
+          "type": "number",
+          "value": 0
+        },
+        {
+          "name": "Block2",
+          "type": "number",
+          "value": 0
+        },
+        {
+          "name": "SpawnAcc",
+          "type": "number",
+          "value": 0
+        },
+        {
+          "name": "EndDone",
+          "type": "number",
+          "value": 0
+        }
+      ],
+      "instances": [
+        {
+          "angle": 0,
+          "customSize": true,
+          "height": 720,
+          "layer": "",
+          "locked": false,
+          "name": "Divider",
+          "persistentUuid": "532bc08b-4301-4d14-9140-92df7edc161b",
+          "width": 6,
+          "x": 637,
+          "y": 0,
+          "zOrder": 3,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 90,
+          "customSize": false,
+          "height": 0,
+          "layer": "",
+          "locked": false,
+          "name": "Timer1",
+          "persistentUuid": "7f436802-ecb0-4efd-82ad-37c15fc76d50",
+          "width": 0,
+          "x": 40,
+          "y": 320,
+          "zOrder": 10,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 90,
+          "customSize": false,
+          "height": 0,
+          "layer": "",
+          "locked": false,
+          "name": "Score1Txt",
+          "persistentUuid": "c4483c3a-61c7-44b2-9ad4-11bf9b268712",
+          "width": 0,
+          "x": 90,
+          "y": 60,
+          "zOrder": 10,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 90,
+          "customSize": false,
+          "height": 0,
+          "layer": "",
+          "locked": false,
+          "name": "Energy1Txt",
+          "persistentUuid": "0995c20a-8c4e-46dd-b733-37d21d00726a",
+          "width": 0,
+          "x": 90,
+          "y": 560,
+          "zOrder": 10,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 90,
+          "customSize": true,
+          "height": 90,
+          "layer": "",
+          "locked": false,
+          "name": "SkillBtn1",
+          "persistentUuid": "1f533680-62a8-4343-b4e1-d9d4a1ee9167",
+          "width": 90,
+          "x": 24,
+          "y": 24,
+          "zOrder": 10,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 270,
+          "customSize": false,
+          "height": 0,
+          "layer": "",
+          "locked": false,
+          "name": "Timer2",
+          "persistentUuid": "61eaa136-012f-45b4-bdff-3aa5d3bc885d",
+          "width": 0,
+          "x": 1160,
+          "y": 320,
+          "zOrder": 10,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 270,
+          "customSize": false,
+          "height": 0,
+          "layer": "",
+          "locked": false,
+          "name": "Score2Txt",
+          "persistentUuid": "76a64cc9-8718-485f-a7e4-5e96889a4520",
+          "width": 0,
+          "x": 1110,
+          "y": 560,
+          "zOrder": 10,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 270,
+          "customSize": false,
+          "height": 0,
+          "layer": "",
+          "locked": false,
+          "name": "Energy2Txt",
+          "persistentUuid": "215258b1-930b-4e7d-851c-9e9f7c9f5923",
+          "width": 0,
+          "x": 1110,
+          "y": 60,
+          "zOrder": 10,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 270,
+          "customSize": true,
+          "height": 90,
+          "layer": "",
+          "locked": false,
+          "name": "SkillBtn2",
+          "persistentUuid": "4f29a4a3-2821-4cbc-9dce-bee4bd4bc569",
+          "width": 90,
+          "x": 1170,
+          "y": 20,
+          "zOrder": 10,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 90,
+          "customSize": true,
+          "height": 500,
+          "layer": "",
+          "locked": false,
+          "name": "Block1Fx",
+          "persistentUuid": "330a9bcb-dbb2-49c6-98a9-ed84936a22c6",
+          "width": 500,
+          "x": 70,
+          "y": 110,
+          "zOrder": 30,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 270,
+          "customSize": true,
+          "height": 500,
+          "layer": "",
+          "locked": false,
+          "name": "Block2Fx",
+          "persistentUuid": "a3044413-3eef-401f-8cf0-f94c993db2c7",
+          "width": 500,
+          "x": 710,
+          "y": 110,
+          "zOrder": 30,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": true,
+          "height": 720,
+          "layer": "UI",
+          "locked": false,
+          "name": "OverlayBg",
+          "persistentUuid": "d3af584b-df52-41d3-af0b-24d8469d33a9",
+          "width": 1280,
+          "x": 0,
+          "y": 0,
+          "zOrder": 50,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": true,
+          "height": 0,
+          "layer": "UI",
+          "locked": false,
+          "name": "ResultTitle",
+          "persistentUuid": "32dafab6-7e36-4a12-a550-690163f15080",
+          "width": 600,
+          "x": 340,
+          "y": 200,
+          "zOrder": 51,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": true,
+          "height": 0,
+          "layer": "UI",
+          "locked": false,
+          "name": "ResultScore",
+          "persistentUuid": "37e064b3-7460-44d6-8ccd-bbba66bd2872",
+          "width": 400,
+          "x": 440,
+          "y": 290,
+          "zOrder": 51,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": false,
+          "height": 0,
+          "layer": "UI",
+          "locked": false,
+          "name": "BtnRestart",
+          "persistentUuid": "7ff0b53f-51fd-422b-ad28-9e7e36aa5bd8",
+          "width": 0,
+          "x": 460,
+          "y": 450,
+          "zOrder": 51,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": false,
+          "height": 0,
+          "layer": "UI",
+          "locked": false,
+          "name": "TxtRestart",
+          "persistentUuid": "8dcb9807-58b1-473f-bb85-aaaf82467f20",
+          "width": 0,
+          "x": 560,
+          "y": 468,
+          "zOrder": 52,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": false,
+          "height": 0,
+          "layer": "UI",
+          "locked": false,
+          "name": "BtnMenu",
+          "persistentUuid": "0ef637c1-6b35-4036-8074-f3d4c2adf676",
+          "width": 0,
+          "x": 460,
+          "y": 570,
+          "zOrder": 51,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": false,
+          "height": 0,
+          "layer": "UI",
+          "locked": false,
+          "name": "TxtMenu",
+          "persistentUuid": "b1384703-fa8a-4db4-acd5-b3ce3a0b6a06",
+          "width": 0,
+          "x": 578,
+          "y": 588,
+          "zOrder": 52,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        }
+      ],
+      "objects": [
+        {
+          "name": "Item",
+          "type": "Sprite",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "adaptCollisionMaskAutomatically": false,
+          "updateIfNotVisible": false,
+          "animations": [
+            {
+              "name": "u",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 1,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "ultraman.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "m",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 1,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "melody.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Divider",
+          "type": "Sprite",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "adaptCollisionMaskAutomatically": false,
+          "updateIfNotVisible": false,
+          "animations": [
+            {
+              "name": "idle",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 1,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "divider.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Timer1",
+          "type": "TextObject::Text",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "content": {
+            "text": "30",
+            "font": "",
+            "characterSize": 72,
+            "color": "255;255;255",
+            "bold": true,
+            "italic": false,
+            "underlined": false,
+            "smoothed": true,
+            "textAlignment": "left",
+            "verticalTextAlignment": "top",
+            "isOutlineEnabled": true,
+            "outlineColor": "0;0;0",
+            "outlineThickness": 3,
+            "isShadowEnabled": false,
+            "shadowColor": "0;0;0",
+            "shadowOpacity": 127,
+            "shadowDistance": 3,
+            "shadowAngle": 90,
+            "shadowBlurRadius": 2
+          }
+        },
+        {
+          "name": "Timer2",
+          "type": "TextObject::Text",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "content": {
+            "text": "30",
+            "font": "",
+            "characterSize": 72,
+            "color": "255;255;255",
+            "bold": true,
+            "italic": false,
+            "underlined": false,
+            "smoothed": true,
+            "textAlignment": "left",
+            "verticalTextAlignment": "top",
+            "isOutlineEnabled": true,
+            "outlineColor": "0;0;0",
+            "outlineThickness": 3,
+            "isShadowEnabled": false,
+            "shadowColor": "0;0;0",
+            "shadowOpacity": 127,
+            "shadowDistance": 3,
+            "shadowAngle": 90,
+            "shadowBlurRadius": 2
+          }
+        },
+        {
+          "name": "Score1Txt",
+          "type": "TextObject::Text",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "content": {
+            "text": "U: 0",
+            "font": "",
+            "characterSize": 48,
+            "color": "96;165;250",
+            "bold": true,
+            "italic": false,
+            "underlined": false,
+            "smoothed": true,
+            "textAlignment": "left",
+            "verticalTextAlignment": "top",
+            "isOutlineEnabled": true,
+            "outlineColor": "0;0;0",
+            "outlineThickness": 3,
+            "isShadowEnabled": false,
+            "shadowColor": "0;0;0",
+            "shadowOpacity": 127,
+            "shadowDistance": 3,
+            "shadowAngle": 90,
+            "shadowBlurRadius": 2
+          }
+        },
+        {
+          "name": "Score2Txt",
+          "type": "TextObject::Text",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "content": {
+            "text": "M: 0",
+            "font": "",
+            "characterSize": 48,
+            "color": "244;114;182",
+            "bold": true,
+            "italic": false,
+            "underlined": false,
+            "smoothed": true,
+            "textAlignment": "left",
+            "verticalTextAlignment": "top",
+            "isOutlineEnabled": true,
+            "outlineColor": "0;0;0",
+            "outlineThickness": 3,
+            "isShadowEnabled": false,
+            "shadowColor": "0;0;0",
+            "shadowOpacity": 127,
+            "shadowDistance": 3,
+            "shadowAngle": 90,
+            "shadowBlurRadius": 2
+          }
+        },
+        {
+          "name": "Energy1Txt",
+          "type": "TextObject::Text",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "content": {
+            "text": "⚡ 0/8",
+            "font": "",
+            "characterSize": 34,
+            "color": "251;191;36",
+            "bold": true,
+            "italic": false,
+            "underlined": false,
+            "smoothed": true,
+            "textAlignment": "left",
+            "verticalTextAlignment": "top",
+            "isOutlineEnabled": true,
+            "outlineColor": "0;0;0",
+            "outlineThickness": 3,
+            "isShadowEnabled": false,
+            "shadowColor": "0;0;0",
+            "shadowOpacity": 127,
+            "shadowDistance": 3,
+            "shadowAngle": 90,
+            "shadowBlurRadius": 2
+          }
+        },
+        {
+          "name": "Energy2Txt",
+          "type": "TextObject::Text",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "content": {
+            "text": "⚡ 0/8",
+            "font": "",
+            "characterSize": 34,
+            "color": "251;191;36",
+            "bold": true,
+            "italic": false,
+            "underlined": false,
+            "smoothed": true,
+            "textAlignment": "left",
+            "verticalTextAlignment": "top",
+            "isOutlineEnabled": true,
+            "outlineColor": "0;0;0",
+            "outlineThickness": 3,
+            "isShadowEnabled": false,
+            "shadowColor": "0;0;0",
+            "shadowOpacity": 127,
+            "shadowDistance": 3,
+            "shadowAngle": 90,
+            "shadowBlurRadius": 2
+          }
+        },
+        {
+          "name": "SkillBtn1",
+          "type": "Sprite",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "adaptCollisionMaskAutomatically": false,
+          "updateIfNotVisible": false,
+          "animations": [
+            {
+              "name": "idle",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 1,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "spiderman-skill.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "SkillBtn2",
+          "type": "Sprite",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "adaptCollisionMaskAutomatically": false,
+          "updateIfNotVisible": false,
+          "animations": [
+            {
+              "name": "idle",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 1,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "kuromi-skill.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Block1Fx",
+          "type": "Sprite",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "adaptCollisionMaskAutomatically": false,
+          "updateIfNotVisible": false,
+          "animations": [
+            {
+              "name": "idle",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 1,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "kuromi-block.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Block2Fx",
+          "type": "Sprite",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "adaptCollisionMaskAutomatically": false,
+          "updateIfNotVisible": false,
+          "animations": [
+            {
+              "name": "idle",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 1,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "spiderman-block.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "OverlayBg",
+          "type": "Sprite",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "adaptCollisionMaskAutomatically": false,
+          "updateIfNotVisible": false,
+          "animations": [
+            {
+              "name": "idle",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 1,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "overlay.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "ResultTitle",
+          "type": "TextObject::Text",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "content": {
+            "text": "MISSION COMPLETE",
+            "font": "",
+            "characterSize": 56,
+            "color": "250;204;21",
+            "bold": true,
+            "italic": false,
+            "underlined": false,
+            "smoothed": true,
+            "textAlignment": "center",
+            "verticalTextAlignment": "top",
+            "isOutlineEnabled": false,
+            "outlineColor": "0;0;0",
+            "outlineThickness": 3,
+            "isShadowEnabled": false,
+            "shadowColor": "0;0;0",
+            "shadowOpacity": 127,
+            "shadowDistance": 3,
+            "shadowAngle": 90,
+            "shadowBlurRadius": 2
+          }
+        },
+        {
+          "name": "ResultScore",
+          "type": "TextObject::Text",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "content": {
+            "text": "0",
+            "font": "",
+            "characterSize": 90,
+            "color": "255;255;255",
+            "bold": true,
+            "italic": false,
+            "underlined": false,
+            "smoothed": true,
+            "textAlignment": "center",
+            "verticalTextAlignment": "top",
+            "isOutlineEnabled": false,
+            "outlineColor": "0;0;0",
+            "outlineThickness": 3,
+            "isShadowEnabled": false,
+            "shadowColor": "0;0;0",
+            "shadowOpacity": 127,
+            "shadowDistance": 3,
+            "shadowAngle": 90,
+            "shadowBlurRadius": 2
+          }
+        },
+        {
+          "name": "BtnRestart",
+          "type": "Sprite",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "adaptCollisionMaskAutomatically": false,
+          "updateIfNotVisible": false,
+          "animations": [
+            {
+              "name": "idle",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 1,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "btn.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "TxtRestart",
+          "type": "TextObject::Text",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "content": {
+            "text": "再玩一次",
+            "font": "",
+            "characterSize": 40,
+            "color": "40;25;0",
+            "bold": true,
+            "italic": false,
+            "underlined": false,
+            "smoothed": true,
+            "textAlignment": "left",
+            "verticalTextAlignment": "top",
+            "isOutlineEnabled": false,
+            "outlineColor": "0;0;0",
+            "outlineThickness": 3,
+            "isShadowEnabled": false,
+            "shadowColor": "0;0;0",
+            "shadowOpacity": 127,
+            "shadowDistance": 3,
+            "shadowAngle": 90,
+            "shadowBlurRadius": 2
+          }
+        },
+        {
+          "name": "BtnMenu",
+          "type": "Sprite",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "adaptCollisionMaskAutomatically": false,
+          "updateIfNotVisible": false,
+          "animations": [
+            {
+              "name": "idle",
+              "useMultipleDirections": false,
+              "directions": [
+                {
+                  "looping": false,
+                  "timeBetweenFrames": 1,
+                  "sprites": [
+                    {
+                      "hasCustomCollisionMask": false,
+                      "image": "btn.png",
+                      "points": [],
+                      "originPoint": {
+                        "name": "origine",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "centerPoint": {
+                        "automatic": true,
+                        "name": "centre",
+                        "x": 0,
+                        "y": 0
+                      },
+                      "customCollisionMask": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "TxtMenu",
+          "type": "TextObject::Text",
+          "tags": "",
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "content": {
+            "text": "回選單",
+            "font": "",
+            "characterSize": 40,
+            "color": "40;25;0",
+            "bold": true,
+            "italic": false,
+            "underlined": false,
+            "smoothed": true,
+            "textAlignment": "left",
+            "verticalTextAlignment": "top",
+            "isOutlineEnabled": false,
+            "outlineColor": "0;0;0",
+            "outlineThickness": 3,
+            "isShadowEnabled": false,
+            "shadowColor": "0;0;0",
+            "shadowOpacity": 127,
+            "shadowDistance": 3,
+            "shadowAngle": 90,
+            "shadowBlurRadius": 2
+          }
+        }
+      ],
+      "objectsFolderStructure": {
+        "folderName": "__ROOT"
+      },
+      "objectsGroups": [],
+      "events": [
+        {
+          "type": "BuiltinCommonInstructions::Standard",
+          "conditions": [
+            {
+              "type": {
+                "value": "SceneJustBegins"
+              },
+              "parameters": [
+                ""
+              ]
+            }
+          ],
+          "actions": [
+            {
+              "type": {
+                "value": "PlaySoundOnChannel"
+              },
+              "parameters": [
+                "",
+                "bgm-duo.mp3",
+                "1",
+                "yes",
+                "50",
+                "1"
+              ]
+            },
+            {
+              "type": {
+                "value": "SetNumberVariable"
+              },
+              "parameters": [
+                "TimeLeft",
+                "=",
+                "GlobalVariable(g_time)"
+              ]
+            },
+            {
+              "type": {
+                "value": "ResetTimer"
+              },
+              "parameters": [
+                "",
+                "\"tick\""
+              ]
+            },
+            {
+              "type": {
+                "value": "Hide"
+              },
+              "parameters": [
+                "OverlayBg"
+              ]
+            },
+            {
+              "type": {
+                "value": "Hide"
+              },
+              "parameters": [
+                "ResultTitle"
+              ]
+            },
+            {
+              "type": {
+                "value": "Hide"
+              },
+              "parameters": [
+                "ResultScore"
+              ]
+            },
+            {
+              "type": {
+                "value": "Hide"
+              },
+              "parameters": [
+                "BtnRestart"
+              ]
+            },
+            {
+              "type": {
+                "value": "Hide"
+              },
+              "parameters": [
+                "TxtRestart"
+              ]
+            },
+            {
+              "type": {
+                "value": "Hide"
+              },
+              "parameters": [
+                "BtnMenu"
+              ]
+            },
+            {
+              "type": {
+                "value": "Hide"
+              },
+              "parameters": [
+                "TxtMenu"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "BuiltinCommonInstructions::JsCode",
+          "inlineCode": "\nconst scene = runtimeScene;\nconst vars = scene.getVariables();\nconst one = n => scene.getObjects(n)[0];\nif (vars.get(\"Phase\").getAsString() === \"init\") {\n  vars.get(\"Phase\").setString(\"play\");\n  for (const n of [\"Block1Fx\", \"Block2Fx\"]) { const o = one(n); if (o) o.hide(true); }\n}\nif (vars.get(\"Phase\").getAsString() === \"end\") {\n  if (vars.get(\"EndDone\").getAsNumber() === 0) {\n    vars.get(\"EndDone\").setNumber(1);\n    const s1 = vars.get(\"Score1\").getAsNumber(), s2 = vars.get(\"Score2\").getAsNumber();\n    const rt = one(\"ResultTitle\");\n    if (rt) rt.setString(s1 > s2 ? \"ULTRAMAN WINS!\" : s2 > s1 ? \"MELODY WINS!\" : \"HEROIC TIE!\");\n    const rs = one(\"ResultScore\");\n    if (rs) rs.setString(\"U \" + s1 + \" : \" + s2 + \" M\");\n  }\n  return;\n}\nconst dt = scene.getElapsedTime() / 1000;\n// 技能遮蔽倒數\nfor (const [bv, bn] of [[\"Block1\", \"Block1Fx\"], [\"Block2\", \"Block2Fx\"]]) {\n  const t = vars.get(bv).getAsNumber();\n  if (t > 0) {\n    vars.get(bv).setNumber(Math.max(0, t - dt));\n    if (vars.get(bv).getAsNumber() <= 0) { const o = one(bn); if (o) o.hide(true); }\n  }\n}\n// 生成（兩邊各一，每 0.7 秒）\nvars.get(\"SpawnAcc\").setNumber(vars.get(\"SpawnAcc\").getAsNumber() + dt);\nwhile (vars.get(\"SpawnAcc\").getAsNumber() >= 0.7) {\n  vars.get(\"SpawnAcc\").setNumber(vars.get(\"SpawnAcc\").getAsNumber() - 0.7);\n  for (const side of [1, 2]) {\n    const it = scene.createObject(\"Item\");\n    if (!it) continue;\n    it.setAnimationName(side === 1 ? \"u\" : \"m\");\n    it.setWidth(77); it.setHeight(77);\n    it.setAngle(side === 1 ? 90 : 270);\n    it.setY(20 + Math.random() * 620);\n    it.setX(side === 1 ? 610 - 77 : 645);\n    it.setZOrder(5);\n    it.getVariables().get(\"vx\").setNumber(180 + Math.random() * 220);\n    it.getVariables().get(\"side\").setNumber(side);\n  }\n}\n// 移動：U 側往左、M 側往右\nfor (const it of [...scene.getObjects(\"Item\")]) {\n  const side = it.getVariables().get(\"side\").getAsNumber();\n  const vx = it.getVariables().get(\"vx\").getAsNumber();\n  it.setX(it.getX() + (side === 1 ? -vx : vx) * dt);\n  if (it.getX() < -80 || it.getX() > 1280) it.deleteFromScene(scene);\n}\n// 點擊\nconst im = scene.getGame().getInputManager();\nfor (const id of im.getStartedTouchIdentifiers()) {\n  const x = im.getTouchX(id), y = im.getTouchY(id);\n  const side = x < 640 ? 1 : 2;\n  const sb = one(side === 1 ? \"SkillBtn1\" : \"SkillBtn2\");\n  if (sb && sb.insideObject(x, y)) {\n    const ev_ = \"Energy\" + side;\n    if (vars.get(ev_).getAsNumber() >= 8) {\n      vars.get(ev_).setNumber(0);\n      // 遮住對手半場 3 秒\n      const targetBlock = side === 1 ? \"Block2\" : \"Block1\";\n      vars.get(targetBlock).setNumber(3);\n      const o = one(targetBlock + \"Fx\"); if (o) o.hide(false);\n    }\n    continue;\n  }\n  let best = null;\n  for (const it of scene.getObjects(\"Item\")) {\n    if (it.getVariables().get(\"side\").getAsNumber() !== side) continue;\n    const cx = it.getX() + 38, cy = it.getY() + 38;\n    if (Math.abs(x - cx) < 60 && Math.abs(y - cy) < 60) { best = it; break; }\n  }\n  if (best) {\n    const sv = \"Score\" + side, ev_ = \"Energy\" + side;\n    vars.get(sv).setNumber(vars.get(sv).getAsNumber() + 1);\n    vars.get(ev_).setNumber(Math.min(8, vars.get(ev_).getAsNumber() + 1));\n    gdjs.evtTools.sound.playSound(scene, \"hit.mp3\", false, 100, 1);\n    best.deleteFromScene(scene);\n  }\n}\n// HUD\nconst s1t = one(\"Score1Txt\"); if (s1t) s1t.setString(\"U: \" + vars.get(\"Score1\").getAsNumber());\nconst s2t = one(\"Score2Txt\"); if (s2t) s2t.setString(\"M: \" + vars.get(\"Score2\").getAsNumber());\nconst e1t = one(\"Energy1Txt\"); if (e1t) e1t.setString(\"⚡ \" + vars.get(\"Energy1\").getAsNumber() + \"/8\");\nconst e2t = one(\"Energy2Txt\"); if (e2t) e2t.setString(\"⚡ \" + vars.get(\"Energy2\").getAsNumber() + \"/8\");\nconst b1 = one(\"SkillBtn1\"); if (b1) b1.setOpacity(vars.get(\"Energy1\").getAsNumber() >= 8 ? 255 : 80);\nconst b2 = one(\"SkillBtn2\"); if (b2) b2.setOpacity(vars.get(\"Energy2\").getAsNumber() >= 8 ? 255 : 80);\n",
+          "parameterObjects": "",
+          "useStrict": true,
+          "eventsSheetExpanded": false
+        },
+        {
+          "type": "BuiltinCommonInstructions::Standard",
+          "conditions": [
+            {
+              "type": {
+                "value": "Timer"
+              },
+              "parameters": [
+                "",
+                "1",
+                "\"tick\""
+              ]
+            },
+            {
+              "type": {
+                "value": "StringVariable"
+              },
+              "parameters": [
+                "Phase",
+                "=",
+                "\"play\""
+              ]
+            }
+          ],
+          "actions": [
+            {
+              "type": {
+                "value": "ResetTimer"
+              },
+              "parameters": [
+                "",
+                "\"tick\""
+              ]
+            },
+            {
+              "type": {
+                "value": "SetNumberVariable"
+              },
+              "parameters": [
+                "TimeLeft",
+                "-",
+                "1"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "BuiltinCommonInstructions::Standard",
+          "conditions": [],
+          "actions": [
+            {
+              "type": {
+                "value": "TextObject::String"
+              },
+              "parameters": [
+                "Timer1",
+                "=",
+                "ToString(Variable(TimeLeft))"
+              ]
+            },
+            {
+              "type": {
+                "value": "TextObject::String"
+              },
+              "parameters": [
+                "Timer2",
+                "=",
+                "ToString(Variable(TimeLeft))"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "BuiltinCommonInstructions::Standard",
+          "conditions": [
+            {
+              "type": {
+                "value": "NumberVariable"
+              },
+              "parameters": [
+                "TimeLeft",
+                "<=",
+                "5"
+              ]
+            }
+          ],
+          "actions": [
+            {
+              "type": {
+                "value": "TextObject::ChangeColor"
+              },
+              "parameters": [
+                "Timer1",
+                "255;80;80"
+              ]
+            },
+            {
+              "type": {
+                "value": "TextObject::ChangeColor"
+              },
+              "parameters": [
+                "Timer2",
+                "255;80;80"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "BuiltinCommonInstructions::Standard",
+          "conditions": [
+            {
+              "type": {
+                "value": "NumberVariable"
+              },
+              "parameters": [
+                "TimeLeft",
+                "<=",
+                "0"
+              ]
+            },
+            {
+              "type": {
+                "value": "StringVariable"
+              },
+              "parameters": [
+                "Phase",
+                "=",
+                "\"play\""
+              ]
+            }
+          ],
+          "actions": [
+            {
+              "type": {
+                "value": "SetStringVariable"
+              },
+              "parameters": [
+                "Phase",
+                "=",
+                "\"end\""
+              ]
+            },
+            {
+              "type": {
+                "value": "StopSoundChannel"
+              },
+              "parameters": [
+                "",
+                "1"
+              ]
+            },
+            {
+              "type": {
+                "value": "PlaySound"
+              },
+              "parameters": [
+                "",
+                "gameover.mp3",
+                "",
+                "100",
+                "1"
+              ]
+            },
+            {
+              "type": {
+                "value": "Show"
+              },
+              "parameters": [
+                "OverlayBg",
+                ""
+              ]
+            },
+            {
+              "type": {
+                "value": "Show"
+              },
+              "parameters": [
+                "ResultTitle",
+                ""
+              ]
+            },
+            {
+              "type": {
+                "value": "Show"
+              },
+              "parameters": [
+                "ResultScore",
+                ""
+              ]
+            },
+            {
+              "type": {
+                "value": "Show"
+              },
+              "parameters": [
+                "BtnRestart",
+                ""
+              ]
+            },
+            {
+              "type": {
+                "value": "Show"
+              },
+              "parameters": [
+                "TxtRestart",
+                ""
+              ]
+            },
+            {
+              "type": {
+                "value": "Show"
+              },
+              "parameters": [
+                "BtnMenu",
+                ""
+              ]
+            },
+            {
+              "type": {
+                "value": "Show"
+              },
+              "parameters": [
+                "TxtMenu",
+                ""
+              ]
+            }
+          ]
+        },
+        {
+          "type": "BuiltinCommonInstructions::Standard",
+          "conditions": [
+            {
+              "type": {
+                "value": "StringVariable"
+              },
+              "parameters": [
+                "Phase",
+                "=",
+                "\"end\""
+              ]
+            },
+            {
+              "type": {
+                "value": "IsCursorOnObject"
+              },
+              "parameters": [
+                "BtnRestart",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "type": {
+                "value": "MouseButtonReleased"
+              },
+              "parameters": [
+                "",
+                "Left"
+              ]
+            }
+          ],
+          "actions": [
+            {
+              "type": {
+                "value": "Scene"
+              },
+              "parameters": [
+                "",
+                "\"Duo\"",
+                ""
+              ]
+            }
+          ]
+        },
+        {
+          "type": "BuiltinCommonInstructions::Standard",
+          "conditions": [
+            {
+              "type": {
+                "value": "StringVariable"
+              },
+              "parameters": [
+                "Phase",
+                "=",
+                "\"end\""
+              ]
+            },
+            {
+              "type": {
+                "value": "IsCursorOnObject"
+              },
+              "parameters": [
+                "BtnMenu",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "type": {
+                "value": "MouseButtonReleased"
+              },
+              "parameters": [
+                "",
+                "Left"
+              ]
+            }
+          ],
+          "actions": [
+            {
+              "type": {
+                "value": "Scene"
+              },
+              "parameters": [
+                "",
+                "\"Menu\"",
+                ""
+              ]
+            }
+          ]
+        }
+      ],
+      "layers": [
+        {
+          "ambientLightColorB": 32,
+          "ambientLightColorG": 32,
+          "ambientLightColorR": 32,
+          "camera3DFarPlaneDistance": 10000,
+          "camera3DFieldOfView": 45,
+          "camera3DNearPlaneDistance": 0.1,
+          "followBaseLayerCamera": false,
+          "isLightingLayer": false,
+          "isLocked": false,
+          "name": "",
+          "renderingType": "",
+          "visibility": true,
+          "effects": [],
+          "cameras": [
+            {
+              "defaultSize": true,
+              "defaultViewport": true,
+              "height": 0,
+              "width": 0,
+              "viewportBottom": 1,
+              "viewportLeft": 0,
+              "viewportRight": 1,
+              "viewportTop": 0
+            }
+          ]
+        },
+        {
+          "ambientLightColorB": 32,
+          "ambientLightColorG": 32,
+          "ambientLightColorR": 32,
+          "camera3DFarPlaneDistance": 10000,
+          "camera3DFieldOfView": 45,
+          "camera3DNearPlaneDistance": 0.1,
+          "followBaseLayerCamera": false,
+          "isLightingLayer": false,
+          "isLocked": false,
+          "name": "UI",
+          "renderingType": "",
+          "visibility": true,
+          "effects": [],
+          "cameras": [
+            {
+              "defaultSize": true,
+              "defaultViewport": true,
+              "height": 0,
+              "width": 0,
+              "viewportBottom": 1,
+              "viewportLeft": 0,
+              "viewportRight": 1,
+              "viewportTop": 0
+            }
+          ]
+        }
+      ],
+      "behaviorsSharedData": [],
+      "usedResources": []
+    }
+  ],
+  "externalEvents": [],
+  "eventsFunctionsExtensions": [],
+  "externalLayouts": []
+}

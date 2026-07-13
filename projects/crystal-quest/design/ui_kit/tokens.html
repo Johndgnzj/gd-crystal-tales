@@ -1,0 +1,26 @@
+<!-- @dsCard group="Tokens" name="Tokens：色彩／字級／基礎素材" subtitle="取自 build_cq2.py 的遊戲實值" -->
+<!doctype html><html><head><meta charset="utf-8"><style>
+  html,body{margin:0;padding:0;background:#0d0f16;}
+  *{box-sizing:border-box;}
+  .wrap{width:640px;height:360px;overflow:hidden;border-radius:6px;}
+  .stage{width:1280px;height:720px;position:relative;transform:scale(.5);transform-origin:top left;
+         font-family:"Noto Sans TC",system-ui,sans-serif;font-weight:700;}
+  .px{image-rendering:pixelated;}
+  .panel{position:absolute;background-image:url(./assets/panel.png);background-size:100% 100%;}
+  .t{position:absolute;color:#fff;white-space:pre;line-height:1.25;
+      text-shadow:-2px 0 #0a0a14,2px 0 #0a0a14,0 -2px #0a0a14,0 2px #0a0a14,
+                  -2px -2px #0a0a14,2px -2px #0a0a14,-2px 2px #0a0a14,2px 2px #0a0a14;}
+
+  .sw{display:flex;gap:8px;align-items:center}.chip{width:34px;height:34px;border-radius:4px;border:1px solid #333a4c;flex:none}
+  .lbl{display:flex;flex-direction:column;font-size:12px}.lbl b{font-size:13px}.lbl span{color:#8f97ad}.lbl i{color:#6c7488;font-style:normal;font-size:11px}
+  .tyrow{display:flex;align-items:baseline;gap:12px;margin:2px 0}.sz{color:#fff;white-space:nowrap}.meta{color:#8f97ad;font-size:12px}
+  .as{display:flex;flex-direction:column;gap:4px;font-size:11px;color:#8f97ad;align-items:center}
+</style></head><body>
+<div style="padding:20px;font-family:"Noto Sans TC",system-ui,sans-serif;color:#e8e8f2;max-width:640px">
+  <h3 style="margin:0 0 10px;color:#FFE178">色彩</h3>
+  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px 14px"><div class="sw"><div class="chip" style="background:#FFFFFF"></div><div class="lbl"><b>文字主色</b><span>#FFFFFF</span><i>所有內文</i></div></div><div class="sw"><div class="chip" style="background:#0A0A14"></div><div class="lbl"><b>文字描邊</b><span>#0A0A14</span><i>outline 2px</i></div></div><div class="sw"><div class="chip" style="background:#FFE178"></div><div class="lbl"><b>強調金</b><span>#FFE178</span><i>HUD 金幣/選單標題/名字</i></div></div><div class="sw"><div class="chip" style="background:#FFEB78"></div><div class="lbl"><b>選取黃</b><span>#FFEB78</span><i>游標所在列/指令</i></div></div><div class="sw"><div class="chip" style="background:#AAE6AA"></div><div class="lbl"><b>目標綠</b><span>#AAE6AA</span><i>HUD 目標列</i></div></div><div class="sw"><div class="chip" style="background:#AAB4DC"></div><div class="lbl"><b>提示紫灰</b><span>#AAB4DC</span><i>操作提示列</i></div></div><div class="sw"><div class="chip" style="background:#AADCEB"></div><div class="lbl"><b>數值青</b><span>#AADCEB</span><i>角色頁衍生屬性列</i></div></div><div class="sw"><div class="chip" style="background:#78E68C"></div><div class="lbl"><b>治療綠</b><span>#78E68C</span><i>我方目標選取</i></div></div><div class="sw"><div class="chip" style="background:#788296"></div><div class="lbl"><b>失效灰</b><span>#788296</span><i>不可用/未解鎖</i></div></div><div class="sw"><div class="chip" style="background:#FF9696"></div><div class="lbl"><b>警示紅</b><span>#FF9696</span><i>戰敗/確認警告</i></div></div><div class="sw"><div class="chip" style="background:#141822"></div><div class="lbl"><b>場景底色</b><span>#141822</span><i>World 場景背景</i></div></div><div class="sw"><div class="chip" style="background:#0A0C0F"></div><div class="lbl"><b>戰鬥底色</b><span>#0A0C0F</span><i>Battle 場景背景</i></div></div></div>
+  <h3 style="margin:16px 0 8px;color:#FFE178">字級（遊戲內 px）</h3><div class="tyrow"><span class="sz" style="font-size:50.6px">水晶戰記 Aa 123</span><span class="meta">92px — 標題 Logo（水晶戰記）</span></div><div class="tyrow"><span class="sz" style="font-size:35.2px">水晶戰記 Aa 123</span><span class="meta">64px — 戰鬥結算標題（勝利！）</span></div><div class="tyrow"><span class="sz" style="font-size:20.900000000000002px">水晶戰記 Aa 123</span><span class="meta">38px — Banner 事件橫幅</span></div><div class="tyrow"><span class="sz" style="font-size:16.5px">水晶戰記 Aa 123</span><span class="meta">30px — 選單標題/戰鬥訊息列</span></div><div class="tyrow"><span class="sz" style="font-size:15.400000000000002px">水晶戰記 Aa 123</span><span class="meta">28px — 對話內文/戰鬥指令</span></div><div class="tyrow"><span class="sz" style="font-size:14.3px">水晶戰記 Aa 123</span><span class="meta">26px — 對話名字/選單分頁</span></div><div class="tyrow"><span class="sz" style="font-size:12.100000000000001px">水晶戰記 Aa 123</span><span class="meta">22px — 選單內容列/HUD 目標</span></div><div class="tyrow"><span class="sz" style="font-size:11.0px">水晶戰記 Aa 123</span><span class="meta">20px — HUD/提示列</span></div>
+  <h3 style="margin:16px 0 8px;color:#FFE178">基礎素材</h3>
+  <div style="display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap"><div class="as"><img class="px" src="./assets/panel.png" style="height:60px"><span>panel 面板(拉伸)</span></div><div class="as"><img class="px" src="./assets/btn.png" style="height:44px"><span>btn 按鈕</span></div><div class="as"><img class="px" src="./assets/cursor.png" style="height:40px"><span>目標游標</span></div><div class="as"><img class="px" src="./assets/face_ludo.png" style="height:72px"><span>立繪 144px</span></div><div class="as"><img class="px" src="./assets/hero_ludo.png" style="height:84px"><span>戰鬥角色</span></div><div class="as"><img class="px" src="./assets/goblin.png" style="height:64px"><span>敵人(原生16px)</span></div></div>
+  <p style="color:#AAB4DC;font-size:12px">字型目前為引擎預設；候選：Fusion Pixel Font（開源繁中像素字型）。</p>
+</div></body></html>

@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "gdevelop": {
+      "command": "/Users/john/.nvm/versions/node/v22.17.1/bin/node",
+      "args": ["/Users/john/Projects/60_soho/30_Personal/GameCreator/GDevelop/gdevelop-mcp/dist/index.js"]
+    }
+  }
+}
