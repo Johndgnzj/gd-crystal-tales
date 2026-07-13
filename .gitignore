@@ -3,6 +3,12 @@
 *.env
 !.env.example
 
+# === 他方版權參考圖（僅本機作畫風方向靈感，不入 repo/不散布）===
+projects/crystal-quest/design/ref/
+
+# === 風格試產暫存圖（本機驗風格用，定案後清掉，不入 repo）===
+projects/crystal-quest/design/style_test/
+
 # === 大型第三方工具（各有自己的 .git、可重新取得，不納入本 repo）===
 # LPC 角色產生器完整 clone（~780MB）；還原見 README_安裝與使用.md（git clone --depth 1）
 tools/lpc/

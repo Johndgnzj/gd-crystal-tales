@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""立繪接圖：design/faces/ 的生成圖（橫幅、人物偏左、右側有裝飾星）→
+"""立繪接圖：design/faces/ 的半身生成圖（橫幅、人物置中、中性深底）→
    偵測人物水平中心 → 裁正方形 → 縮 144x144 → 覆蓋 assets/ui/face_*.png。
+   只吃半身圖（<name>.png）；全身圖（<name>_full.png）不在名單、不會被裁。
    檔案不存在時保留舊版（主角三位有程式繪備援）。在 art_v4_portraits.py 之後執行。"""
 import os
 from PIL import Image
@@ -59,7 +60,7 @@ def content_center_x(im):
     # 以區內像素總量選主體：人物稠密、星群稀疏（純寬度會被大片星星騙走）
     main = max(runs, key=lambda r: sum(cols[r[0]:r[1] + 1]))
     if (main[1] - main[0]) * 8 > im.width * 0.7:
-        return int(im.width * 0.22)   # 背景有漸層時偵測會併成全寬：退回「人物在左1/3」約定
+        return im.width // 2   # 背景有漸層時偵測會併成全寬：退回「人物置中」約定
     return (main[0] + main[1]) * 8 // 2
 
 for cid in FACE_SRC:

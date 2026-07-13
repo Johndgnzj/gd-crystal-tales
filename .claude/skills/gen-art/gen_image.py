@@ -2,8 +2,9 @@
 """Gemini 產圖腳本（gen-art skill 的執行端）。
 
 用法：
-  python3 gen_image.py --type face     --prompt "鐵匠漢克：壯碩中年男子、絡腮鬍、皮圍裙" --out design/faces/Hank.png
-  python3 gen_image.py --type battlebg --prompt "廢棄礦坑深處，藍黑色調"                --out assets/ui/battlebg_cave2.png
+  python3 gen_image.py --type face --frame bust --prompt "鐵匠漢克：壯碩老年男子、花白絡腮鬍、皮圍裙" --out design/faces/Hank.png
+  python3 gen_image.py --type face --frame full --prompt "主角魯多：俊美青年劍士、藍披風"            --out design/faces/Ludo_full.png
+  python3 gen_image.py --type battlebg --prompt "廢棄礦坑深處，藍黑色調"                              --out assets/ui/battlebg_cave2.png
   python3 gen_image.py --type raw      --prompt "..." --ar 1:1 --out /tmp/test.png
 
 金鑰：讀環境變數 GEMINI_API_KEY，否則往上層目錄找 .env（KEY=VALUE 格式）。
@@ -15,16 +16,21 @@ MODELS = ["gemini-2.5-flash-image", "gemini-2.0-flash-preview-image-generation"]
 
 # 各素材類型的風格前綴（維持與遊戲現有素材一致的構圖約定）
 STYLES = {
-    # John 的立繪管線約定：橫幅、人物偏左、右側裝飾星、深藍底 → art_v7_faces.py 自動裁 144px 頭像
-    "face": ("Classic Japanese anime JRPG character illustration: crisp confident line art, "
-             "clean cel shading with soft highlights (NOT semi-realistic rendering, NOT pixel art, "
-             "NOT 3D). Expressive youthful anime face with large detailed eyes. Elaborate layered "
-             "fantasy adventurer outfit rich in detail (belts, buckles, straps, gold trim, armor "
-             "pieces or flowing cloth), vivid saturated colors, confident characterful pose. "
-             "The character occupies the LEFT third of the frame, bust-up (chest-up) view, facing "
-             "slightly right, warm key light. Solid very dark navy blue background (#141822), a few "
-             "small decorative star sparkles on the right side. Absolutely no text, no letters, no "
-             "numbers, no watermark. Character: "),
+    # 立繪基底風格（2026-07-13 依 design/ref/role-design-* 定調：細線稿＋水彩手繪感＋暖色）。
+    # 構圖：人物置中、暖赭深底 → 半身圖(frame=bust)供 art_v7_faces.py 自動裁 144px 頭像。
+    "face": ("Hand-drawn anime JRPG character illustration in a soft watercolor, painterly style: "
+             "fine and delicate line art with subtle line-weight variation (NOT thick heavy black "
+             "outlines), gentle watercolor-like shading with soft gradients, translucent washes and "
+             "a faint paper texture (NOT flat cel blocks, NOT semi-realistic thick oil paint, NOT "
+             "pixel art, NOT 3D). Soft, even key light. Use the character's own described colors as "
+             "their distinctive palette; do NOT default every character to warm tones. Expressive "
+             "eyes and a refined, handsome face; age "
+             "the character honestly: youthful and beautiful when young, but genuinely weathered, "
+             "wrinkled and aged when old. Elaborate layered fantasy adventurer outfit rich in detail "
+             "(belts, buckles, straps, gold trim, ornate embroidery, flowing cloth). Character "
+             "centered in the frame in a confident, characterful pose. Solid flat neutral dark "
+             "background (#20222a), no scenery, no floor, no text, no letters, no numbers, no "
+             "watermark. "),
     "battlebg": ("Side-view JRPG battle background, painterly pixel-art style, rich vivid colors, "
                  "clearly lit and readable (NOT dark, NOT black), gentle depth, empty flat middle "
                  "ground for combatants to stand on, horizon around upper third, "
@@ -43,15 +49,27 @@ STYLES = {
                  "JRPG style matching a classic pixel-art fantasy town, cohesive warm palette, "
                  "centered, on a solid flat magenta #ff00ff background for easy cutout, no ground "
                  "plane, no drop shadow, no text, no letters, no numbers, no people. Building: "),
-    # 就地室內大圖（斜角剖面房間，洋紅底去背）
-    "interior": ("Pixel art 2D JRPG interior room, 45-degree oblique cutaway view, cozy and "
-                 "detailed furniture, warm lantern light, solid flat magenta #ff00ff background "
-                 "surrounding the room for easy cutout, no characters, no people, no text, "
-                 "no letters. Room: "),
+    # 室內背景大圖（水彩手繪，滿版場景，與立繪同一套風格 DNA；作立繪＋選單式室內背景）
+    "interior": ("Hand-drawn watercolor, painterly JRPG interior background scene: fine and delicate "
+                 "line work, soft watercolor shading with gentle gradients and warm lantern light, "
+                 "warm color palette of creams, golds, warm woods and earthy reds (NOT flat cel "
+                 "blocks, NOT pixel art, NOT 3D). Cozy, richly detailed fantasy room with characterful "
+                 "furniture and props and atmospheric depth. Full-frame scene filling the whole image, "
+                 "no characters, no people, no text, no letters, no numbers, no watermark. Room: "),
     "raw": "",
 }
 ASPECT = {"face": "16:9", "battlebg": "16:9", "map": "16:9", "title": "16:9", "icon": "1:1",
           "building": "1:1", "interior": "4:3", "raw": None}
+
+# face 專用分鏡（接在 STYLES["face"] 之後）。bust=腰上半身（供 art_v7 裁頭像，須橫幅）；full=全身。
+# 非主要角色只需 bust；主要角色 bust + full 各一張。
+FACE_FRAME = {
+    "bust": ("Framing: waist-up half-body portrait, head near the top with a little headroom, "
+             "landscape frame. Character: "),
+    "full": ("Framing: full-body from head to feet, the entire figure visible with margin above "
+             "and below, standing, portrait frame. Character: "),
+}
+FACE_AR = {"bust": "16:9", "full": "3:4"}
 
 
 def find_key():
@@ -92,14 +110,20 @@ def generate(key, model, prompt, aspect):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--type", default="raw", choices=list(STYLES))
+    ap.add_argument("--frame", default="bust", choices=list(FACE_FRAME),
+                    help="face 專用：bust=腰上半身(預設，供裁頭像)／full=全身")
     ap.add_argument("--prompt", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--ar", default=None, help="覆寫長寬比，如 16:9 / 1:1 / 3:4")
     a = ap.parse_args()
 
     key = find_key()
-    prompt = STYLES[a.type] + a.prompt
-    aspect = a.ar or ASPECT[a.type]
+    if a.type == "face":
+        prompt = STYLES["face"] + FACE_FRAME[a.frame] + a.prompt
+        aspect = a.ar or FACE_AR[a.frame]
+    else:
+        prompt = STYLES[a.type] + a.prompt
+        aspect = a.ar or ASPECT[a.type]
     last = None
     for model in MODELS:
         for attempt in range(3):
