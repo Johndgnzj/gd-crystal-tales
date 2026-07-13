@@ -3,8 +3,12 @@
    在 build_cq2.py 與 art_v2.py 之後執行覆蓋。素材授權 CC-BY-SA 3.0 / GPL 3.0（見 CREDITS）。"""
 from PIL import Image, ImageDraw
 
-T = "/Users/john/Projects/60_soho/30_Personal/GameCreator/GDevelop/tools"
-A = "/Users/john/Projects/60_soho/30_Personal/GameCreator/GDevelop/projects/crystal-quest/assets"
+import os
+_HERE = os.path.dirname(os.path.abspath(__file__))
+PROJ  = os.path.dirname(_HERE)
+GDROOT = os.path.dirname(os.path.dirname(PROJ))
+T = f"{GDROOT}/tools"
+A = f"{PROJ}/assets"
 B = Image.open(f"{T}/lpc-atlas2/build_atlas.png").convert("RGBA")   # 建築組件
 O = Image.open(f"{T}/lpc-atlas1/base_out_atlas.png").convert("RGBA") # 戶外/洞窟
 
@@ -115,7 +119,7 @@ save(trim(crop(O, 63, 254, 97, 287)), "stal_black")
 save(trim(crop(O, 768, 384, 832, 448)), "bush")
 
 # ---------- 10. 選單地圖頁：區域地圖縮圖 ----------
-P2 = "/Users/john/Projects/60_soho/30_Personal/GameCreator/GDevelop/projects/crystal-quest/design/芳蕾鎮區域地圖.png"
+P2 = f"{PROJ}/design/芳蕾鎮區域地圖.png"
 rm = Image.open(P2).convert("RGBA")
 rm.thumbnail((640, 360), Image.LANCZOS)
 rm.save(f"{A}/ui/region_map.png")

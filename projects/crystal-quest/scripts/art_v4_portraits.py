@@ -3,7 +3,10 @@
    風格依 ART_PROMPTS：16-bit JRPG、有限調色盤、乾淨像素。"""
 from PIL import Image, ImageDraw
 
-A = "/Users/john/Projects/60_soho/30_Personal/GameCreator/GDevelop/projects/crystal-quest/assets"
+import os
+_HERE = os.path.dirname(os.path.abspath(__file__))
+PROJ  = os.path.dirname(_HERE)
+A = f"{PROJ}/assets"
 S = 48  # 邏輯畫布
 
 def px(d, x, y, c):

@@ -5,7 +5,8 @@
 import os
 from PIL import Image
 
-PROJ = "/Users/john/Projects/60_soho/30_Personal/GameCreator/GDevelop/projects/crystal-quest"
+_HERE = os.path.dirname(os.path.abspath(__file__))
+PROJ = os.path.dirname(_HERE)
 SRC = f"{PROJ}/design/faces"
 DST = f"{PROJ}/assets/ui"
 # id → 來源檔名候選（依序找；lude/alan 為 John 早期產圖的舊檔名）

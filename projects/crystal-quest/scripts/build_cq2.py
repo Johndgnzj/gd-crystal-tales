@@ -4,7 +4,9 @@
 import json, os, uuid, random, math
 from PIL import Image, ImageDraw
 
-PROJ = "/Users/john/Projects/60_soho/30_Personal/GameCreator/GDevelop/projects/crystal-quest"
+_HERE = os.path.dirname(os.path.abspath(__file__))
+PROJ  = os.path.dirname(_HERE)                    # projects/crystal-quest（由腳本位置推導、可攜）
+GDROOT = os.path.dirname(os.path.dirname(PROJ))   # GDevelop 工作區根（含 tools/）
 A = f"{PROJ}/assets"
 SCRATCH = "/private/tmp/claude-501/-Users-john-Projects-60-soho-30-Personal-GameCreator-GDevelop/038d8d3e-e22f-48f1-b3aa-164f0cb4c09d/scratchpad"
 CONTENT = json.load(open(f"{PROJ}/CONTENT.json"))
@@ -18,7 +20,7 @@ random.seed(51)
 TS = 32
 
 # ================= 1. Atlas（LPC terrain 整合版）=================
-LPCT = Image.open("/Users/john/Projects/60_soho/30_Personal/GameCreator/GDevelop/tools/lpc-terrain/terrain_atlas.png").convert("RGBA")
+LPCT = Image.open(f"{GDROOT}/tools/lpc-terrain/terrain_atlas.png").convert("RGBA")
 def lpc(c,r): return LPCT.crop((c*32,r*32,c*32+32,r*32+32))
 
 tiles = ["grass","grassf","path","dirt","tgrass","water","sand","bridge",
@@ -54,7 +56,7 @@ put_lpc("plaza",11,22)        # 城鎮中心廣場：改用自然淡色夯土（
 tg = lpc(22,5).copy(); reed = lpc(8,17)
 tg.alpha_composite(reed); put("tgrass",tg)
 # 洞窟專用磚（LPC base_out：岩壁面 / 沙岩頂）
-BASEO = Image.open("/Users/john/Projects/60_soho/30_Personal/GameCreator/GDevelop/tools/lpc-atlas1/base_out_atlas.png").convert("RGBA")
+BASEO = Image.open(f"{GDROOT}/tools/lpc-atlas1/base_out_atlas.png").convert("RGBA")
 def baseo(c,r): return BASEO.crop((c*32,r*32,c*32+32,r*32+32))
 put("cwall", baseo(1,3)); put("cwtop", baseo(5,1)); put("ctop", baseo(18,8))
 # 森林迷宮牆＝大樹樹冠內部的密葉紋理（加深色調讓通道更好讀）

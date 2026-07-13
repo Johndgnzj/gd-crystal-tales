@@ -4,7 +4,8 @@
    推送用 DesignSync（Claude 執行）。改完設計後：改這支腳本或回報 token 變更→重生遊戲 UI。"""
 import os, shutil
 
-PROJ = "/Users/john/Projects/60_soho/30_Personal/GameCreator/GDevelop/projects/crystal-quest"
+_HERE = os.path.dirname(os.path.abspath(__file__))
+PROJ = os.path.dirname(_HERE)
 OUT = f"{PROJ}/design/ui_kit"
 A = f"{PROJ}/assets"
 SCRATCH_E2E = "/private/tmp/claude-501/-Users-john-Projects-60-soho-30-Personal-GameCreator-GDevelop/3ce492e9-94cd-4d02-abd6-73f8a4230a52/scratchpad/e2e"

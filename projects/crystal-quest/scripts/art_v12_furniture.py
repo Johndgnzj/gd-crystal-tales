@@ -4,7 +4,10 @@
    輸出到 assets/props/：int_room_wood.png / int_room_stone.png ＋ f_*.png。須在 build_cq2.py 之前跑。"""
 from PIL import Image, ImageDraw
 
-A = "/Users/john/Projects/60_soho/30_Personal/GameCreator/GDevelop/projects/crystal-quest/assets/props"
+import os
+_HERE = os.path.dirname(os.path.abspath(__file__))
+PROJ  = os.path.dirname(_HERE)
+A = f"{PROJ}/assets/props"
 
 # ---- 調色盤 ----
 WOOD   =(150,112,72); WOOD_D =(116,84,52); WOOD_L =(178,138,96); WOOD_XD=(84,60,38)

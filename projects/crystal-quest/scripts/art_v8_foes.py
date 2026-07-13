@@ -6,8 +6,11 @@
 import os
 from PIL import Image
 
-LPC = "/Users/john/Projects/60_soho/30_Personal/GameCreator/GDevelop/tools/lpc/spritesheets"
-OUT = "/Users/john/Projects/60_soho/30_Personal/GameCreator/GDevelop/projects/crystal-quest/assets/battle/lpc_src"
+_HERE = os.path.dirname(os.path.abspath(__file__))
+PROJ  = os.path.dirname(_HERE)
+GDROOT = os.path.dirname(os.path.dirname(PROJ))
+LPC = f"{GDROOT}/tools/lpc/spritesheets"
+OUT = f"{PROJ}/assets/battle/lpc_src"
 os.makedirs(OUT, exist_ok=True)
 
 def tint(img, color):

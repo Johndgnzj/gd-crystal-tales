@@ -3,7 +3,11 @@
 import random
 from PIL import Image, ImageDraw
 
-A = "/Users/john/Projects/60_soho/30_Personal/GameCreator/GDevelop/projects/crystal-quest/assets"
+import os
+_HERE = os.path.dirname(os.path.abspath(__file__))
+PROJ  = os.path.dirname(_HERE)
+GDROOT = os.path.dirname(os.path.dirname(PROJ))
+A = f"{PROJ}/assets"
 random.seed(99)
 TS = 32
 tiles = ["grass","grassf","path","dirt","tgrass","water","sand","bridge",
@@ -75,7 +79,7 @@ icrack(10,(66,64,74))
 wrap_dither(11,(56,54,66),[(50,48,60),(64,62,74),(52,52,62)],0.42)
 # 8/10 主地板改用 OGA LPC cobblestone（[LPC] Dungeon Elements, Sharm, CC-BY）：
 #   去飽和→套礦坑/洞穴灰階（保留鋪石細節、仍無縫）；gravel(9,遇敵)/cavedark(11) 維持自繪以資區別
-_COB=Image.open("/Users/john/Projects/60_soho/30_Personal/GameCreator/GDevelop/tools/lpc-dungeon/cobble.png").convert("RGBA")
+_COB=Image.open(f"{GDROOT}/tools/lpc-dungeon/cobble.png").convert("RGBA")
 def _lumtint(src,tint):
     out=Image.new("RGBA",(TS,TS),(0,0,0,0)); sp=src.load(); op=out.load()
     for yy in range(TS):

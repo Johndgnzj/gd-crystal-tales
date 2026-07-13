@@ -5,8 +5,12 @@
 import json
 from PIL import Image, ImageDraw
 
-A = "/Users/john/Projects/60_soho/30_Personal/GameCreator/GDevelop/projects/crystal-quest/assets"
-LPC = "/Users/john/Projects/60_soho/30_Personal/GameCreator/GDevelop/tools/lpc/spritesheets"
+import os
+_HERE = os.path.dirname(os.path.abspath(__file__))
+PROJ  = os.path.dirname(_HERE)
+GDROOT = os.path.dirname(os.path.dirname(PROJ))
+A = f"{PROJ}/assets"
+LPC = f"{GDROOT}/tools/lpc/spritesheets"
 FRAMES = [1, 3, 5, 7]   # 行走循環取 4 幀
 LEFT_ROW = 1            # LPC walk 表第 1 列 = 面向左
 # 戰鬥持武器：LPC weapon walk 圖層（fg 疊上、behind 墊下）

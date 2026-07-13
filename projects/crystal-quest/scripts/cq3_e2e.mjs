@@ -1,7 +1,9 @@
 // 水晶戰記 v3 E2E：序章(亞倫跟隨/立繪)→鍵盤教學戰→魔影→回鎮(瑪琳入隊)→選單五頁/配點→委託→頭目→回報
 import http from "http"; import fs from "fs"; import path from "path";
 import { createRequire } from "module";
-const require = createRequire("/Users/john/Projects/60_soho/30_Personal/GameCreator/GDevelop/gdevelop-mcp/package.json");
+import { fileURLToPath } from "url";
+const _gdroot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");  // GDevelop 工作區根（可攜）
+const require = createRequire(path.join(_gdroot, "gdevelop-mcp/package.json"));
 const puppeteer = require("puppeteer");
 const DIR = process.argv[2], OUT = process.argv[3];
 const MIME = {".html":"text/html",".js":"text/javascript",".json":"application/json",".png":"image/png",".jpg":"image/jpeg",".tmj":"application/json",".wav":"audio/wav",".mp3":"audio/mpeg"};

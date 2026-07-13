@@ -5,8 +5,12 @@
    villager（米拉沿用）已有 36 幀，不動。輸出到 assets/char/，須在 build_cq2.py 之前跑。"""
 from PIL import Image
 
-LPC = "/Users/john/Projects/60_soho/30_Personal/GameCreator/GDevelop/tools/lpc/spritesheets"
-A = "/Users/john/Projects/60_soho/30_Personal/GameCreator/GDevelop/projects/crystal-quest/assets/char"
+import os
+_HERE = os.path.dirname(os.path.abspath(__file__))
+PROJ  = os.path.dirname(_HERE)
+GDROOT = os.path.dirname(os.path.dirname(PROJ))
+LPC = f"{GDROOT}/tools/lpc/spritesheets"
+A = f"{PROJ}/assets/char"
 ROWS = ["Up", "Left", "Down", "Right"]   # LPC walk 圖列序＝與 art_v6 一致
 
 def tint(img, color):

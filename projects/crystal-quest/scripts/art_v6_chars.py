@@ -3,8 +3,12 @@
    瑪琳（白上衣+深藍裙+短靴+暖赭馬尾）。輸出 36 幀/人到 assets/char/（覆蓋）。"""
 from PIL import Image
 
-LPC = "/Users/john/Projects/60_soho/30_Personal/GameCreator/GDevelop/tools/lpc/spritesheets"
-A = "/Users/john/Projects/60_soho/30_Personal/GameCreator/GDevelop/projects/crystal-quest/assets/char"
+import os
+_HERE = os.path.dirname(os.path.abspath(__file__))
+PROJ  = os.path.dirname(_HERE)
+GDROOT = os.path.dirname(os.path.dirname(PROJ))
+LPC = f"{GDROOT}/tools/lpc/spritesheets"
+A = f"{PROJ}/assets/char"
 ROWS = ["Up", "Left", "Down", "Right"]
 
 def tint(img, color):

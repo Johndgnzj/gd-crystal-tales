@@ -32,8 +32,8 @@ GDevelop/
 - **Python 3 + Pillow**（`pip install pillow`；建置腳本用）
 - GDevelop（預覽/匯出）
 
-> ⚠️ 建置腳本目前內含**絕對路徑**（假設工作區在 `~/Projects/60_soho/30_Personal/GameCreator/GDevelop`）；
-> 於其他機器 clone 後需調整腳本頂部的路徑常數。
+> 建置腳本的路徑皆由腳本自身位置（`__file__`）推導，clone 到任何位置都能直接跑。
+> 只需在工作區根放好 `tools/`（見下）與 `gdevelop-mcp/`；`.mcp.json` 內的 Node 22 路徑是本機 nvm 路徑，換機需自行調整。
 
 ## 建置與執行
 
