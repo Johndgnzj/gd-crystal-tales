@@ -33,4 +33,23 @@ txt("開始遊戲",f"{U}/t_start.png",58)
 txt("繼續冒險",f"{U}/t_cont.png",48)
 txt("重新開始",f"{U}/t_restart.png",48)
 txt("開始新遊戲",f"{U}/t_new.png",48)   # 無存檔時用（取代「重新開始」，語意較對）
-print("title v13 done: menubg + t_start/t_cont/t_restart/t_new")
+txt("交談",f"{U}/t_talk.png",44)         # 室內立繪+選單指令
+txt("離開",f"{U}/t_leave.png",44)
+
+# --- 室內「立繪＋選單」用：從 design/faces 半身圖去深藍底（亮度鍵＋羽化）當室內大型前景角色 ---
+from PIL import ImageFilter
+def portrait(name):
+    src=f"{PROJ}/design/faces/{name}.png"
+    if not os.path.exists(src): return
+    im=Image.open(src).convert("RGBA"); w,h=im.size
+    im=im.crop((0,0,int(w*0.46),h)); w,h=im.size          # 人物在左側，裁左 46%
+    px=im.load(); al=Image.new("L",(w,h),0); ap=al.load()
+    for y in range(h):
+        for x in range(w):
+            r,g,b,a=px[x,y]; lum=(r*30+g*59+b*11)//100
+            ap[x,y]=0 if lum<=22 else (255 if lum>=44 else int((lum-22)*255/22))
+    al=al.filter(ImageFilter.GaussianBlur(2))              # 羽化邊緣，柔和融入房間
+    im.putalpha(al)
+    im.save(f"{U}/portrait_{name}.png")
+for _n in ["tina"]: portrait(_n)   # 先做公會（緹娜）；其餘棟核可後再補
+print("title v13 done: menubg + t_start/t_cont/t_restart/t_new + portrait_tina")

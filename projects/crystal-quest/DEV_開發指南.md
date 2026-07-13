@@ -85,7 +85,7 @@ crystal-quest/
 | 數值/裝備/技能/敵人/遭遇/難度節奏 | `CONTENT.json`（pacing.battles=練級所需場數）→ 重跑 build |
 | NPC 台詞/劇情 | build_cq2.py 的 `DLG`/`CUTS` 資料表 |
 | 地圖佈局 | build_cq2.py 第 4 節（MapB/carve_maze/make_forest）；**裝飾 prop 不要傳 foot**——`foot=(0,0,0,0)` 會把該格變牆，樹狀迷宮會斷路。城鎮建築尺寸/位置＝`BLDG_LAYOUT`；樹一律避開 `_bld_clear`（各建築精靈實際覆蓋範圍）不會被遮成一角/擋門口 |
-| 室內佈局/家具 | 物件擺放式（Track J2）：房間外殼 `int_room_wood/stone` ＋動態生成可碰撞家具。改佈局＝`INT_ROOMS`（每棟 shell/furn[(obj,lx,ly)]/owners/entry，room-local px）；家具碰撞深度＝`FURN_FOOT`；房間幾何＝`INT_GEO`（對齊 art_v12 的 RW/RH/WALL/SIDE）。家具圖＝art_v12_furniture.py。可用離線佈局預覽快速調位（合成 shell+家具，見交付紀錄）|
+| 室內 | 手繪大圖 `intc_<key>` 當背景（John 定案不用物件式；`_clean_ext` 去洋紅）。每棟設定在 `INT_DRAWN`＋`INT_DRAWN_DEFAULT`（座標皆為背景圖 W/H 比例）。**兩種模式**：① `mode:"menu"`（★公會，立繪＋選單）＝手繪背景＋`IntArt` 大型立繪前景（`portrait_<id>.png`，art_v13 由 design/faces 亮度鍵+羽化裁出）＋指令選單（IntCmd0/1＝交談/離開），不走動、直接互動；② 預設 walk（`room`/`furn` 隱形碰撞矩形、可走動）。切模式改 `INT_DRAWN[key].mode`。舊物件式（int_room+FURN_*）已停用。可用離線疊圖預覽快速調 fraction。|
 | 選單/戰鬥 UI | WORLD_JS 選單段 / BATTLE_JS refresh()；UI tokens：選單 accent 青 #AADCEB、戰鬥 accent 金（Design 定案） |
 | 新立繪/背景圖 | `/gen-art` skill（根目錄 `.claude/skills/gen-art/`） |
 | 新場景 | build_world_scene + cfg + `layouts` 清單 + **resources 的 tmj 註冊清單**（漏了會 Tilemap 載入錯誤） |

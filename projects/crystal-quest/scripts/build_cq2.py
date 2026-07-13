@@ -1152,6 +1152,10 @@ def build_world_scene(name,mapb,tmjname,npcs,cfg,default_spawn):
         # 室內折衷方案：單一 Interior 物件、6 個手繪大圖動畫（intc_<key>），進哪棟切哪張；碰撞走隱形 st.furn
         extra.append(sprite("Interior",[anim(BLDG_KEY[_bo],["intc_"+BLDG_KEY[_bo]+".png"],1,False)
                      for _bo in ["BGuild","BInn","BShrine","BMayor","BShop","BSmith"]]))
+        # 立繪＋選單式室內：大型前景立繪（先做緹娜）＋指令標籤（描邊字）
+        extra.append(sprite("IntArt",[anim("tina",["portrait_tina.png"],1,False)]))
+        extra.append(sprite("IntCmd0",[anim("i",["t_talk.png"],1,False)]))
+        extra.append(sprite("IntCmd1",[anim("i",["t_leave.png"],1,False)]))
         extra.append(sprite("Well",[anim("i",["well.png"],1,False)]))
         extra.append(sprite("Board",[anim("i",["board.png"],1,False)]))
         for _dn,_fn in [("Barrel","barrel"),("Crate","crate"),("Lamp","lamp"),
@@ -1188,6 +1192,9 @@ def build_world_scene(name,mapb,tmjname,npcs,cfg,default_spawn):
     if name=="Town":
         for _hx,_hy in [(13,26),(34,24),(7,27)]: insts.append(inst("Hen",_hx*TS+7,_hy*TS+8,5))
         insts.append(inst("Interior",0,0,1,585,440))         # 室內手繪大圖（init 隱藏，進屋時定位/縮放）
+        insts.append(inst("IntArt",0,0,50))                  # 立繪前景（進屋時定位/縮放）
+        insts.append(inst("IntCmd0",150,556,9995,0,0,"UI"))  # 指令選單（UI 層螢幕座標）
+        insts.append(inst("IntCmd1",150,616,9995,0,0,"UI"))
     for n in npcs: insts.append(inst(n["obj"],n["x"]*TS,n["y"]*TS-16,5))
     if name=="Forest2":
         insts.append(inst("BossMark",(FW-6)*TS,FEY*TS-28,5,64,80))
@@ -1353,6 +1360,7 @@ if(!rs.__v){
   // Track J：室內初始隱藏；有 doors 的場景（Town）室外只顯示戶外 NPC（主人平時在室內）
   st0.inside=null;
   var iv0=one("Interior"); if(iv0)iv0.hide(true);
+  ["IntArt","IntCmd0","IntCmd1"].forEach(function(n){var o=one(n);if(o)o.hide(true);});
   if(CFG.doors){
     CFG.npcs.forEach(function(n){var o=one(n.obj);if(!o)return;
       var out=false;for(var oi=0;oi<CFG.outdoorNpcs.length;oi++)if(CFG.outdoorNpcs[oi]===n.obj)out=true;
@@ -1466,44 +1474,58 @@ function setOutdoorHidden(h){
 }
 function isOutdoorNpc(obj){for(var i=0;i<((CFG.outdoorNpcs)||[]).length;i++)if(CFG.outdoorNpcs[i]===obj)return true;return false;}
 function npcFace(obj){for(var i=0;i<CFG.npcs.length;i++){if(CFG.npcs[i].obj===obj)return CFG.npcs[i].face||"Down";}return "Down";}
+function npcId(obj){for(var i=0;i<CFG.npcs.length;i++){if(CFG.npcs[i].obj===obj)return CFG.npcs[i].id;}return "";}
+function openOwnerDlg(id){var defs=DLG[id]||[],f9=flags();for(var i=0;i<defs.length;i++){if(matchWhen(f9,defs[i].when)){st.dlg={name:defs[i].name,lines:defs[i].lines,action:defs[i].action};st.dlgIdx=0;sfx("select.wav");return;}}}
 function enterBuilding(door){
   st.inside=door.obj; st.curDoor=door;
   setOutdoorHidden(true);
   CFG.npcs.forEach(function(n){var o=one(n.obj);if(o)o.hide(true);});
   rs.getObjects("Follower").forEach(function(o){o.hide(true);});
-  // 折衷方案：手繪大圖當背景（品質）＋ fraction 定義的隱形碰撞框（真碰撞）
   var key=door.key, nat=CFG.intNat[key]||[1118,839];
   var cfgR=CFG.intDrawn[key]||CFG.intDrawnDefault;
   var cx=CFG.MW*TS/2, cy=CFG.MH*TS/2;
   var dH=700, dW=Math.round(dH*nat[0]/nat[1]);          // 顯示尺寸（維持原生長寬比）
   var RX=Math.round(cx-dW/2), RY=Math.round(cy-dH/2);
-  st.intCam=[cx,cy];
-  st.intZoom=Math.min(1280/dW,720/dH)*0.96;             // 讓整間房剛好填滿螢幕（不會太空）
+  st.intCam=[cx,cy]; st.intZoom=Math.min(1280/dW,720/dH)*0.96;   // 房間填滿螢幕
   var iv=one("Interior");
   if(iv){iv.hide(false);iv.setAnimationName(key);iv.setWidth(dW);iv.setHeight(dH);iv.setX(RX);iv.setY(RY);iv.setZOrder(1);}
   function fx(v){return RX+v*dW;} function fy(v){return RY+v*dH;}
+  var art=one("IntArt");
+  if(cfgR.mode==="menu"){
+    // === 立繪＋選單式（不走動）：手繪背景＋大型立繪前景＋指令選單 ===
+    st.intMode="menu"; st.intCmd=0; st.intJustEntered=true; st.room=null; st.furn=[]; st.furnObjs=[];
+    st.kp=st.kp||{}; st.kp.Space=true; st.kp.Return=true;   // 把進門那次（可能被壓住數幀）的 Space 標成已按下，避免一進門就誤觸「交談」
+    p.hide(true);
+    var oid=(door.owners&&door.owners[0])?npcId(door.owners[0]):""; st.owner=oid;
+    if(art){art.hide(false); try{art.setAnimationName(oid);}catch(e){}
+      var nR=art.getWidth()/art.getHeight(), aH=Math.round(dH*0.82), aW=Math.round(aH*nR);
+      art.setWidth(aW); art.setHeight(aH);
+      art.setX(RX+dW-aW+Math.round(dW*0.02)); art.setY(RY+dH-aH); art.setZOrder(50);}
+    st.last=[p.getX(),p.getY()]; sfx("select.wav"); return;
+  }
+  // === walk 模式（其餘棟）：手繪背景＋隱形碰撞，可走動 ===
+  st.intMode="walk"; if(art)art.hide(true); p.hide(false);
   var rm=cfgR.room, ex=cfgR.exit;
   st.room={l:fx(rm[0]),t:fy(rm[1]),r:fx(rm[2]),b:fy(rm[3]),exL:fx(ex[0]),exR:fx(ex[1]),exY:fy(ex[2])};
   st.furn=(cfgR.furn||[]).map(function(f){return [fx(f[0]),fy(f[1]),fx(f[2]),fy(f[3])];});
   st.furnObjs=[];
-  // 主人 NPC（fraction 腳底；面向下對著玩家）
   for(var k=0;k<door.owners.length&&k<cfgR.owners.length;k++){
-    var no=one(door.owners[k]); if(!no)continue;
-    no.hide(false);
-    no.setX(fx(cfgR.owners[k][0])-no.getWidth()/2);
-    no.setY(fy(cfgR.owners[k][1])-no.getHeight());
+    var no=one(door.owners[k]); if(!no)continue; no.hide(false);
+    no.setX(fx(cfgR.owners[k][0])-no.getWidth()/2); no.setY(fy(cfgR.owners[k][1])-no.getHeight());
     no.setAnimationName("IdleDown"); no.setZOrder(baseZ(no));
   }
-  // 玩家入口（fraction 腳底），面向上
   var pw=p.getWidth(),ph=p.getHeight();
   p.setX(fx(cfgR.entry[0])-pw/2); p.setY(fy(cfgR.entry[1])-ph*0.85);
   p.setAnimationName("IdleUp"); st.last=[p.getX(),p.getY()];
   st.exitArmed=false; sfx("select.wav");
 }
 function exitBuilding(){
-  var door=st.curDoor; st.inside=null; st.curDoor=null;
+  var door=st.curDoor; st.inside=null; st.curDoor=null; st.intMode=null;
   setOutdoorHidden(false);
   var iv=one("Interior"); if(iv)iv.hide(true);
+  var art=one("IntArt"); if(art)art.hide(true);
+  var c0=one("IntCmd0"),c1=one("IntCmd1"); if(c0)c0.hide(true); if(c1)c1.hide(true);
+  p.hide(false);
   st.furnObjs=[]; st.furn=[];
   CFG.npcs.forEach(function(n){var o=one(n.obj);if(!o)return;
     if(isOutdoorNpc(n.obj)){o.hide(false);
@@ -1739,7 +1761,7 @@ if(st.cut){
   var showBoard=!near&&nearBoard&&!st.dlg&&!st.menu&&!st.shop;
   var showDoor=!st.inside&&!near&&!nearBoard&&nearDoor&&!st.dlg&&!st.menu&&!st.shop;
   var showChest=!near&&!nearBoard&&!nearDoor&&nearChest&&!st.dlg&&!st.menu&&!st.shop;
-  var showLeave=st.inside&&!showTalk&&!st.dlg&&!st.menu&&!st.shop;
+  var showLeave=st.inside&&st.intMode!=="menu"&&!showTalk&&!st.dlg&&!st.menu&&!st.shop;   // 立繪選單式室內用選單離開，不顯示走動提示
   if(pr){pr.hide(!(showTalk||showBoard||showDoor||showChest||showLeave));
     if(showTalk)pr.setString("空白鍵：交談");
     else if(showBoard)pr.setString("空白鍵：查看告示板");
@@ -1750,6 +1772,23 @@ if(st.cut){
 // ---------- 選單（角色/道具/地圖/稱號/系統） ----------
 if(!st.kp)st.kp={};
 function keyHit(k){var d=gdjs.evtTools.input.isKeyPressed(rs,k)||!!(st.tk&&st.tk[k]);var was=st.kp[k];st.kp[k]=d;return d&&!was;}
+// ===== 立繪＋選單式室內：指令選單（交談/離開），不走動 =====
+if(st.inside&&st.intMode==="menu"){
+  lock=true;   // 鎖 TopDown 移動，方向鍵留給選單游標
+  var _c0=one("IntCmd0"),_c1=one("IntCmd1");
+  if(!st.dlg&&!st.cut&&!st.menu&&!st.shop){
+    if(_c0)_c0.hide(false); if(_c1)_c1.hide(false);
+    if(keyHit("Up")||keyHit("Down")){st.intCmd=(st.intCmd+1)%2;sfx("cursor.mp3");}
+    if(_c0)_c0.setColor(st.intCmd===0?"255;255;255":"150;150;162");
+    if(_c1)_c1.setColor(st.intCmd===1?"255;255;255":"150;150;162");
+    var _cl=-1; if(anyStartIn("IntCmd0"))_cl=0; if(anyStartIn("IntCmd1"))_cl=1;
+    if(_cl>=0)st.intCmd=_cl;
+    var _canC=!st.intJustEntered&&!st.dlgPrev; st.intJustEntered=false;   // 略過進門/對話關閉當幀的按鍵，避免誤觸
+    if(_canC&&(_cl>=0||keyHit("Space")||keyHit("Return"))){
+      if(st.intCmd===0)openOwnerDlg(st.owner); else exitBuilding();
+    }
+  }else{ if(_c0)_c0.hide(true); if(_c1)_c1.hide(true); }
+}
 var TABS=["角色","裝備","道具","地圖","稱號","系統"];
 // Claude Design 原型 tokens：accent=#AADCEB（John 選定）、gold 留給金幣/警示
 var C_ACC="170;220;235", C_GOLD="255;225;120", C_DIM="120;130;150";
@@ -2152,7 +2191,9 @@ if(!st.dlg&&!st.cut){var pn=one("DlgPanel"),dn=one("DlgName"),dx=one("DlgText"),
 
 // ---------- 移動/碰撞/動畫 ----------
 var ft=feet(p);
-if(st.inside){
+if(st.inside&&st.intMode==="menu"){
+  // 立繪＋選單式室內：不走動（玩家隱藏），移動/碰撞整段略過。
+}else if(st.inside){
   // 室內：夾在牆內可行走矩形，且腳底不得進入任一家具 footprint（可碰撞家具＝真的擋路）。底部中央為出口。
   var rb=st.room, fr=st.furn||[];
   var offx=ft[0]-p.getX(), offy=ft[1]-p.getY();
@@ -2337,6 +2378,7 @@ if(st.inside){
   cam.setCameraX(Math.max(hw,Math.min(CFG.MW*TS-hw,p.getX()+p.getWidth()/2)));
   cam.setCameraY(Math.max(hh,Math.min(CFG.MH*TS-hh,p.getY()+p.getHeight()/2)));
 }
+st.dlgPrev=!!st.dlg;   // 記錄本幀對話狀態→下幀立繪選單用來略過「關閉對話那次按鍵」
 try{window.__B=null;window.__G=g;}catch(e){}   // 清掉戰鬥殘留掛勾；__G=全域變數容器（E2E 佈置背包/隊伍用）
 try{window.__W={scene:CFG.SCENE,x:Math.round(p.getX()),y:Math.round(p.getY()),
   lock:lock,step:f.step,reg:f.reg||0,ch1:f.ch1||0,ch2:f.ch2||0,flags:f,gold:g.get("g_gold").getAsNumber(),
@@ -2386,9 +2428,9 @@ INT_DRAWN={
            [0.55,0.45,0.74,0.58],   # 右上圓桌+椅（吊燈下）
            [0.75,0.56,0.92,0.70],   # 右圓桌+椅
            [0.46,0.71,0.64,0.87]],  # 下方圓桌+椅
-   "owners":[[0.46,0.56]],          # 緹娜站櫃檯後靠右端（右側是開闊地板，玩家從右前方搆得到對話）
-   "entry":[0.68,0.66],             # 玩家入口（中央開闊地板）
-   "exit":[0.64,0.86,0.80]},        # exL,exR,exY（腳底 x∈[exL,exR] 且 y>exY 即離場）
+   "owners":[[0.46,0.56]],          # (walk 模式用) 緹娜站櫃檯後靠右端
+   "entry":[0.68,0.66],"exit":[0.64,0.86,0.80],
+   "mode":"menu"},                  # ★立繪＋選單式（不走動）：手繪背景＋緹娜大型立繪＋指令選單
 }
 INT_DRAWN_DEFAULT={"room":[0.20,0.55,0.86,0.86],"furn":[],
    "owners":[[0.30,0.56]],"entry":[0.60,0.72],"exit":[0.44,0.74,0.80]}

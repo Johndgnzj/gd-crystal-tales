@@ -43,6 +43,8 @@ LPC 角色產生器圖層合成（CC-BY-SA/GPL），圖層配方參考 overworld
   （Gemini gemini-2.5-flash-image，提示詞作者 John/協作 Agent，2026-07-12，
   由 /gen-art skill 生成，原圖在 design/faces/、art_v7_faces.py 裁切縮圖）。
   程式繪備用版可由 art_v4_portraits.py 重生。
+- `assets/ui/portrait_<id>.png`（室內立繪＋選單用的大型前景立繪）：由 design/faces 同一 AI 立繪，
+  以 art_v13_title.py 亮度鍵去深藍底＋羽化裁出（衍生自上者，授權相同）。目前有 portrait_tina（公會）。
 - `assets/battle/hero_*.png`：由 LPC 合成角色幀放大裁切（沿用 LPC CC-BY-SA/GPL 授權），
   武器圖層取自 LPC weapon walk（longsword/dagger/saber，CC-BY-SA/GPL）。
 - `assets/ui/battlebg_*.png`：程序化生成（自製）。
