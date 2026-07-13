@@ -72,6 +72,8 @@ LPC 角色產生器圖層合成（CC-BY-SA/GPL），圖層配方參考 overworld
 - 野狼（取代先前的熊 recolor 佔位）：[**[LPC] Wolf Animation**](https://opengameart.org/content/lpc-wolf-animation) —— CC-BY 4.0/3.0 / GPL / OGA-BY 3.0 —— Stephen "Redshrike" Challener ＋ William.Thompsonj。
 - 掠翅鳥：[**[LPC] Birds**](https://opengameart.org/content/lpc-birds)（eagle）—— CC-BY 4.0/3.0 / CC-BY-SA / GPL / OGA-BY —— bluecarrot16（castelonia 委製）。
 - `assets/ui/menubg.png`（水晶奇譚標題畫面）：背景與 Logo 徽記為 AI 生成
-  （Gemini gemini-2.5-flash-image，提示詞作者 John/協作 Agent，2026-07-12，原圖 design/title/），
+  （Gemini gemini-2.5-flash-image，提示詞作者 John/協作 Agent，原圖 design/title/：
+  2026-07-13 改用手繪奇幻森林 `title_new.png`，由 `art_v13_title.py` 合成既有 logo；舊版 title_a 保留），
   標題文字「水晶奇譚／CRYSTAL TALE」以 PIL＋系統字體(STHeiti/Arial)合成（自製）。
+  標題選單描邊字 `t_start/t_cont/t_restart.png` 亦為 PIL 系統字體烘製（自製）。
   ※ 遊戲更名：水晶戰記 → 水晶奇譚（Crystal Tale）；專案資料夾 crystal-quest 維持為代號。

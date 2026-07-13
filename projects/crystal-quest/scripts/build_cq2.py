@@ -661,6 +661,7 @@ def _clean_ext(src,dst,stone=False):
 BLDG_EXTF={}
 for _bo,_bk in BLDG_KEY.items():
     _clean_ext(f"{P}/ext_{_bk}.png",f"{P}/extc_{_bk}.png",stone=True); BLDG_EXTF[_bo]="extc_"+_bk+".png"
+    _clean_ext(f"{P}/int_{_bk}.png",f"{P}/intc_{_bk}.png")   # 手繪室內大圖去洋紅底（折衷方案：當室內背景，配隱形碰撞）
 # (obj, door_tx, door_ty, 底部寬幾格)
 # 房子大小還原成 5 格寬（John：4 格太小、要配合人物大小）。樹一律避開建築實際覆蓋範圍→不會被遮成一角/擋門口。
 BLDG_LAYOUT=[("BGuild",6,8,5),("BInn",14,8,5),("BShrine",30,8,5),
@@ -1148,11 +1149,9 @@ def build_world_scene(name,mapb,tmjname,npcs,cfg,default_spawn):
         # 45° 斜角外觀（ext_*.png，customSize 由 instance 縮放）
         for _bo in ["BGuild","BInn","BShrine","BMayor","BShop","BSmith"]:
             extra.append(sprite(_bo,[anim("i",[BLDG_EXTF[_bo]],1,False)]))
-        # 室內：房間外殼(wood/stone) ＋ 可碰撞家具物件（物件擺放式，取代單張室內大圖）
-        extra.append(sprite("IntRoom",[anim("wood",["int_room_wood.png"],1,False),
-                                       anim("stone",["int_room_stone.png"],1,False)]))
-        for _fo,_ff in FURN_OBJ.items():
-            extra.append(sprite(_fo,[anim("i",[_ff+".png"],1,False)]))
+        # 室內折衷方案：單一 Interior 物件、6 個手繪大圖動畫（intc_<key>），進哪棟切哪張；碰撞走隱形 st.furn
+        extra.append(sprite("Interior",[anim(BLDG_KEY[_bo],["intc_"+BLDG_KEY[_bo]+".png"],1,False)
+                     for _bo in ["BGuild","BInn","BShrine","BMayor","BShop","BSmith"]]))
         extra.append(sprite("Well",[anim("i",["well.png"],1,False)]))
         extra.append(sprite("Board",[anim("i",["board.png"],1,False)]))
         for _dn,_fn in [("Barrel","barrel"),("Crate","crate"),("Lamp","lamp"),
@@ -1188,7 +1187,7 @@ def build_world_scene(name,mapb,tmjname,npcs,cfg,default_spawn):
         else: insts.append(inst(pn,px,py,5))
     if name=="Town":
         for _hx,_hy in [(13,26),(34,24),(7,27)]: insts.append(inst("Hen",_hx*TS+7,_hy*TS+8,5))
-        insts.append(inst("IntRoom",0,0,1))                  # 室內房間外殼（init 隱藏，進屋時顯示定位；家具動態生成）
+        insts.append(inst("Interior",0,0,1,585,440))         # 室內手繪大圖（init 隱藏，進屋時定位/縮放）
     for n in npcs: insts.append(inst(n["obj"],n["x"]*TS,n["y"]*TS-16,5))
     if name=="Forest2":
         insts.append(inst("BossMark",(FW-6)*TS,FEY*TS-28,5,64,80))
@@ -1353,7 +1352,7 @@ if(!rs.__v){
     if(isOutdoorNpc(n.obj))st0.npcw.push({o:o,hx:o.getX(),hy:o.getY(),tx:o.getX(),ty:o.getY(),wait:Math.random()*2.5,face:n.face||"Down"});}});
   // Track J：室內初始隱藏；有 doors 的場景（Town）室外只顯示戶外 NPC（主人平時在室內）
   st0.inside=null;
-  var iv0=one("IntRoom"); if(iv0)iv0.hide(true);
+  var iv0=one("Interior"); if(iv0)iv0.hide(true);
   if(CFG.doors){
     CFG.npcs.forEach(function(n){var o=one(n.obj);if(!o)return;
       var out=false;for(var oi=0;oi<CFG.outdoorNpcs.length;oi++)if(CFG.outdoorNpcs[oi]===n.obj)out=true;
@@ -1421,14 +1420,22 @@ if(st.hens){for(var _hi=0;_hi<st.hens.length;_hi++){var H=st.hens[_hi];
 }}
 // 戶外 NPC 在住家附近小範圍隨機遊走（純視覺、不擋路、不吃碰撞外；對話/選單/室內時停住，方便互動）
 if(st.npcw&&!st.dlg&&!st.cut&&!st.menu&&!st.shop&&!st.inside){
+  var _NDIR=[[0,-1,"Up"],[0,1,"Down"],[-1,0,"Left"],[1,0,"Right"]];   // 上下左右四方向
   for(var _ni=0;_ni<st.npcw.length;_ni++){var N=st.npcw[_ni];
     N.wait-=dt;
-    if(N.wait<=0){var _na=Math.random()*6.283,_nr=8+Math.random()*44;N.tx=N.hx+Math.cos(_na)*_nr;N.ty=N.hy+Math.sin(_na)*_nr;N.wait=1.2+Math.random()*3.2;}
-    var _ox2=N.o.getX(),_oy2=N.o.getY(),_ndx=N.tx-_ox2,_ndy=N.ty-_oy2,_nd=Math.sqrt(_ndx*_ndx+_ndy*_ndy);
-    if(_nd>1.5){var _nmv=Math.min(26*dt,_nd),_nx=_ox2+_ndx/_nd*_nmv,_ny=_oy2+_ndy/_nd*_nmv;
+    if(N.wait<=0){
+      // 隨機挑一個四方向、只沿該軸直線走一小段（不斜走）；夾在住家半徑內避免越走越遠
+      var _d=_NDIR[Math.floor(Math.random()*4)],_len=16+Math.random()*40,R=54;
+      var _tx=Math.max(N.hx-R,Math.min(N.hx+R,N.o.getX()+_d[0]*_len));
+      var _ty=Math.max(N.hy-R,Math.min(N.hy+R,N.o.getY()+_d[1]*_len));
+      N.tx=_tx;N.ty=_ty;N.dstep=_d;N.wait=1.2+Math.random()*3.2;
+    }
+    var _d2=N.dstep,_ox2=N.o.getX(),_oy2=N.o.getY();
+    // 只沿選定單軸移動；殘距＝該軸差（另一軸恆為 0）
+    var _rem=_d2?(_d2[0]?Math.abs(N.tx-_ox2):Math.abs(N.ty-_oy2)):0;
+    if(_d2&&_rem>1.5){var _nmv=Math.min(26*dt,_rem),_nx=_ox2+_d2[0]*_nmv,_ny=_oy2+_d2[1]*_nmv;
       if(!blocked(_nx+N.o.getWidth()/2,_ny+N.o.getHeight()*0.85)){
-        N.o.setX(_nx);N.o.setY(_ny);
-        N.o.setAnimationName("Walk"+(Math.abs(_ndx)>Math.abs(_ndy)?(_ndx>0?"Right":"Left"):(_ndy>0?"Down":"Up")));}
+        N.o.setX(_nx);N.o.setY(_ny);N.o.setAnimationName("Walk"+_d2[2]);}
       else N.wait=0.3;
       N.o.setZOrder(baseZ(N.o));
     } else N.o.setAnimationName("Idle"+N.face);
@@ -1464,47 +1471,39 @@ function enterBuilding(door){
   setOutdoorHidden(true);
   CFG.npcs.forEach(function(n){var o=one(n.obj);if(o)o.hide(true);});
   rs.getObjects("Follower").forEach(function(o){o.hide(true);});
-  var GEO=CFG.intGeo, RW=GEO.rw, RH=GEO.rh;
+  // 折衷方案：手繪大圖當背景（品質）＋ fraction 定義的隱形碰撞框（真碰撞）
+  var key=door.key, nat=CFG.intNat[key]||[1118,839];
+  var cfgR=CFG.intDrawn[key]||CFG.intDrawnDefault;
   var cx=CFG.MW*TS/2, cy=CFG.MH*TS/2;
-  var RX=Math.round(cx-RW/2), RY=Math.round(cy-RH/2);
-  st.intCam=[cx,cy]; st.roomTL=[RX,RY];
-  var room=CFG.rooms[door.key]||CFG.rooms.guild;
-  // 房間外殼（wood/stone 貼圖，底層）
-  var iv=one("IntRoom");
-  if(iv){iv.hide(false);iv.setAnimationName(room.shell);iv.setX(RX);iv.setY(RY);iv.setZOrder(1);}
-  // 可行走矩形（牆內）＋出口區（底部中央門口）
-  st.room={l:RX+GEO.side+8,t:RY+GEO.wall+6,r:RX+RW-GEO.side-8,b:RY+RH-18,
-           exL:cx-64,exR:cx+64,exY:RY+RH-30};
-  // 動態生成家具物件（腳底越低疊越前），可碰撞者記錄底部 footprint rect
-  st.furnObjs=[]; st.furn=[];
-  for(var fi=0;fi<room.furn.length;fi++){
-    var it=room.furn[fi],type=it[0],lx=it[1],ly=it[2];
-    var fo=rs.createObject(type); if(!fo)continue;
-    var fw=fo.getWidth(),fh=fo.getHeight();
-    fo.setX(RX+lx); fo.setY(RY+ly); fo.setZOrder(baseZ(fo));
-    st.furnObjs.push(fo);
-    var foot=CFG.furnFoot[type];
-    if(foot)st.furn.push([RX+lx+3,RY+ly+fh-foot,RX+lx+fw-3,RY+ly+fh-2]);
-  }
-  // 主人 NPC（room-local 腳底座標；面向下對著玩家）
-  for(var k=0;k<door.owners.length&&k<room.owners.length;k++){
+  var dH=700, dW=Math.round(dH*nat[0]/nat[1]);          // 顯示尺寸（維持原生長寬比）
+  var RX=Math.round(cx-dW/2), RY=Math.round(cy-dH/2);
+  st.intCam=[cx,cy];
+  st.intZoom=Math.min(1280/dW,720/dH)*0.96;             // 讓整間房剛好填滿螢幕（不會太空）
+  var iv=one("Interior");
+  if(iv){iv.hide(false);iv.setAnimationName(key);iv.setWidth(dW);iv.setHeight(dH);iv.setX(RX);iv.setY(RY);iv.setZOrder(1);}
+  function fx(v){return RX+v*dW;} function fy(v){return RY+v*dH;}
+  var rm=cfgR.room, ex=cfgR.exit;
+  st.room={l:fx(rm[0]),t:fy(rm[1]),r:fx(rm[2]),b:fy(rm[3]),exL:fx(ex[0]),exR:fx(ex[1]),exY:fy(ex[2])};
+  st.furn=(cfgR.furn||[]).map(function(f){return [fx(f[0]),fy(f[1]),fx(f[2]),fy(f[3])];});
+  st.furnObjs=[];
+  // 主人 NPC（fraction 腳底；面向下對著玩家）
+  for(var k=0;k<door.owners.length&&k<cfgR.owners.length;k++){
     var no=one(door.owners[k]); if(!no)continue;
     no.hide(false);
-    no.setX(RX+room.owners[k][0]-no.getWidth()/2);
-    no.setY(RY+room.owners[k][1]-no.getHeight());
+    no.setX(fx(cfgR.owners[k][0])-no.getWidth()/2);
+    no.setY(fy(cfgR.owners[k][1])-no.getHeight());
     no.setAnimationName("IdleDown"); no.setZOrder(baseZ(no));
   }
-  // 玩家入口（room-local 腳底），面向上
+  // 玩家入口（fraction 腳底），面向上
   var pw=p.getWidth(),ph=p.getHeight();
-  p.setX(RX+room.entry[0]-pw/2); p.setY(RY+room.entry[1]-ph*0.85);
+  p.setX(fx(cfgR.entry[0])-pw/2); p.setY(fy(cfgR.entry[1])-ph*0.85);
   p.setAnimationName("IdleUp"); st.last=[p.getX(),p.getY()];
   st.exitArmed=false; sfx("select.wav");
 }
 function exitBuilding(){
   var door=st.curDoor; st.inside=null; st.curDoor=null;
   setOutdoorHidden(false);
-  var iv=one("IntRoom"); if(iv)iv.hide(true);
-  if(st.furnObjs){st.furnObjs.forEach(function(o){o.deleteFromScene();});}
+  var iv=one("Interior"); if(iv)iv.hide(true);
   st.furnObjs=[]; st.furn=[];
   CFG.npcs.forEach(function(n){var o=one(n.obj);if(!o)return;
     if(isOutdoorNpc(n.obj)){o.hide(false);
@@ -1651,11 +1650,12 @@ if(st.cut){
 } else {
   // ---------- NPC 對話 ----------
   var near=null;
+  var _talkR=st.inside?134:72;   // 室內主人常在櫃檯/桌後（深家具），對話半徑放寬才搆得到
   for(var i=0;i<CFG.npcs.length;i++){
     var o=one(CFG.npcs[i].obj); if(!o||o.isHidden())continue;
     var dxx=(o.getX()+o.getWidth()/2)-(p.getX()+p.getWidth()/2);
     var dyy=(o.getY()+o.getHeight()/2)-(p.getY()+p.getHeight()/2);
-    if(Math.sqrt(dxx*dxx+dyy*dyy)<72){near=CFG.npcs[i];break;}
+    if(Math.sqrt(dxx*dxx+dyy*dyy)<_talkR){near=CFG.npcs[i];break;}
   }
   // 告示板：走近顯示當前委託＋建議等級（讀 CONTENT.pacing／劇情旗標）
   var boardO=one("Board");var nearBoard=false;
@@ -2329,7 +2329,7 @@ if(goal){
 // 相機：室外 1.8x 跟隨；室內 1.15x 鎖定室內中心（放大房間後 zoom 降低才容得下全景）
 var cam=rs.getLayer("");
 if(st.inside){
-  cam.setCameraZoom(1.15);
+  cam.setCameraZoom(st.intZoom||1.15);
   cam.setCameraX(st.intCam[0]); cam.setCameraY(st.intCam[1]);
 }else{
   var Z=1.8; cam.setCameraZoom(Z);
@@ -2377,11 +2377,25 @@ _DOOR_OWNERS={"BGuild":["NTina"],"BInn":["NDora"],"BShrine":["NSister"],
 town_doors=[{"obj":o,"tx":BLDG_DOOR[o][0],"ty":BLDG_DOOR[o][1],"key":BLDG_KEY[o],
              "label":_DOOR_LABEL[o],"owners":_DOOR_OWNERS[o]}
             for o in ["BGuild","BInn","BShrine","BMayor","BShop","BSmith"]]
-# Track J2：物件擺放式室內——傳房間幾何/佈局/家具碰撞深度給 JS（取代舊 intNat/intFloor 單張大圖）
+# Track J3：折衷室內——手繪大圖(intc_<key>)當背景 ＋ fraction 定義的隱形碰撞。座標皆為手繪圖 W/H 的比例[l,t,r,b]。
+TOWN_INTNAT={BLDG_KEY[o]:list(BLDG_INT[o]) for o in BLDG_INT}   # key -> [原生w,原生h]（供顯示長寬比）
+# 只有 guild 已逐一對齊碰撞；其餘先用 default（手繪已上、碰撞待微調，John 先驗公會）
+INT_DRAWN={
+ "guild":{"room":[0.15,0.52,0.90,0.87],
+   "furn":[[0.15,0.55,0.50,0.69],   # 長櫃檯
+           [0.55,0.45,0.74,0.58],   # 右上圓桌+椅（吊燈下）
+           [0.75,0.56,0.92,0.70],   # 右圓桌+椅
+           [0.46,0.71,0.64,0.87]],  # 下方圓桌+椅
+   "owners":[[0.46,0.56]],          # 緹娜站櫃檯後靠右端（右側是開闊地板，玩家從右前方搆得到對話）
+   "entry":[0.68,0.66],             # 玩家入口（中央開闊地板）
+   "exit":[0.64,0.86,0.80]},        # exL,exR,exY（腳底 x∈[exL,exR] 且 y>exY 即離場）
+}
+INT_DRAWN_DEFAULT={"room":[0.20,0.55,0.86,0.86],"furn":[],
+   "owners":[[0.30,0.56]],"entry":[0.60,0.72],"exit":[0.44,0.74,0.80]}
 town_cfg={"npcs":[{"obj":n["obj"],"id":n["id"],"face":n["face"]} for n in NPCS_TOWN],
  "spawns":{"home":[15*TS,12*TS],"fromForest":[39*TS,14*TS],"fromMine":[21*TS,2*TS],"shrine":[30*TS,10*TS]},
  "doors":town_doors,"outdoorNpcs":["NGray","NMira","NGuard"],
- "intGeo":INT_GEO,"rooms":INT_ROOMS,"furnFoot":FURN_FOOT,
+ "intNat":TOWN_INTNAT,"intDrawn":INT_DRAWN,"intDrawnDefault":INT_DRAWN_DEFAULT,
  "exits":[{"r":px_rect(40.4,12.5,42,17),"to":"Forest","spawn":"fromTown","minStep":3,"deny":"瑪琳：先跟亞倫先生去礦山吧！（往北）","pushX":-24},
           {"r":px_rect(19.5,-1,24,0.8),"to":"Mine","spawn":"fromTown"}],
  "triggers":[{"r":px_rect(19.5,28,24,30),"msg":"南方大道封鎖中（找羅素隊長打聽）","minStep":0},
@@ -3221,18 +3235,17 @@ battle["events"]=[jsev(BATTLE_JS)]
 # ================= 10. Title =================
 title=scene("Title",(12,10,26))
 title["objects"]=[
-  sprite("TBg",[anim("i",["menubg.png"],1,False)]),   # Logo「水晶奇譚」已烘進背景圖
-  sprite("TBtn",[anim("i",["btn.png"],1,False)]),
-  sprite("TBtn2",[anim("i",["btn.png"],1,False)]),
-  text_obj("TStart","開始冒險",36),
-  text_obj("TStart2","重新開始",30),
-  text_obj("THelp","方向鍵/左下搖桿移動 · 空白鍵或右下鈕交談 · M／≡ 選單 · 觸控與滑鼠皆支援",20,"150;160;200",align="center"),
+  sprite("TBg",[anim("i",["menubg.png"],1,False)]),           # 森林手繪＋log「水晶奇譚」已烘進
+  sprite("TxtStart",[anim("i",["t_start.png"],1,False)]),     # 開始遊戲（無框、文字描邊）
+  sprite("TxtCont",[anim("i",["t_cont.png"],1,False)]),       # 繼續冒險（有存檔）
+  sprite("TxtRestart",[anim("i",["t_restart.png"],1,False)]), # 重新開始（有存檔）
+  sprite("TxtNew",[anim("i",["t_new.png"],1,False)]),         # 開始新遊戲（無存檔）
+  text_obj("THelp","方向鍵/搖桿選擇 · 空白鍵或點擊確定",20,"210;220;242",align="center"),
 ]
 title["instances"]=[
   inst("TBg",0,0,0,1280,720),
-  inst("TBtn",460,496,2,360,90),inst("TStart",566,522,3),
-  inst("TBtn2",460,602,2,360,74),inst("TStart2",576,622,3),
-  inst("THelp",240,690,1,800,0),
+  inst("TxtStart",520,556,3),inst("TxtCont",520,506,3),inst("TxtRestart",520,592,3),inst("TxtNew",520,556,3),
+  inst("THelp",240,678,2,800,0),
 ]
 title["events"]=[jsev(r"""
 var rs=runtimeScene;
@@ -3290,19 +3303,44 @@ function loadSave(){
   }catch(e){newGame();}
 }
 var hasSave=false;try{hasSave=!!(window.localStorage&&window.localStorage.getItem("cq_save"));}catch(e){}
-var btnA=oneT("TBtn"),btnB=oneT("TBtn2"),t1=oneT("TStart"),t2=oneT("TStart2");
-if(hasSave){
-  if(btnA)btnA.setY(496); if(t1){t1.setString("繼續冒險");t1.setY(522);}
-  if(btnB)btnB.hide(false); if(t2)t2.hide(false);
+if(rs.__ts===undefined){rs.__ts=0;rs.__tsel=0;rs.__kp={};rs.__mb=false;}   // 0=登陸 1=選單
+function kHit(k){var d=gdjs.evtTools.input.isKeyPressed(rs,k),was=rs.__kp[k];rs.__kp[k]=d;return d&&!was;}
+// 本幀點擊點：觸控起始 ＋ 滑鼠左鍵按下邊緣（皆支援）
+var clicks=[];
+try{var _t=im.getStartedTouchIdentifiers();for(var i=0;i<_t.length;i++)clicks.push([im.getTouchX(_t[i]),im.getTouchY(_t[i])]);}catch(e){}
+try{var _mb=gdjs.evtTools.input.isMouseButtonPressed(rs,"Left"); if(_mb&&!rs.__mb)clicks.push([im.getCursorX(),im.getCursorY()]); rs.__mb=_mb;}catch(e){}
+
+var oS=oneT("TxtStart"),oC=oneT("TxtCont"),oR=oneT("TxtRestart"),oN=oneT("TxtNew");
+function cxc(o){return o?640-o.getWidth()/2:0;}
+function hitObj(o,p){return o&&!o.isHidden()&&o.insideObject(p[0],p[1]);}
+function go(opt){gdjs.evtTools.sound.playSound(rs,"select.wav",false,100,1); if(opt==="cont")loadSave(); else newGame();}  // restart/new 皆 newGame
+if(oS)oS.setPosition(cxc(oS),548);
+
+if(rs.__ts===0){
+  // 登陸：只出現「開始遊戲」（無框、文字描邊）；按任意鍵或點擊 → 選單
+  if(oS)oS.hide(false); if(oC)oC.hide(true); if(oR)oR.hide(true); if(oN)oN.hide(true);
+  if(kHit("Space")||kHit("Return")||kHit("Up")||kHit("Down")||clicks.length>0){
+    rs.__ts=1; rs.__tsel=0; gdjs.evtTools.sound.playSound(rs,"cursor.mp3",false,100,1);
+  }
+}else if(hasSave){
+  // 有存檔：繼續冒險（預設）／重新開始
+  if(oS)oS.hide(true); if(oN)oN.hide(true); if(oC)oC.hide(false); if(oR)oR.hide(false);
+  if(oC)oC.setPosition(cxc(oC),500); if(oR)oR.setPosition(cxc(oR),584);
+  if(kHit("Up")||kHit("Down")){rs.__tsel=(rs.__tsel+1)%2;gdjs.evtTools.sound.playSound(rs,"cursor.mp3",false,100,1);}
+  var selv=rs.__tsel===0?"cont":"restart";
+  if(oC)oC.setColor(selv==="cont"?"255;255;255":"148;150;162");
+  if(oR)oR.setColor(selv==="restart"?"255;255;255":"148;150;162");
+  for(var j=0;j<clicks.length;j++){
+    if(hitObj(oC,clicks[j])){go("cont");return;}
+    if(hitObj(oR,clicks[j])){go("restart");return;}
+  }
+  if(kHit("Space")||kHit("Return")){go(selv);return;}
 }else{
-  if(btnA)btnA.setY(566); if(t1){t1.setString("開始冒險");t1.setY(592);}
-  if(btnB)btnB.hide(true); if(t2)t2.hide(true);
-}
-var ids=im.getStartedTouchIdentifiers();
-for(var i=0;i<ids.length;i++){
-  var x=im.getTouchX(ids[i]),y=im.getTouchY(ids[i]);
-  if(btnA&&btnA.insideObject(x,y)){ if(hasSave)loadSave(); else newGame(); return; }
-  if(hasSave&&btnB&&btnB.insideObject(x,y)){ newGame(); return; }
+  // 無存檔：只「開始新遊戲」（語意較對，取代「重新開始」）
+  if(oS)oS.hide(true); if(oC)oC.hide(true); if(oR)oR.hide(true); if(oN)oN.hide(false);
+  if(oN){oN.setPosition(cxc(oN),548); oN.setColor("255;255;255");}
+  for(var j2=0;j2<clicks.length;j2++){ if(hitObj(oN,clicks[j2])){go("new");return;} }
+  if(kHit("Space")||kHit("Return")){go("new");return;}
 }
 """.replace("__CONTENT__",json.dumps(CONTENT,ensure_ascii=False)))]
 
@@ -3313,8 +3351,8 @@ for t in ["town","forest","forest2","mine","cave"]:
 for f in sorted(os.listdir(f"{A}/char")):
     if f.endswith(".png"): resources.append(res_(f,f"assets/char/{f}","image"))
 for f in sorted(os.listdir(f"{A}/props")):
-    # 舊「單張室內大圖」(int_<key>/intc_<key>) 已改成物件擺放式室內→不再註冊(int_room_* 是新房間外殼要留)
-    if f.startswith("intc_") or (f.startswith("int_") and not f.startswith("int_room")): continue
+    # 室內折衷：手繪 intc_<key> 當背景要註冊；原始 int_<key>（含洋紅底）不入庫（int_room_* 房間外殼保留）
+    if f.startswith("int_") and not f.startswith("int_room"): continue
     if f.endswith(".png"): resources.append(res_(f,f"assets/props/{f}","image"))
 for f in sorted(os.listdir(f"{A}/battle")):
     if f.endswith(".png"): resources.append(res_(f,f"assets/battle/{f}","image"))

@@ -16,19 +16,26 @@ MODELS = ["gemini-2.5-flash-image", "gemini-2.0-flash-preview-image-generation"]
 # 各素材類型的風格前綴（維持與遊戲現有素材一致的構圖約定）
 STYLES = {
     # John 的立繪管線約定：橫幅、人物偏左、右側裝飾星、深藍底 → art_v7_faces.py 自動裁 144px 頭像
-    "face": ("Anime fantasy RPG character portrait banner, clean cel-shaded illustration "
-             "(smooth painted style, NOT pixel art). The character occupies the LEFT third "
-             "of the frame, bust-up view, facing slightly right, warm key light. Solid very "
-             "dark navy blue background, a few small decorative star sparkles on the right "
-             "side. Absolutely no text, no letters, no numbers, no watermark. Character: "),
+    "face": ("Classic Japanese anime JRPG character illustration: crisp confident line art, "
+             "clean cel shading with soft highlights (NOT semi-realistic rendering, NOT pixel art, "
+             "NOT 3D). Expressive youthful anime face with large detailed eyes. Elaborate layered "
+             "fantasy adventurer outfit rich in detail (belts, buckles, straps, gold trim, armor "
+             "pieces or flowing cloth), vivid saturated colors, confident characterful pose. "
+             "The character occupies the LEFT third of the frame, bust-up (chest-up) view, facing "
+             "slightly right, warm key light. Solid very dark navy blue background (#141822), a few "
+             "small decorative star sparkles on the right side. Absolutely no text, no letters, no "
+             "numbers, no watermark. Character: "),
     "battlebg": ("Side-view JRPG battle background, painterly pixel-art style, rich vivid colors, "
                  "clearly lit and readable (NOT dark, NOT black), gentle depth, empty flat middle "
                  "ground for combatants to stand on, horizon around upper third, "
                  "no characters, no people, no text, no UI. Scene: "),
     "map": ("Hand-drawn fantasy region map, parchment-free dark style, bird's-eye view, clear "
             "landmarks and roads, Traditional Chinese label-free (no text at all). Region: "),
-    "title": ("Fantasy JRPG title screen key art, dramatic sky, no logo, no text, cinematic "
-              "lighting. Scene: "),
+    "title": ("Lush hand-painted fantasy JRPG title-screen key art, richly detailed natural scene "
+              "with atmospheric mist and layered depth, soft cinematic lighting, mysterious yet "
+              "hopeful adventurous mood, classic SNES/PS1-era painterly JRPG look, foreground "
+              "elements framing a luminous focal point in the misty distance. "
+              "No logo, no text, no letters, no numbers, no watermark, no UI. Scene: "),
     "icon": ("Single game icon, centered subject, dark background, clean silhouette, no text. "
              "Subject: "),
     # 45° 斜角像素建築外觀（洋紅底去背 → 縮放置放於地圖）
