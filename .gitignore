@@ -9,6 +9,10 @@ tools/lpc/
 # gdevelop-mcp（獨立專案、另有自己的 .git 與 node_modules）
 gdevelop-mcp/
 
+# === 只版控 crystal-quest 主專案（其餘早期 demo 僅本機參考，不入 repo）===
+projects/*
+!projects/crystal-quest/
+
 # === 依賴 / 建置產物 ===
 node_modules/
 builds/
