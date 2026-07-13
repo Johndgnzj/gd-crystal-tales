@@ -28,9 +28,13 @@ STYLES = {
              "the character honestly: youthful and beautiful when young, but genuinely weathered, "
              "wrinkled and aged when old. Elaborate layered fantasy adventurer outfit rich in detail "
              "(belts, buckles, straps, gold trim, ornate embroidery, flowing cloth). Character "
-             "centered in the frame in a confident, characterful pose. Solid flat neutral dark "
-             "slate blue-grey background, no scenery, no floor, no border, no frame, no text, no "
-             "letters, no numbers, no watermark. "),
+             "centered in the frame in a confident, characterful pose. IMPORTANT for clean cutout: "
+             "draw a clean, CONTINUOUS (still fine) outline all the way around the whole silhouette "
+             "— including cape, sleeves, hem, hands and loose hair strands — so no part melts softly "
+             "into the backdrop. Solid flat single-colour background in a muted tone chosen to CLEARLY "
+             "CONTRAST the character's own clothing, cape and hair (so the figure separates cleanly; "
+             "do NOT make the backdrop the same colour or tone as any garment, cape or the hair), "
+             "no scenery, no floor, no border, no frame, no text, no letters, no numbers, no watermark. "),
     "battlebg": ("Side-view JRPG battle background, painterly pixel-art style, rich vivid colors, "
                  "clearly lit and readable (NOT dark, NOT black), gentle depth, empty flat middle "
                  "ground for combatants to stand on, horizon around upper third, "
