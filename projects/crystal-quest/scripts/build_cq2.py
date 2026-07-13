@@ -510,6 +510,11 @@ def follower_anims():
 FACE_IDS=["ludo","marin","aaron","tina","dora","sister","barton","gid","hank","martha","gray","mira","guard"]
 def face_anims():
     return [anim(k,[f"face_{k}.png"],1,False) for k in FACE_IDS]
+ART_IDS=["ludo","marin","aaron"]   # 有全身立繪者（選單故事頁展示）
+def art_anims():
+    return [anim(k,[f"menuart_{k}.png"],1,False) for k in ART_IDS]
+def portrait_anims():   # 對話用大型去背半身立繪（取代舊 144 小頭像框）
+    return [anim(k,[f"portrait_{k}.png"],1,False) for k in FACE_IDS]
 
 def tmj_write(name,MW,MH,ground):
     tmj={"compressionlevel":-1,"width":MW,"height":MH,"tilewidth":TS,"tileheight":TS,"infinite":False,
@@ -727,6 +732,16 @@ tw.unblock(20,0,23,0); tw.unblock(41,13,41,16)
 tw.mark_enc()
 
 # ---- Forest 兩層 64x44：樹牆迷宮（第一層通往深處、第二層有頭目）----
+# 森林 anokolisa 化：多樹種＋地面裝飾。獨立 RNG，絕不動全域 random 流（否則其他地圖佈局位移）。
+_FRNG = random.Random(1414)
+FTREES = [f"FTree{i}" for i in range(1,7)]                         # art_v14 產的 6 棵
+_FDECO = ["FFern","FMush","FFlower","FPebble","FFern","FFlower","FBush"]  # 加權：蕨/花多、灌木少
+def _forest_decor(m):
+    for y in range(1,m.MH-1):
+        for x in range(1,m.MW-1):
+            if m.blocked[y][x]: continue
+            if m.get(x,y) in (G["grass"],G["grassf"],G["tgrass"]) and _FRNG.random()<0.10:
+                m.prop(_FRNG.choice(_FDECO),x,y,py=6)             # 無 foot → 不擋路、連通性不受影響
 def make_forest(MW,MH,entry_y,exit_east=False,boss=False):
     m=MapB(MW,MH,G["grass"])
     carve_maze(m,1,1,MW-2,MH-2,G["fwall"],G["grass"])
@@ -755,7 +770,8 @@ def make_forest(MW,MH,entry_y,exit_east=False,boss=False):
         for x in range(2,MW-2):
             if (m.get(x,y)==G["fwall"] and m.get(x,y-1)==G["fwall"]
                 and m.get(x,y-2)==G["fwall"] and random.random()<0.22):
-                m.prop("Tree",x,y,px=TPX,py=TPY)
+                m.prop(_FRNG.choice(FTREES),x,y,px=TPX,py=TPY)   # 多樹種（全域 0.22 判定不變→種樹位置與原本一致）
+    _forest_decor(m)                                             # 開闊草地撒非阻擋裝飾
     m.mark_enc()
     return m
 FW,FH=64,44
@@ -1008,6 +1024,12 @@ def world_objects(npc_list, extra=None):
           sprite("Tree",[anim("i",["tree.png"],1,False)]),
           sprite("Bush",[anim("i",["bush.png"],1,False)]),
           sprite("Rock",[anim("i",["rock.png"],1,False)]),
+          *[sprite(f"FTree{_i}",[anim("i",[f"fst_tree_{_i}.png"],1,False)]) for _i in range(1,7)],  # 森林多樹種(anokolisa)
+          sprite("FBush",[anim("i",["fst_deco_bush.png"],1,False)]),      # 以下森林非阻擋地面裝飾
+          sprite("FFern",[anim("i",["fst_deco_fern.png"],1,False)]),
+          sprite("FMush",[anim("i",["fst_deco_mush.png"],1,False)]),
+          sprite("FFlower",[anim("i",["fst_deco_flower.png"],1,False)]),
+          sprite("FPebble",[anim("i",["fst_deco_pebble.png"],1,False)]),
           sprite("Fence",[anim("i",["fence.png"],1,False)]),
           sprite("Chest",[anim("closed",["chest_closed.png"],1,False),
                           anim("opened",["chest_opened.png"],1,False)]),
@@ -1017,6 +1039,7 @@ def world_objects(npc_list, extra=None):
           text_obj("Prompt","",24,align="center"),
           sprite("DlgPanel",[anim("i",["panel.png"],1,False)]),
           sprite("DlgFace",face_anims()),
+          sprite("DlgArt",portrait_anims()),
           text_obj("DlgName","",26,"255;225;120"),text_obj("DlgText","",28),
           text_obj("Banner","",38,"255;235;140",align="center"),
           sprite("MenuPanel",[anim("i",["panel.png"],1,False)]),
@@ -1024,6 +1047,7 @@ def world_objects(npc_list, extra=None):
           sprite("BarBg",[anim("i",["bar_bg.png"],1,False)]),
           sprite("BarFill",[anim("hp",["bar_hp.png"],1,False),anim("mp",["bar_mp.png"],1,False)]),
           sprite("MenuFace",face_anims()),
+          sprite("MenuArt",art_anims()),
           sprite("MenuMap",[anim("i",["region_map.png"],1,False)]),
           text_obj("MenuTitle","",30,"255;225;120"),
           text_obj("MenuTab","",26)]+[
@@ -1062,12 +1086,14 @@ def ui_insts(W=1280):
             inst("Prompt",W//2-150,560,9999,300,0,"UI"),
             inst("DlgPanel",60,540,9000,1160,160,"UI"),
             inst("DlgFace",70,388,9002,144,144,"UI"),
+            inst("DlgArt",30,160,8998,300,380,"UI"),
             inst("DlgName",90,556,9001,0,0,"UI"),inst("DlgText",90,596,9001,1100,0,"UI"),
             inst("Banner",240,90,9999,800,0,"UI"),
             inst("MenuPanel",140,80,9500,1000,520,"UI"),
             inst("MenuTitle",180,100,9501,0,0,"UI"),
             inst("MenuTab",420,104,9501,0,0,"UI"),
             inst("MenuFace",940,150,9502,144,144,"UI"),
+            inst("MenuArt",812,112,9502,306,470,"UI"),
             inst("MenuMap",330,180,9502,620,360,"UI"),
             inst("MenuHint",180,556,9501,0,0,"UI")]+rows
 
@@ -1221,6 +1247,8 @@ def build_world_scene(name,mapb,tmjname,npcs,cfg,default_spawn):
     sc["events"]=[jsev(js)]
     # tilemap 檔名
     sc["objects"][0]["content"]["tilemapJsonFile"]=tmjname+".tmj"
+    if name in ("Forest","Forest2"):                       # 森林用 anokolisa 專屬地面圖集（其他地圖續用 atlas.png）
+        sc["objects"][0]["content"]["tilemapAtlasImage"]="atlas_forest.png"
     return sc
 
 # ================= 7. World 引擎 JS =================
@@ -1332,8 +1360,18 @@ function mkMember(id){
 var FACE={"路德":"ludo","瑪琳":"marin","亞倫":"aaron",
   "緹娜":"tina","朵拉":"dora","希雅修女":"sister","巴頓鎮長":"barton","吉德":"gid",
   "漢克":"hank","瑪莎":"martha","老葛雷":"gray","米拉":"mira","羅素隊長":"guard"};
-function setFace(nm){var fo=one("DlgFace");if(!fo)return;var a=FACE[nm];
-  if(a){fo.setAnimationName(a);fo.hide(false);}else fo.hide(true);}
+function setFace(nm){
+  var fo=one("DlgFace"); if(fo)fo.hide(true);                        // 舊 144 小頭像框停用（改用大型去背立繪）
+  var ar=one("DlgArt"); if(!ar)return;
+  var _st=rs.__v;
+  if(_st&&_st.inside&&_st.intMode==="menu"){ar.hide(true);return;}   // 立繪＋選單式室內：已有 IntArt 大立繪
+  var a=FACE[nm];
+  if(!a){ar.hide(true);return;}                                     // 無對應立繪（旁白等）→ 不顯示
+  ar.setAnimationName(a); if(ar.setScale)ar.setScale(1);            // 先重置原生尺寸，再依高度縮放（比例正確）
+  var H=380, nR=ar.getWidth()/ar.getHeight(), W=Math.round(H*nR);
+  if(W>470){W=470;H=Math.round(W/nR);}                              // 寬服裝角色（拖擺長袍）限寬
+  ar.setWidth(W); ar.setHeight(H); ar.setX(14); ar.setY(540-H); ar.hide(false);   // 貼近左緣（間距減半）
+}
 function healAll(){var ps=party();for(var i=0;i<ps.length;i++){derive(ps[i]);ps[i].hp=ps[i].maxhp;ps[i].mp=ps[i].maxmp;}setJ("g_party",ps);}
 function blocked(px,py){
   var tx=Math.floor(px/TS),ty=Math.floor(py/TS);
@@ -1352,7 +1390,7 @@ if(!rs.__v){
   rs.__v={dlg:null,dlgIdx:0,sp:false,enc:0,encNext:600+Math.random()*800,grace:1.2,cut:null,cutIdx:0,queue:[]};
   rs.__bgmT=0;
   var st0=rs.__v;
-  ["Tree","Bush","Rock","Fence","Well","BGuild","BInn","BShrine","BMayor","BShop","BSmith","Board","Barrel","Crate","Lamp","Flowerbed","Stall","Laundry","CaveMouth","Support","Rubble","BossMark","BearMark","StalGold","StalBrown","StalBlack","Herb1","Herb2","Herb3","RelicHelmet","DunSkull","DunSkullPile","DunBones","DunWeb","DunCrack"]
+  ["Tree","FTree1","FTree2","FTree3","FTree4","FTree5","FTree6","FBush","FFern","FMush","FFlower","FPebble","Bush","Rock","Fence","Well","BGuild","BInn","BShrine","BMayor","BShop","BSmith","Board","Barrel","Crate","Lamp","Flowerbed","Stall","Laundry","CaveMouth","Support","Rubble","BossMark","BearMark","StalGold","StalBrown","StalBlack","Herb1","Herb2","Herb3","RelicHelmet","DunSkull","DunSkullPile","DunBones","DunWeb","DunCrack"]
     .forEach(function(n){rs.getObjects(n).forEach(function(o){o.setZOrder(baseZ(o));});});
   st0.npcHome={}; st0.npcw=[];
   CFG.npcs.forEach(function(n){var o=one(n.obj);if(o){o.setAnimationName("Idle"+(n.face||"Down"));o.setZOrder(baseZ(o));st0.npcHome[n.obj]=[o.getX(),o.getY()];
@@ -1378,7 +1416,7 @@ if(!rs.__v){
     o.setAnimationName(_op?"opened":"closed"); o.setZOrder(baseZ(o));
     st0.chests.push({o:o,d:_cd,opened:_op});
   });
-  var hideL=["DlgPanel","DlgFace","DlgName","DlgText","Prompt","Banner","MenuPanel","MenuFace","MenuMap","MenuTab","MenuTitle","MenuHint"];
+  var hideL=["DlgPanel","DlgFace","DlgArt","DlgName","DlgText","Prompt","Banner","MenuPanel","MenuFace","MenuArt","MenuMap","MenuTab","MenuTitle","MenuHint"];
   for(var hi=0;hi<20;hi++)hideL.push("MRow"+hi);
   hideL.forEach(function(n){var o=one(n);if(o)o.hide(true);});
   ["RowHi","BarBg","BarFill"].forEach(function(n){rs.getObjects(n).forEach(function(o){o.hide(true);});});
@@ -1467,7 +1505,7 @@ var b=p.getBehavior("Move");
 if(st.grace>0)st.grace-=dt;
 var f=flags();
 // ===== Track J：進屋機制（同場景就地室內切換） =====
-var OUTDOOR_HIDE=["Tree","Bush","Rock","Fence","Well","BGuild","BInn","BShrine","BMayor","BShop","BSmith","Board","Barrel","Crate","Lamp","Flowerbed","Stall","Laundry","Hen"];
+var OUTDOOR_HIDE=["Tree","FTree1","FTree2","FTree3","FTree4","FTree5","FTree6","FBush","FFern","FMush","FFlower","FPebble","Bush","Rock","Fence","Well","BGuild","BInn","BShrine","BMayor","BShop","BSmith","Board","Barrel","Crate","Lamp","Flowerbed","Stall","Laundry","Hen"];
 function setOutdoorHidden(h){
   var m=one("Map"); if(m)m.hide(h);
   for(var oi=0;oi<OUTDOOR_HIDE.length;oi++){rs.getObjects(OUTDOOR_HIDE[oi]).forEach(function(o){o.hide(h);});}
@@ -1866,6 +1904,12 @@ function renderPanel(rows,barsp,opt){
   }
   var mf=one("MenuFace");
   if(mf){mf.hide(!opt.showFace);if(opt.showFace)mf.setAnimationName(opt.showFace);}
+  var mart=one("MenuArt");   // 故事頁大型全身立繪（三主角）；統一畫布→固定顯示尺寸、右側定位
+  if(mart){
+    if(opt.showArt){mart.hide(false);mart.setAnimationName(opt.showArt);
+      mart.setWidth(306);mart.setHeight(470);mart.setX(812);mart.setY(112);}
+    else mart.hide(true);
+  }
   var mmap=one("MenuMap");
   if(mmap)mmap.hide(!opt.showMap);
   if(mh){mh.hide(false);mh.setString((opt.hint||"")+"　　金幣 "+g.get("g_gold").getAsNumber());}
@@ -1896,7 +1940,7 @@ if(st.menu){
   var enter=eRet||eSpc;
   var up=keyHit("Up"),down=keyHit("Down");
   var rows=[]; var barsp=[]; var hint="←→/Q/E 切換分頁　Esc 關閉";
-  var showFace=null, showMap=false;
+  var showFace=null, showArt=null, showMap=false;
   if(st.tab===0&&st.mMode==="list"){
     if(up&&st.sel>0){st.sel--;sfx("cursor.mp3");}
     if(down&&st.sel<ps.length-1){st.sel++;sfx("cursor.mp3");}
@@ -1913,9 +1957,12 @@ if(st.menu){
     hint="↑↓ 選隊員　Enter 檢視/配點　←→/Q/E 分頁　Esc 關閉";
     if(enter&&ps[st.sel]){st.mMode="member";st.sSel=0;st.mPage=0;sfx("select.wav");}
   } else if(st.tab===0){
-    var m=ps[st.sel];derive(m);showFace=m.id;
+    var m=ps[st.sel];derive(m);
     if(st.mPage===undefined)st.mPage=0;
     if(keyHit("Left")||keyHit("Right")){st.mPage^=1;sfx("cursor.mp3");}
+    var _hasArt=(m.id==="ludo"||m.id==="marin"||m.id==="aaron");
+    if(st.mPage===1&&_hasArt){showArt=m.id;showFace=null;}   // 故事頁：有全身圖者顯示大立繪
+    else showFace=m.id;                                       // 能力頁或無全身圖：顯示小頭像
     rows.push({t:m.name+"　"+clsName(m)+"　Lv"+m.lv+"　EXP "+m.exp+"/"+expNeed(m.lv)+"　　"+
       (st.mPage===0?"〔能力〕　故事▶":"◀能力　〔故事〕"),x:180,y:140});
     if(st.mPage===1){
@@ -1941,15 +1988,17 @@ if(st.menu){
       }
     }
     if(did){derive(m);setJ("g_party",ps);}
-    rows.push({t:"HP "+m.hp+"/"+m.maxhp,x:180,y:170});
-    barsp.push({x:330,y:178,w:170,cur:m.hp,max:m.maxhp,kind:"hp"});
-    rows.push({t:"MP "+m.mp+"/"+m.maxmp,x:560,y:170});
-    barsp.push({x:700,y:178,w:170,cur:m.mp,max:m.maxmp,kind:"mp"});
-    rows.push({t:"【屬性】屬性點 "+(m.pts||0)+((m.pts||0)>0?"（按 1=力 2=敏 3=智 分配）":""),x:180,y:208,
+    rows.push({t:"HP "+m.hp+"/"+m.maxhp,x:180,y:168});
+    barsp.push({x:330,y:176,w:170,cur:m.hp,max:m.maxhp,kind:"hp"});
+    rows.push({t:"MP "+m.mp+"/"+m.maxmp,x:560,y:168});
+    barsp.push({x:700,y:176,w:170,cur:m.mp,max:m.maxmp,kind:"mp"});
+    // 屬性：分欄對齊、拉開行距、攻防成對（原本擠成兩長行、全形空格難讀）
+    rows.push({t:"【屬性】屬性點 "+(m.pts||0)+((m.pts||0)>0?"　（1=力 2=敏 3=智 分配）":""),x:180,y:206,
       c:(m.pts||0)>0?C_GOLD:C_ACC});
-    rows.push({t:"力量 "+m.attrs.str+"　敏捷 "+m.attrs.agi+"　智力 "+m.attrs.int,x:180,y:236});
-    rows.push({t:"物攻 "+m.patk+"　魔攻 "+m.matk+"　物防 "+m.pdef+"　魔防 "+m.mdef,x:180,y:264,c:"170;220;235"});
-    rows.push({t:"閃避 "+m.dodgeV+"　會心 "+m.critV+"%　速度 "+m.spd,x:180,y:292,c:"170;220;235"});
+    rows.push({t:"力量  "+m.attrs.str,x:200,y:238}); rows.push({t:"敏捷  "+m.attrs.agi,x:380,y:238}); rows.push({t:"智力  "+m.attrs.int,x:560,y:238});
+    var _dc="170;220;235";
+    rows.push({t:"物攻  "+m.patk,x:200,y:276,c:_dc}); rows.push({t:"物防  "+m.pdef,x:380,y:276,c:_dc}); rows.push({t:"閃避  "+m.dodgeV,x:560,y:276,c:_dc}); rows.push({t:"速度  "+m.spd,x:740,y:276,c:_dc});
+    rows.push({t:"魔攻  "+m.matk,x:200,y:304,c:_dc}); rows.push({t:"魔防  "+m.mdef,x:380,y:304,c:_dc}); rows.push({t:"會心  "+m.critV+"%",x:560,y:304,c:_dc});
     rows.push({t:"【裝備】（Enter 循環更換）",x:180,y:332,c:C_ACC});
     for(var i=0;i<SLOTS.length;i++){
       var eid=m.eq&&m.eq[SLOTS[i][0]];
@@ -2113,7 +2162,7 @@ if(st.menu){
     }
     hint="↑↓ 選擇　Enter 執行　←→ 分頁　Esc 關閉";
   }
-  renderPanel(rows,barsp,{title:"選單",showFace:showFace,showMap:showMap,hint:hint,
+  renderPanel(rows,barsp,{title:"選單",showFace:showFace,showArt:showArt,showMap:showMap,hint:hint,
     tab:TABS.map(function(t,i){return i===st.tab?"【"+t+"】":" "+t+" ";}).join("　")});
 } else if(st.shop){
   // ---------- 商店（買/賣兩頁籤，複用選單面板元件）----------
@@ -2180,14 +2229,14 @@ if(st.menu){
     renderPanel(rows,barsp,{title:shopDef.name,tab:tabStr,hint:shHint});
   }
 } else {
-  var hideM=["MenuPanel","MenuTitle","MenuTab","MenuHint","MenuFace","MenuMap"];
+  var hideM=["MenuPanel","MenuTitle","MenuTab","MenuHint","MenuFace","MenuArt","MenuMap"];
   for(var hj=0;hj<20;hj++)hideM.push("MRow"+hj);
   hideM.forEach(function(n){var o=one(n);if(o)o.hide(true);});
   ["RowHi","BarBg","BarFill"].forEach(function(n){rs.getObjects(n).forEach(function(o){o.hide(true);});});
 }
 b.ignoreDefaultControls(lock);
-if(!st.dlg&&!st.cut){var pn=one("DlgPanel"),dn=one("DlgName"),dx=one("DlgText"),df=one("DlgFace");
-  if(pn)pn.hide(true);if(dn)dn.hide(true);if(dx)dx.hide(true);if(df)df.hide(true);}
+if(!st.dlg&&!st.cut){var pn=one("DlgPanel"),dn=one("DlgName"),dx=one("DlgText"),df=one("DlgFace"),da=one("DlgArt");
+  if(pn)pn.hide(true);if(dn)dn.hide(true);if(dx)dx.hide(true);if(df)df.hide(true);if(da)da.hide(true);}
 
 // ---------- 移動/碰撞/動畫 ----------
 var ft=feet(p);
@@ -3387,7 +3436,8 @@ if(rs.__ts===0){
 """.replace("__CONTENT__",json.dumps(CONTENT,ensure_ascii=False)))]
 
 # ================= 11. 專案組裝 =================
-resources=[res_("atlas.png","assets/map/atlas.png","image")]
+resources=[res_("atlas.png","assets/map/atlas.png","image"),
+           res_("atlas_forest.png","assets/map/atlas_forest.png","image")]  # 森林專屬地面（anokolisa，art_v14 產）
 for t in ["town","forest","forest2","mine","cave"]:
     resources.append(res_(t+".tmj",f"assets/map/{t}.tmj","tilemap"))
 for f in sorted(os.listdir(f"{A}/char")):

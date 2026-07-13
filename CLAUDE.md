@@ -37,6 +37,7 @@ python3 build_cq2.py && python3 art_v2.py && python3 art_v3_lpc.py   # 標準重
 # 敵人外觀變動時（先於 build 跑，產 lpc_src/）：python3 art_v8_foes.py && python3 art_v9_creatures.py
 # NPC 走動/室內家具變動時（先於 build 跑，持久化平時免跑）：python3 art_v10_npcwalk.py && python3 art_v12_furniture.py
 # 標題頁美術變動時（合成 menubg＋烘描邊選單字，先於 build 跑）：python3 art_v13_title.py
+# 森林素材變動時（anokolisa 地面 atlas_forest＋多樹種 fst_*＋裝飾，先於 build 跑，來源 tools/anokolisa）：python3 art_v14_forest.py
 ```
 之後用 gdevelop-mcp 的 `validate_project` + `preview_scene` 驗證；互動測試範本見開發指南。
 build 內建迷宮連通性 assert，改地圖後 build 過 = 路通。

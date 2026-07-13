@@ -16,8 +16,8 @@ MODELS = ["gemini-2.5-flash-image", "gemini-2.0-flash-preview-image-generation"]
 
 # 各素材類型的風格前綴（維持與遊戲現有素材一致的構圖約定）
 STYLES = {
-    # 立繪基底風格（2026-07-13 依 design/ref/role-design-* 定調：細線稿＋水彩手繪感＋暖色）。
-    # 構圖：人物置中、暖赭深底 → 半身圖(frame=bust)供 art_v7_faces.py 自動裁 144px 頭像。
+    # 立繪基底風格（2026-07-13 依 design/ref/role-design-* 定調：細線稿＋水彩手繪感）。
+    # 構圖：人物置中、中性藍灰深底 → 半身圖(frame=bust)供 art_v7_faces.py 自動裁 144px 頭像；配色由角色描述帶入。
     "face": ("Hand-drawn anime JRPG character illustration in a soft watercolor, painterly style: "
              "fine and delicate line art with subtle line-weight variation (NOT thick heavy black "
              "outlines), gentle watercolor-like shading with soft gradients, translucent washes and "
@@ -29,8 +29,8 @@ STYLES = {
              "wrinkled and aged when old. Elaborate layered fantasy adventurer outfit rich in detail "
              "(belts, buckles, straps, gold trim, ornate embroidery, flowing cloth). Character "
              "centered in the frame in a confident, characterful pose. Solid flat neutral dark "
-             "background (#20222a), no scenery, no floor, no text, no letters, no numbers, no "
-             "watermark. "),
+             "slate blue-grey background, no scenery, no floor, no border, no frame, no text, no "
+             "letters, no numbers, no watermark. "),
     "battlebg": ("Side-view JRPG battle background, painterly pixel-art style, rich vivid colors, "
                  "clearly lit and readable (NOT dark, NOT black), gentle depth, empty flat middle "
                  "ground for combatants to stand on, horizon around upper third, "
@@ -68,7 +68,8 @@ FACE_FRAME = {
     "bust": ("Framing: waist-up half-body portrait, head near the top with a little headroom, "
              "landscape frame. Character: "),
     "full": ("Framing: full-body from head to feet, the entire figure visible with margin above "
-             "and below, standing, portrait frame. Character: "),
+             "and below, standing, tall vertical portrait-orientation composition (no decorative "
+             "border, no frame). Character: "),
 }
 FACE_AR = {"bust": "16:9", "full": "3:4"}
 

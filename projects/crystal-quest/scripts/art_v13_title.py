@@ -36,27 +36,52 @@ txt("開始新遊戲",f"{U}/t_new.png",48)   # 無存檔時用（取代「重新
 txt("交談",f"{U}/t_talk.png",44)         # 室內立繪+選單指令
 txt("離開",f"{U}/t_leave.png",44)
 
-# --- 室內「立繪＋選單」用：從 design/faces 半身圖（新版＝置中構圖＋中性藍灰底）
-#     以四角背景色的「色距」去背（保留深髮，不會像亮度鍵把暗部吃掉），羽化後裁到角色 bbox ---
+# --- 立繪去背（新版立繪＝置中構圖＋中性藍灰底）---
+# flood-fill 只挖「與邊界相連」的背景；人物內部即使有接近背景色的像素（髮間高光/冷灰）也不相連→保留實心，
+# 不會像亮度鍵/純色距把頭髮挖成半透明。回傳去背後（未裁 bbox）的影像。
 from PIL import ImageFilter
+from collections import deque
+def _cutout(im, tol=40):   # 容差調低：只挖「明顯是背景」者，避免滲進與底色相近的衣物/披風
+    w,h=im.size; data=list(im.getdata())                   # 一次取出像素，索引 i=y*w+x（比 px[] 快）
+    cs=[data[3*w+3],data[3*w+(w-4)],data[(h-4)*w+3],data[(h-4)*w+(w-4)]]   # 四角取樣＝背景色
+    bg=tuple(sum(c[k] for c in cs)//4 for k in range(3))
+    def isbg(i): d=data[i]; return abs(d[0]-bg[0])+abs(d[1]-bg[1])+abs(d[2]-bg[2])<=tol
+    alpha=bytearray(b"\xff")*(w*h); seen=bytearray(w*h); dq=deque()
+    for x in range(w):
+        for i in (x,(h-1)*w+x):
+            if not seen[i] and isbg(i): seen[i]=1; alpha[i]=0; dq.append(i)
+    for y in range(h):
+        for i in (y*w,y*w+w-1):
+            if not seen[i] and isbg(i): seen[i]=1; alpha[i]=0; dq.append(i)
+    while dq:
+        i=dq.popleft(); x=i%w; y=i//w
+        for j in ([i-1] if x>0 else [])+([i+1] if x<w-1 else [])+([i-w] if y>0 else [])+([i+w] if y<h-1 else []):
+            if not seen[j] and isbg(j): seen[j]=1; alpha[j]=0; dq.append(j)
+    al=Image.frombytes("L",(w,h),bytes(alpha)).filter(ImageFilter.GaussianBlur(0.6))  # 約 1px 抗鋸齒
+    im.putalpha(al); return im
+def _tightsave(im,out):
+    bbox=im.getbbox()
+    if bbox: im=im.crop(bbox)
+    im.save(out)
+# 室內「立繪＋選單」大型前景（半身圖去背；比例自然、依高度縮放錨右下）
 def portrait(name):
     src=f"{PROJ}/design/faces/{name}.png"
+    if os.path.exists(src): _tightsave(_cutout(Image.open(src).convert("RGBA")),f"{U}/portrait_{name}.png")
+# 選單「故事」頁大型全身立繪（裁掉四周浮水印/白邊→去背→正規化到統一畫布，選單 sprite 尺寸一致好定位）
+def menuart(name):
+    src=f"{PROJ}/design/faces/{name}_full.png"
     if not os.path.exists(src): return
     im=Image.open(src).convert("RGBA"); w,h=im.size
-    px=im.load()
-    cs=[px[3,3],px[w-4,3],px[3,h-4],px[w-4,h-4]]           # 四角取樣＝背景色（中性底帶輕微漸層）
-    bg=tuple(sum(c[i] for c in cs)//4 for i in range(3))
-    al=Image.new("L",(w,h),0); ap=al.load()
-    T0,T1=50,110                                           # 色距 <T0 視為背景(透明)，>T1 角色(不透明)，之間漸變
-    for y in range(h):
-        for x in range(w):
-            r,g,b,a=px[x,y]
-            d=abs(r-bg[0])+abs(g-bg[1])+abs(b-bg[2])
-            ap[x,y]=0 if d<=T0 else (255 if d>=T1 else int((d-T0)*255/(T1-T0)))
-    al=al.filter(ImageFilter.GaussianBlur(2))              # 羽化邊緣，柔和融入房間
-    im.putalpha(al)
-    bbox=im.getbbox()                                      # 裁到角色實體（比例自然；前景依高度縮放、錨右下）
-    if bbox: im=im.crop(bbox)
-    im.save(f"{U}/portrait_{name}.png")
-for _n in ["tina"]: portrait(_n)   # 先做公會（緹娜）；其餘棟核可後再補
-print("title v13 done: menubg + t_start/t_cont/t_restart/t_new + portrait_tina")
+    m=int(min(w,h)*0.045); im=im.crop((m,m,w-m,h-m))       # 去角落浮水印/白邊
+    im=_cutout(im); bb=im.getbbox()
+    if bb: im=im.crop(bb)
+    CW,CH=520,800; TH=CH-20; sw=int(im.width*TH/im.height)  # 統一畫布 520x800
+    if sw>CW-20: sw=CW-20; TH=int(im.height*sw/im.width)
+    im=im.resize((sw,TH),Image.LANCZOS)
+    cv=Image.new("RGBA",(CW,CH),(0,0,0,0)); cv.alpha_composite(im,((CW-sw)//2,CH-TH))  # 水平置中、底部對齊
+    cv.save(f"{U}/menuart_{name}.png")
+# 對話大立繪＋室內前景：所有有臉的角色都去背（半身、透明底、tight 裁切）
+for _n in ["ludo","marin","aaron","tina","dora","sister","barton","gid","hank","martha","gray","mira","guard"]:
+    portrait(_n)
+for _n in ["ludo","marin","aaron"]: menuart(_n)   # 選單全身：主角三人
+print("title v13 done: menubg + t_* + portrait_*(13) + menuart(ludo/marin/aaron)")

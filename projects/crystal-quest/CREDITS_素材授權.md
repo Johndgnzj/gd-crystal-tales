@@ -12,6 +12,18 @@ LPC 角色產生器圖層合成（CC-BY-SA/GPL），圖層配方參考 overworld
 - 授權：CC-BY-SA 3.0 / GPL 3.0 雙授權——發佈時需標註作者，衍生美術需以相同授權分享
 - 使用範圍：草地（含變體/花）、土路九宮格過渡與內角、素土、石板廣場、長草、大樹（橡樹/松樹）
 
+## 森林地面與植被（anokolisa「Pixel Crawler - Free Pack」，2026-07-13 新增）
+- 來源：itch.io 作者 **Anokolisa**「Pixel Crawler - Free Pack」（免費版），已存於 `tools/anokolisa/`
+  （https://anokolisa.itch.io/free-pixel-art-asset-pack-topdown-tileset-rpg-16x16-sprites ）
+- 授權：見 `tools/anokolisa/LICENSE_Terms.txt`——可自由用於商業/非商業/學習專案、可任意改色改形；
+  **署名非必要（但作者感謝）；唯一限制：不得將素材本身當「最終產品」販售**（只有原作者能販售素材）。
+  crystal-quest 為把素材功能性用於遊戲、未販售素材，故可納入本（公開）repo。
+- 使用範圍（**檔名前綴 `fst_` 一律為本包衍生**，與自製家具 `f_*` 區隔）：
+  - `assets/map/atlas_forest.png`：森林專屬地面圖集（草/長草/花草/樹牆/土路），Forest/Forest2 場景 Map 專用；其他地圖仍用 LPC `atlas.png`。
+  - `assets/props/fst_tree_1..6.png`：6 種樹（針葉/闊葉，統一 96×120 底對齊）。
+  - `assets/props/fst_deco_{bush,fern,mush,flower,pebble}.png`：森林地面非阻擋裝飾。
+  - 以上由 `scripts/art_v14_forest.py` 從 `tools/anokolisa/` 重生（部分經裁切/縮放/微合成，屬允許的改作）。
+
 ## 建築與洞窟（LPC Tile Atlas 1/2，2026-07-11 新增）
 - 來源：OpenGameArt「LPC Tile Atlas」（base_out_atlas.png，`tools/lpc-atlas1/`）與
   「LPC Tile Atlas2」（build_atlas.png，`tools/lpc-atlas2/`），彙整者 adrix89
@@ -45,7 +57,9 @@ LPC 角色產生器圖層合成（CC-BY-SA/GPL），圖層配方參考 overworld
   ※ 2026-07-13：十位鎮民立繪全數改「細線稿＋水彩手繪」風重生，配色改由角色設計各自決定（見 DESIGN §3）；三主角待重生。
   程式繪備用版可由 art_v4_portraits.py 重生。
 - `assets/ui/portrait_<id>.png`（室內立繪＋選單用的大型前景立繪）：由 design/faces 同一 AI 立繪，
-  以 art_v13_title.py 取四角背景色做色距去背＋羽化、裁至角色 bbox（衍生自上者，授權相同）。目前有 portrait_tina（公會，2026-07-13 隨新水彩立繪更新）。
+  以 art_v13_title.py **flood-fill 去背**（只挖與邊界相連的背景、人物實心不透）＋裁至 bbox（衍生自上者，授權相同）。
+  2026-07-13：全 13 位角色皆產 `portrait_<id>`（一般對話的大型去背立繪 DlgArt＋公會室內前景 IntArt 共用）；
+  另 `menuart_<id>`（三主角全身，選單「故事」頁 MenuArt）同法產生（裁邊去浮水印→去背→正規化畫布）。
 - `assets/battle/hero_*.png`：由 LPC 合成角色幀放大裁切（沿用 LPC CC-BY-SA/GPL 授權），
   武器圖層取自 LPC weapon walk（longsword/dagger/saber，CC-BY-SA/GPL）。
 - `assets/ui/battlebg_*.png`：程序化生成（自製）。
